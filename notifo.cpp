@@ -43,6 +43,9 @@ class CNotifoMod : public CModule
 		CString notifo_username;
 		CString notifo_secret;
 
+		// BASIC auth string, needs to be encoded each time username/secret is changed
+		CString notifo_auth;
+
 	public:
 
 		MODCONSTRUCTOR(CNotifoMod) {
@@ -61,6 +64,7 @@ class CNotifoMod : public CModule
 
 			notifo_username = "";
 			notifo_secret = "";
+			notifo_auth = "";
 		}
 		virtual ~CNotifoMod() {}
 
@@ -78,6 +82,16 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Re-encode the authentication credentials.
+		 */
+		void authencode()
+		{
+			// BASIC auth, base64-encoded username:password
+			CString auth = notifo_username + CString(":") + notifo_secret;
+			notifo_auth = auth.Base64Encode_n();
+		}
+
+		/**
 		 * Send a message to the currently-configured Notifo account.
 		 * Requires (and assumes) that the user has already configured their
 		 * username and API secret using the 'set' command.
@@ -87,9 +101,6 @@ class CNotifoMod : public CModule
 		 */
 		void send_message(const CString& message, const CString& title="New Message")
 		{
-			// BASIC auth style
-			CString auth = notifo_username + CString(":") + notifo_secret;
-
 			// POST body parameters for the request
 			CString post = "to=" + urlencode(notifo_username);
 			post += "&msg=" + urlencode(message);
@@ -103,7 +114,7 @@ class CNotifoMod : public CModule
 			request += "Content-Type: application/x-www-form-urlencoded" + crlf;
 			request += "Content-Length: " + CString(post.length()) + crlf;
 			request += "User-Agent: " + user_agent + crlf;
-			request += "Authorization: Basic " + auth.Base64Encode_n() + crlf;
+			request += "Authorization: Basic " + notifo_auth + crlf;
 			request += crlf;
 			request += post + crlf;
 
@@ -128,6 +139,8 @@ class CNotifoMod : public CModule
 		{
 			notifo_username = GetNV("notifo_username");
 			notifo_secret = GetNV("notifo_secret");
+
+			authencode();
 
 			return true;
 		}
@@ -160,11 +173,13 @@ class CNotifoMod : public CModule
 				{
 					SetNV("notifo_username", value);
 					notifo_username = value;
+					authencode();
 				}
 				else if (option == "secret")
 				{
 					SetNV("notifo_secret", value);
 					notifo_secret = value;
+					authencode();
 				}
 				else
 				{
