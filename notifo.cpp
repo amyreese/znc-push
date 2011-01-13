@@ -133,6 +133,21 @@ class CNotifoMod : public CModule
 #endif
 		}
 
+		/**
+		 * Notify the user of a private message.
+		 *
+		 * @param nick Nick that sent the message
+		 * @param message Message contents
+		 */
+		void notify_pm(const CNick& nick, const CString& message)
+		{
+			CString title = "Private Message";
+			CString msg = "From " + nick.GetNick();
+			msg += ": " + message;
+
+			send_message(msg, title);
+		}
+
 	protected:
 
 		bool OnLoad(const CString& args, CString& message)
@@ -143,6 +158,18 @@ class CNotifoMod : public CModule
 			authencode();
 
 			return true;
+		}
+
+		/**
+		 * Handle a private message
+		 *
+		 * @param nick Nick that sent the message
+		 * @param message Message contents
+		 */
+		EModRet OnPrivMsg(CNick& nick, CString& message)
+		{
+			notify_pm(nick, message);
+			return CONTINUE;
 		}
 
 		/**
