@@ -26,6 +26,9 @@ class CNotifoMod : public CModule
 {
 	protected:
 
+		// Application name
+		CString app;
+
 		// Too lazy to add CString("\r\n\") everywhere
 		CString crlf;
 
@@ -43,6 +46,7 @@ class CNotifoMod : public CModule
 	public:
 
 		MODCONSTRUCTOR(CNotifoMod) {
+			app = "ZNC";
 			crlf = "\r\n";
 
 #if DEBUG_HOST
@@ -79,8 +83,9 @@ class CNotifoMod : public CModule
 		 * username and API secret using the 'set' command.
 		 *
 		 * @param message Message to be sent to the user
+		 * @param title Message title to use
 		 */
-		void send_message(const CString& message)
+		void send_message(const CString& message, const CString& title="New Message")
 		{
 			// BASIC auth style
 			CString auth = notifo_username + CString(":") + notifo_secret;
@@ -88,8 +93,8 @@ class CNotifoMod : public CModule
 			// POST body parameters for the request
 			CString post = "to=" + urlencode(notifo_username);
 			post += "&msg=" + urlencode(message);
-			post += "&label=" + urlencode(CString("ZNC"));
-			post += "&title=" + urlencode(CString("New Message"));
+			post += "&label=" + urlencode(app);
+			post += "&title=" + urlencode(title);
 			post += "&uri=" + urlencode(CString("http://notifo.leetcode.net/"));
 
 			// Request headers and POST body
