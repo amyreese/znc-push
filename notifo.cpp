@@ -47,6 +47,7 @@ class CNotifoMod : public CModule
 
 		// Configuration options
 		MCString options;
+		MCString defaults;
 
 	public:
 
@@ -69,15 +70,15 @@ class CNotifoMod : public CModule
 			user = GetUser();
 
 			// Notifo user account and secret
-			options["username"] = "";
-			options["secret"] = "";
+			defaults["username"] = "";
+			defaults["secret"] = "";
 
 			// Notification conditions
-			options["client_count_less_than"] = "0";
+			defaults["client_count_less_than"] = "0";
 
 			// Notification settings
-			options["message_length"] = "100";
-			options["message_uri"] = "";
+			defaults["message_length"] = "100";
+			defaults["message_uri"] = "";
 		}
 		virtual ~CNotifoMod() {}
 
@@ -237,12 +238,16 @@ class CNotifoMod : public CModule
 		 */
 		bool OnLoad(const CString& args, CString& message)
 		{
-			for (MCString::iterator i = options.begin(); i != options.end(); i++)
+			for (MCString::iterator i = defaults.begin(); i != defaults.end(); i++)
 			{
 				CString value = GetNV(i->first);
 				if (value != "")
 				{
 					options[i->first] = value;
+				}
+				else
+				{
+					options[i->first] = defaults[i->first];
 				}
 			}
 
@@ -373,6 +378,30 @@ class CNotifoMod : public CModule
 				{
 					options[option] = value;
 					SetNV(option, value);
+
+					authencode();
+				}
+			}
+			// UNSET command
+			else if (action == "unset")
+			{
+				if (token_count != 2)
+				{
+					PutModule("Usage: unset <option>");
+					return;
+				}
+
+				CString option = tokens[1].AsLower();
+				MCString::iterator pos = options.find(option);
+
+				if (pos == options.end())
+				{
+					PutModule("Error: invalid option name");
+				}
+				else
+				{
+					options[option] = defaults[option];
+					DelNV(option);
 
 					authencode();
 				}

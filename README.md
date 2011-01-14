@@ -49,6 +49,10 @@ Commands
 
     Allows you to see current configuration values.
 
+*   `unset <option>`
+
+    Allows you to reset a configuration option back to the default value.
+
 *   `status`
 
     Check the status of current conditions.
