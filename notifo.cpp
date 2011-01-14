@@ -299,6 +299,11 @@ class CNotifoMod : public CModule
 			VCString tokens;
 			int token_count = command.Split(" ", tokens, false);
 
+			if (token_count < 1)
+			{
+				return;
+			}
+
 			CString action = tokens[0].AsLower();
 
 			// SET command
