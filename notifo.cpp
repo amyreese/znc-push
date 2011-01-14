@@ -193,7 +193,11 @@ class CNotifoMod : public CModule
 		{
 			for (MCString::iterator i = options.begin(); i != options.end(); i++)
 			{
-				options[i->first] = GetNV(i->first);
+				CString value = GetNV(i->first);
+				if (value != "")
+				{
+					options[i->first] = value;
+				}
 			}
 
 			authencode();
