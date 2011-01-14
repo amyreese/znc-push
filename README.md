@@ -80,6 +80,10 @@ Configuration
 
 ### Conditions
 
+*   `away_only = "no"`
+
+    If set to "yes", notifications will only be sent if the user has set their `/away` status.
+
 *   `client_count_less_than = 0`
 
     Notifications will only be sent if the number of connected IRC clients is less than this
@@ -104,8 +108,6 @@ Roadmap
 -------
 
 ### Conditions
-
-*   Away: Whether the user has set their /away status.
 
 *   User inactivity: How long, in seconds, since the last action made by user, in any
     channel or query window.

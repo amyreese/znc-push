@@ -65,6 +65,7 @@ class CNotifoMod : public CModule
 			defaults["secret"] = "";
 
 			// Notification conditions
+			defaults["away_only"] = "no";
 			defaults["client_count_less_than"] = "0";
 
 			// Notification settings
@@ -139,6 +140,19 @@ class CNotifoMod : public CModule
 			AddSocket(sock);
 		}
 
+	protected:
+
+		/**
+		 * Check if the away status condition is met.
+		 *
+		 * @return True if away_only is not "yes" or away status is set
+		 */
+		bool away_only()
+		{
+			CString value = options["away_only"].AsLower();
+			return value != "yes" || user->IsIRCAway();
+		}
+
 		/**
 		 * Check how many clients are connected to ZNC.
 		 *
@@ -193,6 +207,11 @@ class CNotifoMod : public CModule
 				return false;
 			}
 
+			if (!away_only())
+			{
+				return false;
+			}
+
 			if (!client_count_less_than())
 			{
 				return false;
@@ -209,6 +228,11 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_pm(const CNick& nick)
 		{
+			if (!away_only())
+			{
+				return false;
+			}
+
 			return true;
 		}
 
@@ -436,6 +460,10 @@ class CNotifoMod : public CModule
 
 				table.AddColumn("Condition");
 				table.AddColumn("Status");
+
+				table.AddRow();
+				table.SetCell("Condition", "away");
+				table.SetCell("Status", user->IsIRCAway() ? "yes" : "no");
 
 				table.AddRow();
 				table.SetCell("Condition", "client_count");
