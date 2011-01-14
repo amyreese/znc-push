@@ -136,12 +136,14 @@ class CNotifoMod : public CModule
 		/**
 		 * Determine when to notify the user of a channel message.
 		 *
+		 * @param nick Nick that sent the message
 		 * @param channel Channel the message was sent to
+		 * @param message Message contents
 		 * @return Notification should be sent
 		 */
-		bool notify_channel(const CChan& channel)
+		bool notify_channel(const CNick& nick, const CChan& channel, const CString& message)
 		{
-			return true;
+			return false;
 		}
 
 		/**
@@ -173,6 +175,50 @@ class CNotifoMod : public CModule
 			authencode();
 
 			return true;
+		}
+
+		/**
+		 * Handle channel messages.
+		 *
+		 * @param nick Nick that sent the message
+		 * @param channel Channel the message was sent to
+		 * @param message Message contents
+		 */
+		EModRet OnChanMsg(CNick& nick, CChan& channel, CString& message)
+		{
+			if (notify_channel(nick, channel, message))
+			{
+				CString title = "Highlight";
+				CString msg = channel.GetName();
+				msg += ": <" + nick.GetNick();
+				msg += "> " + message;
+
+				send_message(msg, title);
+			}
+
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle channel actions.
+		 *
+		 * @param nick Nick that sent the action
+		 * @param channel Channel the message was sent to
+		 * @param message Message contents
+		 */
+		EModRet OnChanAction(CNick& nick, CChan& channel, CString& message)
+		{
+			if (notify_channel(nick, channel, message))
+			{
+				CString title = "Highlight";
+				CString msg = channel.GetName();
+				msg += ": " + nick.GetNick();
+				msg += " " + message;
+
+				send_message(msg, title);
+			}
+
+			return CONTINUE;
 		}
 
 		/**
