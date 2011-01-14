@@ -14,6 +14,7 @@
 #include "Chan.h"
 #include "User.h"
 #include "Modules.h"
+#include "time.h"
 
 #if (!defined(VERSION_MAJOR) || !defined(VERSION_MINOR) || (VERSION_MAJOR == 0 && VERSION_MINOR < 72))
 #error This module needs ZNC 0.072 or newer.
@@ -38,6 +39,9 @@ class CNotifoMod : public CModule
 
 		// User agent to use
 		CString user_agent;
+
+		// Time last notification was sent
+		map <CString, unsigned int> last_notification_time;
 
 		// User object
 		CUser *user;
@@ -67,6 +71,7 @@ class CNotifoMod : public CModule
 			// Notification conditions
 			defaults["away_only"] = "no";
 			defaults["client_count_less_than"] = "0";
+			defaults["last_notification"] = "300";
 
 			// Notification settings
 			defaults["message_length"] = "100";
@@ -104,9 +109,13 @@ class CNotifoMod : public CModule
 		 *
 		 * @param message Message to be sent to the user
 		 * @param title Message title to use
+		 * @param context Channel or nick context
 		 */
-		void send_message(const CString& message, const CString& title="New Message")
+		void send_message(const CString& message, const CString& title="New Message", const CString& context="")
 		{
+			// Set the last notification time
+			last_notification_time[context] = time(NULL);
+
 			// Shorten message if needed
 			unsigned int message_length = options["message_length"].ToUInt();
 			CString short_message = message;
@@ -193,6 +202,21 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Check if the last_notification condition is met.
+		 *
+		 * @param context Channel or nick context
+		 * @return True if last_notification is zero or elapsed time is greater than last_nofication
+		 */
+		bool last_notification(const CString& context)
+		{
+			unsigned int value = options["last_notification"].ToUInt();
+			unsigned int now = time(NULL);
+			return value == 0
+				|| last_notification_time.count(context) < 1
+				|| last_notification_time[context] + value < now;
+		}
+
+		/**
 		 * Determine when to notify the user of a channel message.
 		 *
 		 * @param nick Nick that sent the message
@@ -204,7 +228,8 @@ class CNotifoMod : public CModule
 		{
 			return away_only()
 				&& client_count_less_than()
-				&& highlight(message);
+				&& highlight(message)
+				&& last_notification(channel.GetName());
 		}
 
 		/**
@@ -215,7 +240,8 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_pm(const CNick& nick)
 		{
-			return away_only();
+			return away_only()
+				&& last_notification(nick.GetNick());
 		}
 
 	protected:
@@ -262,7 +288,7 @@ class CNotifoMod : public CModule
 				msg += ": <" + nick.GetNick();
 				msg += "> " + message;
 
-				send_message(msg, title);
+				send_message(msg, title, channel.GetName());
 			}
 
 			return CONTINUE;
@@ -284,7 +310,7 @@ class CNotifoMod : public CModule
 				msg += ": " + nick.GetNick();
 				msg += " " + message;
 
-				send_message(msg, title);
+				send_message(msg, title, channel.GetName());
 			}
 
 			return CONTINUE;
@@ -304,7 +330,7 @@ class CNotifoMod : public CModule
 				CString msg = "From " + nick.GetNick();
 				msg += ": " + message;
 
-				send_message(msg, title);
+				send_message(msg, title, nick.GetNick());
 			}
 
 			return CONTINUE;
@@ -324,7 +350,7 @@ class CNotifoMod : public CModule
 				CString msg = "* " + nick.GetNick();
 				msg += " " + message;
 
-				send_message(msg, title);
+				send_message(msg, title, nick.GetNick());
 			}
 
 			return CONTINUE;
