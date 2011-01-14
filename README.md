@@ -1,7 +1,7 @@
 ZNC to Notifo
 =============
 
-ZNC to Notifo is a module for [znc][] that will send notifications to a [notifo][] account
+ZNC to Notifo is a module for [ZNC][] that will send notifications to a [Notifo][] account
 for any private message or channel highlight that matches a configurable set of conditions.
 
 
@@ -51,6 +51,6 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 
 
 
-[notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
-[znc]: http://en.znc.in "ZNC, an advanced IRC bouncer"
+[Notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
+[ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 
