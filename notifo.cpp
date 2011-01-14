@@ -465,9 +465,14 @@ class CNotifoMod : public CModule
 				CString message = command.Token(1, true, " ", true);
 				send_message(message);
 			}
+			// HELP command
+			else if (action == "help")
+			{
+				PutModule("View the detailed documentation at https://github.com/jreese/znc-notifo/blob/master/README.md");
+			}
 			else
 			{
-				PutModule("Error: invalid command");
+				PutModule("Error: invalid command, try `help`");
 			}
 		}
 };

@@ -41,6 +41,10 @@ you're done!
 Commands
 --------
 
+*   `help`
+
+    Links you to this fine document.
+
 *   `set <option> <value>`
 
     Allows you to modify configuration values.
