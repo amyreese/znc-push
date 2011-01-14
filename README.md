@@ -64,7 +64,7 @@ Configuration
 
 ### Conditions
 
-*   `client_count_less_than` (Integer, default value: "0")
+*   `client_count_less_than = 0`
 
     Notifications will only be sent if the number of connected IRC clients is less than this
     value.  A value of 0 (zero) will disable this condition.
