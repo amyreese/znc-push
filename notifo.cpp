@@ -410,6 +410,20 @@ class CNotifoMod : public CModule
 				CString message = command.Token(1, true, " ", true);
 				send_message(message);
 			}
+			// STATUS command
+			else if (action == "status")
+			{
+				CTable table;
+
+				table.AddColumn("Condition");
+				table.AddColumn("Status");
+
+				table.AddRow();
+				table.SetCell("Condition", "client_count");
+				table.SetCell("Status", CString(client_count()));
+
+				PutModule(table);
+			}
 			else
 			{
 				PutModule("Error: invalid command");
