@@ -71,6 +71,9 @@ class CNotifoMod : public CModule
 			// Notifo user account and secret
 			options["username"] = "";
 			options["secret"] = "";
+
+			// Notification conditions
+			options["client_count_less_than"] = "0";
 		}
 		virtual ~CNotifoMod() {}
 
@@ -140,6 +143,27 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Check how many clients are connected to ZNC.
+		 *
+		 * @return Number of connected clients
+		 */
+		unsigned int client_count()
+		{
+			return user->GetClients().size();
+		}
+
+		/**
+		 * Check if the client_count condition is met.
+		 *
+		 * @return True if client_count is less than client_count_less_than or if client_count_less_than is zero
+		 */
+		bool client_count_less_than()
+		{
+			unsigned int value = options["client_count_less_than"].ToUInt();
+			return value == 0 || client_count() < value;
+		}
+
+		/**
 		 * Determine if the given message matches any highlight rules.
 		 *
 		 * @param message Message contents
@@ -167,7 +191,17 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_channel(const CNick& nick, const CChan& channel, const CString& message)
 		{
-			return highlight(message);
+			if (!highlight(message))
+			{
+				return false;
+			}
+
+			if (!client_count_less_than())
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		/**
