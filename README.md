@@ -98,4 +98,4 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 
-# vim:set ft= expandtab tabstop=4 shiftwidth=4:
+<!-- vim:set ft= expandtab tabstop=4 shiftwidth=4: -->
