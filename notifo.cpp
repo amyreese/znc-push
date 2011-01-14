@@ -368,9 +368,27 @@ class CNotifoMod : public CModule
 			// GET command
 			else if (action == "get")
 			{
-				if (token_count != 2)
+				if (token_count > 2)
 				{
-					PutModule("Usage: get <option>");
+					PutModule("Usage: get [<option>]");
+					return;
+				}
+
+				if (token_count < 2)
+				{
+					CTable table;
+
+					table.AddColumn("Option");
+					table.AddColumn("Value");
+
+					for (MCString::iterator i = options.begin(); i != options.end(); i++)
+					{
+						table.AddRow();
+						table.SetCell("Option", i->first);
+						table.SetCell("Value", i->second);
+					}
+
+					PutModule(table);
 					return;
 				}
 
