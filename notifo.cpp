@@ -416,12 +416,6 @@ class CNotifoMod : public CModule
 					PutModule(option + CString(": \"") + options[option] + CString("\""));
 				}
 			}
-			// SEND command
-			else if (action == "send")
-			{
-				CString message = command.Token(1, true, " ", true);
-				send_message(message);
-			}
 			// STATUS command
 			else if (action == "status")
 			{
@@ -435,6 +429,12 @@ class CNotifoMod : public CModule
 				table.SetCell("Status", CString(client_count()));
 
 				PutModule(table);
+			}
+			// SEND command
+			else if (action == "send")
+			{
+				CString message = command.Token(1, true, " ", true);
+				send_message(message);
 			}
 			else
 			{
