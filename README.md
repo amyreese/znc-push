@@ -35,13 +35,39 @@ Then set your Notifo username and API secret:
 
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
-you're done!  If you want to tweak the notfication conditions, continue on to configuration.
+you're done!
+
+
+Commands
+--------
+
+*   `set <option> <value>`
+
+    Allows you to modify configuration values.
+
+*   `get [<option>]`
+
+    Allows you to see current configuration values.
+
+*   `status`
+
+    Check the status of current conditions.
+
+*   `send <message>`
+
+    Manually trigger a notification with the given message.  Useful for testing to validate
+    credentials, etc.
 
 
 Configuration
 -------------
 
-There is none yet.... :'(
+### Conditions
+
+*   `client_count_less_than` (Integer, default value: "0")
+
+    Notifications will only be sent if the number of connected IRC clients is less than this
+    value.  A value of 0 (zero) will disable this condition.
 
 
 License
