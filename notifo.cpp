@@ -19,9 +19,6 @@
 #error This module needs ZNC 0.072 or newer.
 #endif
 
-#define DEBUG_HOST 0
-#define DEBUG_LOGGING 0
-
 class CNotifoMod : public CModule
 {
 	protected:
@@ -55,15 +52,9 @@ class CNotifoMod : public CModule
 			app = "ZNC";
 			crlf = "\r\n";
 
-#if DEBUG_HOST
-			notifo_host = "notifo.leetcode.net";
-			notifo_url = "/index.php";
-#else
+			notifo_auth = "";
 			notifo_host = "api.notifo.com";
 			notifo_url = "/v1/send_notification";
-#endif
-
-			notifo_auth = "";
 			user_agent = "ZNC To Notifo";
 
 			// Current user
@@ -146,13 +137,6 @@ class CNotifoMod : public CModule
 			sock->Write(request);
 			sock->Close(Csock::CLT_AFTERWRITE);
 			AddSocket(sock);
-
-#if DEBUG_LOGGING
-			// Log the HTTP request
-			FILE *fh = fopen("/tmp/notifo.log", "a");
-			fputs(request.c_str(), fh);
-			fclose(fh);
-#endif
 		}
 
 		/**
