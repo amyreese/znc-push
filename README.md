@@ -100,6 +100,29 @@ Configuration
     local scheme to access a mobile application.
 
 
+Roadmap
+-------
+
+### Conditions
+
+*   Away: Whether the user has set their /away status.
+
+*   User inactivity: How long, in seconds, since the last action made by user, in any
+    channel or query window.
+
+*   Channel inactivity: How long, in seconds, since the last action made by the user in
+    the same channel or query window.
+
+*   Highlights: Strings to trigger a channel notification, in addition to the default
+    highlight when your nick is mentioned.
+
+*   Nick blacklist: List of nicks to never send notifications from, e.g. channel bots.
+
+### Settings
+
+*   Customizable notification titles and message formats.
+
+
 License
 -------
 
