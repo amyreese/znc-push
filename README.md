@@ -6,10 +6,11 @@ for any private message or channel highlight that matches a configurable set of 
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
-discussion or inclusion.
+discussion or inclusion.  Bug reports and feature requests can be submitted to
+[my bug tracker][mantis] or sent via email.
 
 ZNC to Notifo was created by [John Reese](http://johnmreese.com) and designed to fill a
-personal need.  It may not suit your use cases, but any and all feedback would be greatly
+personal need.  It may not fit your use cases, but any and all feedback would be greatly
 appreciated.
 
 
@@ -142,6 +143,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 
 
 
+[mantis]: http://leetcode.net/mantis
 [Notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 
