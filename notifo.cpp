@@ -39,12 +39,11 @@ class CNotifoMod : public CModule
 		// User agent to use
 		CString user_agent;
 
-		// Recipient account's username and API secret
-		CString notifo_username;
-		CString notifo_secret;
-
 		// BASIC auth string, needs to be encoded each time username/secret is changed
 		CString notifo_auth;
+
+		// Configuration options
+		MCString options;
 
 	public:
 
@@ -60,11 +59,12 @@ class CNotifoMod : public CModule
 			notifo_url = "/v1/send_notification";
 #endif
 
+			notifo_auth = "";
 			user_agent = "ZNC To Notifo";
 
-			notifo_username = "";
-			notifo_secret = "";
-			notifo_auth = "";
+			// Notifo user account and secret
+			options["username"] = "";
+			options["secret"] = "";
 		}
 		virtual ~CNotifoMod() {}
 
@@ -87,7 +87,7 @@ class CNotifoMod : public CModule
 		void authencode()
 		{
 			// BASIC auth, base64-encoded username:password
-			CString auth = notifo_username + CString(":") + notifo_secret;
+			CString auth = options["username"] + CString(":") + options["secret"];
 			notifo_auth = auth.Base64Encode_n();
 		}
 
@@ -102,7 +102,7 @@ class CNotifoMod : public CModule
 		void send_message(const CString& message, const CString& title="New Message")
 		{
 			// POST body parameters for the request
-			CString post = "to=" + urlencode(notifo_username);
+			CString post = "to=" + urlencode(options["username"]);
 			post += "&msg=" + urlencode(message);
 			post += "&label=" + urlencode(app);
 			post += "&title=" + urlencode(title);
@@ -134,6 +134,17 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Determine when to notify the user of a channel message.
+		 *
+		 * @param channel Channel the message was sent to
+		 * @return Notification should be sent
+		 */
+		bool notify_channel(const CChan& channel)
+		{
+			return true;
+		}
+
+		/**
 		 * Determine when to notify the user of a private message.
 		 *
 		 * @param nick Nick that sent the message
@@ -146,10 +157,18 @@ class CNotifoMod : public CModule
 
 	protected:
 
+		/**
+		 * Handle the plugin being loaded.  Retrieve plugin config values.
+		 *
+		 * @param args Plugin arguments
+		 * @param message Message to show the user after loading
+		 */
 		bool OnLoad(const CString& args, CString& message)
 		{
-			notifo_username = GetNV("notifo_username");
-			notifo_secret = GetNV("notifo_secret");
+			for (MCString::iterator i = options.begin(); i != options.end(); i++)
+			{
+				options[i->first] = GetNV(i->first);
+			}
 
 			authencode();
 
@@ -219,26 +238,19 @@ class CNotifoMod : public CModule
 
 				CString option = tokens[1].AsLower();
 				CString value = tokens[2];
+				MCString::iterator pos = options.find(option);
 
-				if (option == "username")
+				if (pos == options.end())
 				{
-					SetNV("notifo_username", value);
-					notifo_username = value;
-					authencode();
-				}
-				else if (option == "secret")
-				{
-					SetNV("notifo_secret", value);
-					notifo_secret = value;
-					authencode();
+					PutModule("Error: invalid option name");
 				}
 				else
 				{
-					PutModule("Error: invalid option name");
-					return;
-				}
+					options[option] = value;
+					SetNV(option, value);
 
-				PutModule("Done");
+					authencode();
+				}
 			}
 			// GET command
 			else if (action == "get")
@@ -250,19 +262,15 @@ class CNotifoMod : public CModule
 				}
 
 				CString option = tokens[1].AsLower();
+				MCString::iterator pos = options.find(option);
 
-				if (option == "username")
+				if (pos == options.end())
 				{
-					PutModule(GetNV("notifo_username"));
-				}
-				else if (option == "secret")
-				{
-					PutModule(GetNV("notifo_secret"));
+					PutModule("Error: invalid option name");
 				}
 				else
 				{
-					PutModule("Error: invalid option name");
-					return;
+					PutModule(option + CString(": \"") + options[option] + CString("\""));
 				}
 			}
 			// SEND command
