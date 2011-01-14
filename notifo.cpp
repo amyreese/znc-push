@@ -76,6 +76,7 @@ class CNotifoMod : public CModule
 			options["client_count_less_than"] = "0";
 
 			// Notification settings
+			options["message_length"] = "100";
 			options["message_uri"] = "";
 		}
 		virtual ~CNotifoMod() {}
@@ -113,9 +114,17 @@ class CNotifoMod : public CModule
 		 */
 		void send_message(const CString& message, const CString& title="New Message")
 		{
+			// Shorten message if needed
+			unsigned int message_length = options["message_length"].ToUInt();
+			CString short_message = message;
+			if (message_length > 0)
+			{
+				short_message = message.Ellipsize(message_length);
+			}
+
 			// POST body parameters for the request
 			CString post = "to=" + urlencode(options["username"]);
-			post += "&msg=" + urlencode(message);
+			post += "&msg=" + urlencode(short_message);
 			post += "&label=" + urlencode(app);
 			post += "&title=" + urlencode(title);
 			post += "&uri=" + urlencode(options["message_uri"]);

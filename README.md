@@ -72,6 +72,12 @@ Configuration
 
 ### Notifications
 
+*   `message_length = 100`
+
+    Maximum length of the notification message to be sent.  The message will be nicely
+    truncated and ellipsized at or before this length is reached.  A value of 0 (zero) will
+    disable this option.
+
 *   `message_url = ""`
 
     URI that will be sent with the notification to Notifo.  This could be a web address or a
