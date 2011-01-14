@@ -48,3 +48,9 @@ License
 -------
 
 This project is licensed under the MIT license.  See the `LICENSE` file for details.
+
+
+
+[notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
+[znc]: http://en.znc.in "ZNC, an advanced IRC bouncer"
+
