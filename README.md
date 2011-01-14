@@ -109,6 +109,9 @@ Roadmap
 
 ### Conditions
 
+*   Last notification: How long, in seconds, since the last notification was sent to
+    Notifo, to prevent spamming the user with notifications.
+
 *   User inactivity: How long, in seconds, since the last action made by user, in any
     channel or query window.
 
