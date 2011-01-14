@@ -202,22 +202,9 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_channel(const CNick& nick, const CChan& channel, const CString& message)
 		{
-			if (!highlight(message))
-			{
-				return false;
-			}
-
-			if (!away_only())
-			{
-				return false;
-			}
-
-			if (!client_count_less_than())
-			{
-				return false;
-			}
-
-			return true;
+			return away_only()
+				&& client_count_less_than()
+				&& highlight(message);
 		}
 
 		/**
@@ -228,12 +215,7 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_pm(const CNick& nick)
 		{
-			if (!away_only())
-			{
-				return false;
-			}
-
-			return true;
+			return away_only();
 		}
 
 	protected:
