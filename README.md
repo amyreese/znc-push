@@ -4,6 +4,14 @@ ZNC to Notifo
 ZNC to Notifo is a module for [ZNC][] that will send notifications to a [Notifo][] account
 for any private message or channel highlight that matches a configurable set of conditions.
 
+This project is still a Work In Progress, but should be functional enough and stable enough
+for everyday usage.  Users are more than welcome to submit feature requests or patches for
+discussion or inclusion.
+
+ZNC to Notifo was created by [John Reese](http://johnmreese.com) and designed to fill a
+personal need.  It may not suit your use cases, but any and all feedback would be greatly
+appreciated.
+
 
 Compiling
 ---------
