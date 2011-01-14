@@ -32,6 +32,9 @@ class CNotifoMod : public CModule
 		// Too lazy to add CString("\r\n\") everywhere
 		CString crlf;
 
+		// BASIC auth string, needs to be encoded each time username/secret is changed
+		CString notifo_auth;
+
 		// Host and URL to send messages to
 		CString notifo_host;
 		CString notifo_url;
@@ -39,8 +42,8 @@ class CNotifoMod : public CModule
 		// User agent to use
 		CString user_agent;
 
-		// BASIC auth string, needs to be encoded each time username/secret is changed
-		CString notifo_auth;
+		// User object
+		CUser *user;
 
 		// Configuration options
 		MCString options;
@@ -61,6 +64,9 @@ class CNotifoMod : public CModule
 
 			notifo_auth = "";
 			user_agent = "ZNC To Notifo";
+
+			// Current user
+			user = GetUser();
 
 			// Notifo user account and secret
 			options["username"] = "";
@@ -134,6 +140,24 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Determine if the given message matches any highlight rules.
+		 *
+		 * @param message Message contents
+		 * @return True if message matches a highlight
+		 */
+		bool highlight(const CString& message)
+		{
+			CNick nick = user->GetIRCNick();
+
+			if (message.find(nick.GetNick()) != string::npos)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
 		 * Determine when to notify the user of a channel message.
 		 *
 		 * @param nick Nick that sent the message
@@ -143,7 +167,7 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_channel(const CNick& nick, const CChan& channel, const CString& message)
 		{
-			return false;
+			return highlight(message);
 		}
 
 		/**
