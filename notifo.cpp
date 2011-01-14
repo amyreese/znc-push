@@ -134,18 +134,14 @@ class CNotifoMod : public CModule
 		}
 
 		/**
-		 * Notify the user of a private message.
+		 * Determine when to notify the user of a private message.
 		 *
 		 * @param nick Nick that sent the message
-		 * @param message Message contents
+		 * @return Notification should be sent
 		 */
-		void notify_pm(const CNick& nick, const CString& message)
+		bool notify_pm(const CNick& nick)
 		{
-			CString title = "Private Message";
-			CString msg = "From " + nick.GetNick();
-			msg += ": " + message;
-
-			send_message(msg, title);
+			return true;
 		}
 
 	protected:
@@ -161,14 +157,42 @@ class CNotifoMod : public CModule
 		}
 
 		/**
-		 * Handle a private message
+		 * Handle a private message.
 		 *
 		 * @param nick Nick that sent the message
 		 * @param message Message contents
 		 */
 		EModRet OnPrivMsg(CNick& nick, CString& message)
 		{
-			notify_pm(nick, message);
+			if (notify_pm(nick))
+			{
+				CString title = "Private Message";
+				CString msg = "From " + nick.GetNick();
+				msg += ": " + message;
+
+				send_message(msg, title);
+			}
+
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle a private action.
+		 *
+		 * @param nick Nick that sent the action
+		 * @param message Message contents
+		 */
+		EModRet OnPrivAction(CNick& nick, CString& message)
+		{
+			if (notify_pm(nick))
+			{
+				CString title = "Private Message";
+				CString msg = "* " + nick.GetNick();
+				msg += " " + message;
+
+				send_message(msg, title);
+			}
+
 			return CONTINUE;
 		}
 
