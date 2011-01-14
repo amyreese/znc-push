@@ -70,6 +70,14 @@ Configuration
     value.  A value of 0 (zero) will disable this condition.
 
 
+### Notifications
+
+*   `message_url = ""`
+
+    URI that will be sent with the notification to Notifo.  This could be a web address or a
+    local scheme to access a mobile application.
+
+
 License
 -------
 
@@ -80,3 +88,4 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 
+# vim:set ft= expandtab tabstop=4 shiftwidth=4:

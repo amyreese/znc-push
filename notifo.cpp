@@ -74,6 +74,9 @@ class CNotifoMod : public CModule
 
 			// Notification conditions
 			options["client_count_less_than"] = "0";
+
+			// Notification settings
+			options["message_uri"] = "";
 		}
 		virtual ~CNotifoMod() {}
 
@@ -115,7 +118,7 @@ class CNotifoMod : public CModule
 			post += "&msg=" + urlencode(message);
 			post += "&label=" + urlencode(app);
 			post += "&title=" + urlencode(title);
-			post += "&uri=" + urlencode(CString("http://notifo.leetcode.net/"));
+			post += "&uri=" + urlencode(options["message_uri"]);
 
 			// Request headers and POST body
 			CString request = "POST " + notifo_url + " HTTP/1.1" + crlf;
