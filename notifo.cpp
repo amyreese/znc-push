@@ -43,6 +43,9 @@ class CNotifoMod : public CModule
 		// Time last notification was sent
 		map <CString, unsigned int> last_notification_time;
 
+		// Time of last activity by user
+		map <CString, unsigned int> last_active_time;
+
 		// User object
 		CUser *user;
 
@@ -70,9 +73,10 @@ class CNotifoMod : public CModule
 
 			// Notification conditions
 			defaults["away_only"] = "no";
-			defaults["nick_blacklist"] = "";
 			defaults["client_count_less_than"] = "0";
+			defaults["last_active"] = "180";
 			defaults["last_notification"] = "300";
+			defaults["nick_blacklist"] = "";
 
 			// Notification settings
 			defaults["message_length"] = "100";
@@ -203,6 +207,21 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Check if the last_active condition is met.
+		 *
+		 * @param context Channel or nick context
+		 * @return True if last_active is zero or elapsed time is greater than last_active
+		 */
+		bool last_active(const CString& context)
+		{
+			unsigned int value = options["last_active"].ToUInt();
+			unsigned int now = time(NULL);
+			return value == 0
+				|| last_active_time.count(context) < 1
+				|| last_active_time[context] + value < now;
+		}
+
+		/**
 		 * Check if the last_notification condition is met.
 		 *
 		 * @param context Channel or nick context
@@ -251,10 +270,12 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_channel(const CNick& nick, const CChan& channel, const CString& message)
 		{
+			CString context = channel.GetName();
 			return away_only()
 				&& client_count_less_than()
 				&& highlight(message)
-				&& last_notification(channel.GetName())
+				&& last_active(context)
+				&& last_notification(context)
 				&& nick_blacklist(nick)
 				&& true;
 		}
@@ -267,8 +288,10 @@ class CNotifoMod : public CModule
 		 */
 		bool notify_pm(const CNick& nick)
 		{
+			CString context = nick.GetNick();
 			return away_only()
-				&& last_notification(nick.GetNick())
+				&& last_active(context)
+				&& last_notification(context)
 				&& nick_blacklist(nick)
 				&& true;
 		}
@@ -382,6 +405,30 @@ class CNotifoMod : public CModule
 				send_message(msg, title, nick.GetNick());
 			}
 
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle a message sent by the user.
+		 *
+		 * @param target Target channel or nick
+		 * @param message Message contents
+		 */
+		EModRet OnUserMsg(CString& target, CString& message)
+		{
+			last_active_time[target] = time(NULL);
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle an action sent by the user.
+		 *
+		 * @param target Target channel or nick
+		 * @param message Message contents
+		 */
+		EModRet OnUserAction(CString& target, CString& message)
+		{
+			last_active_time[target] = time(NULL);
 			return CONTINUE;
 		}
 

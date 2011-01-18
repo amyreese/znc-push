@@ -90,6 +90,16 @@ Configuration
     Notifications will only be sent if the number of connected IRC clients is less than this
     value.  A value of 0 (zero) will disable this condition.
 
+*   `last_active = 180`
+
+    Time in seconds since the last message sent by the user on that channel or query window.
+    Notifications will only be sent if the elapsed time is greater than this value.  A value
+    of 0 (zero) will disable this condition.
+
+    Note that this condition keeps track of the last message sent to each channel and query
+    window separately, so a recent PM to Joe will not affect a notification sent from
+    channel #foo.
+
 *   `last_notification = 300`
 
     Time in seconds since the last notification sent from that channel or query window.
@@ -133,9 +143,6 @@ Roadmap
 
 *   User inactivity: How long, in seconds, since the last action made by user, in any
     channel or query window.
-
-*   Channel inactivity: How long, in seconds, since the last action made by the user in
-    the same channel or query window.
 
 *   Highlights: Strings to trigger a channel notification, in addition to the default
     highlight when your nick is mentioned.
