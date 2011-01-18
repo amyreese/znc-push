@@ -100,6 +100,17 @@ Configuration
     query window separately, so a recent PM from Joe will not affect a notification sent
     from channel #foo.
 
+*   `nick_blacklist = ""`
+
+    Space-separated list of nicks.  Applies to both channel mentions and query windows.
+    Notifications will only be sent for messages from nicks that are not present in this
+    list, using a case-insensitive comparison.
+
+    Note that wildcard patterns can be used to match multiple nicks with a single blacklist
+    entry. For example, `set nick_blacklist *bot` will not send notifications from nicks
+    like "channelbot", "FooBot", or "Robot".  Care must be used to not accidentally
+    blacklist legitimate nicks with wildcards.
+
 
 ### Notifications
 
@@ -128,8 +139,6 @@ Roadmap
 
 *   Highlights: Strings to trigger a channel notification, in addition to the default
     highlight when your nick is mentioned.
-
-*   Nick blacklist: List of nicks to never send notifications from, e.g. channel bots.
 
 ### Settings
 

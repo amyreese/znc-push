@@ -70,6 +70,7 @@ class CNotifoMod : public CModule
 
 			// Notification conditions
 			defaults["away_only"] = "no";
+			defaults["nick_blacklist"] = "";
 			defaults["client_count_less_than"] = "0";
 			defaults["last_notification"] = "300";
 
@@ -217,6 +218,30 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Check if the nick_blacklist condition is met.
+		 *
+		 * @param nick Nick that sent the message
+		 * @return True if nick is not in the blacklist
+		 */
+		bool nick_blacklist(const CNick& nick)
+		{
+			VCString blacklist;
+			options["nick_blacklist"].Split(" ", blacklist, false);
+
+			CString name = nick.GetNick().AsLower();
+
+			for (VCString::iterator i = blacklist.begin(); i != blacklist.end(); i++)
+			{
+				if (name.WildCmp(i->AsLower()))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/**
 		 * Determine when to notify the user of a channel message.
 		 *
 		 * @param nick Nick that sent the message
@@ -229,7 +254,9 @@ class CNotifoMod : public CModule
 			return away_only()
 				&& client_count_less_than()
 				&& highlight(message)
-				&& last_notification(channel.GetName());
+				&& last_notification(channel.GetName())
+				&& nick_blacklist(nick)
+				&& true;
 		}
 
 		/**
@@ -241,7 +268,9 @@ class CNotifoMod : public CModule
 		bool notify_pm(const CNick& nick)
 		{
 			return away_only()
-				&& last_notification(nick.GetNick());
+				&& last_notification(nick.GetNick())
+				&& nick_blacklist(nick)
+				&& true;
 		}
 
 	protected:
