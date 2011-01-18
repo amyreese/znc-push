@@ -376,14 +376,14 @@ class CNotifoMod : public CModule
 			// SET command
 			if (action == "set")
 			{
-				if (token_count != 3)
+				if (token_count < 3)
 				{
 					PutModule("Usage: set <option> <value>");
 					return;
 				}
 
 				CString option = tokens[1].AsLower();
-				CString value = tokens[2];
+				CString value = command.Token(2, true, " ");
 				MCString::iterator pos = options.find(option);
 
 				if (pos == options.end())
