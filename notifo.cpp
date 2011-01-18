@@ -620,11 +620,43 @@ class CNotifoMod : public CModule
 				table.SetCell("Condition", "client_count");
 				table.SetCell("Status", CString(client_count()));
 
-				unsigned int ago = time(NULL) - idle_time;
+				unsigned int now = time(NULL);
+				unsigned int ago = now - idle_time;
 
 				table.AddRow();
 				table.SetCell("Condition", "idle");
 				table.SetCell("Status", CString(ago) + " seconds");
+
+				if (token_count > 1)
+				{
+					CString context = tokens[1];
+
+					table.AddRow();
+					table.SetCell("Condition", "last_active");
+
+					if (last_active_time.count(context) < 1)
+					{
+						table.SetCell("Status", "n/a");
+					}
+					else
+					{
+						ago = now - last_active_time[context];
+						table.SetCell("Status", CString(ago) + " seconds");
+					}
+
+					table.AddRow();
+					table.SetCell("Condition", "last_notification");
+
+					if (last_notification_time.count(context) < 1)
+					{
+						table.SetCell("Status", "n/a");
+					}
+					else
+					{
+						ago = now - last_notification_time[context];
+						table.SetCell("Status", CString(ago) + " seconds");
+					}
+				}
 
 				PutModule(table);
 			}

@@ -66,9 +66,10 @@ Commands
 
     Allows you to reset a configuration option back to the default value.
 
-*   `status`
+*   `status [<context>]`
 
-    Check the status of current conditions.
+    Check the status of current conditions.  Specifying the "context" of either a channel
+    or nick name will provide status values specific to that context.
 
 *   `send <message>`
 
