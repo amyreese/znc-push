@@ -90,6 +90,12 @@ Configuration
     Notifications will only be sent if the number of connected IRC clients is less than this
     value.  A value of 0 (zero) will disable this condition.
 
+*   `idle = 0`
+
+    Time in seconds since the last activity by the user on any channel or query window,
+    including joins, parts, messages, and actions.  Notifications will only be sent if the
+    elapsed time is greater than this value.  A value of 0 (zero) will disable this condition.
+
 *   `last_active = 180`
 
     Time in seconds since the last message sent by the user on that channel or query window.

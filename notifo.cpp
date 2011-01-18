@@ -40,11 +40,14 @@ class CNotifoMod : public CModule
 		// User agent to use
 		CString user_agent;
 
-		// Time last notification was sent
+		// Time last notification was sent for a given context
 		map <CString, unsigned int> last_notification_time;
 
-		// Time of last activity by user
+		// Time of last activity by user for a given context
 		map <CString, unsigned int> last_active_time;
+
+		// Time of last activity by user in any context
+		unsigned int idle_time;
 
 		// User object
 		CUser *user;
@@ -59,6 +62,7 @@ class CNotifoMod : public CModule
 			app = "ZNC";
 			crlf = "\r\n";
 
+			idle_time = time(NULL);
 			notifo_auth = "";
 			notifo_host = "api.notifo.com";
 			notifo_url = "/v1/send_notification";
@@ -74,6 +78,7 @@ class CNotifoMod : public CModule
 			// Notification conditions
 			defaults["away_only"] = "no";
 			defaults["client_count_less_than"] = "0";
+			defaults["idle"] = "0";
 			defaults["last_active"] = "180";
 			defaults["last_notification"] = "300";
 			defaults["nick_blacklist"] = "";
@@ -207,6 +212,19 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Check if the idle condition is met.
+		 *
+		 * @return True if idle is zero or elapsed time is greater than idle
+		 */
+		bool idle()
+		{
+			unsigned int value = options["idle"].ToUInt();
+			unsigned int now = time(NULL);
+			return value == 0
+				|| idle_time + value < now;
+		}
+
+		/**
 		 * Check if the last_active condition is met.
 		 *
 		 * @param context Channel or nick context
@@ -274,6 +292,7 @@ class CNotifoMod : public CModule
 			return away_only()
 				&& client_count_less_than()
 				&& highlight(message)
+				&& idle()
 				&& last_active(context)
 				&& last_notification(context)
 				&& nick_blacklist(nick)
@@ -290,6 +309,7 @@ class CNotifoMod : public CModule
 		{
 			CString context = nick.GetNick();
 			return away_only()
+				&& idle()
 				&& last_active(context)
 				&& last_notification(context)
 				&& nick_blacklist(nick)
@@ -416,7 +436,7 @@ class CNotifoMod : public CModule
 		 */
 		EModRet OnUserMsg(CString& target, CString& message)
 		{
-			last_active_time[target] = time(NULL);
+			last_active_time[target] = idle_time = time(NULL);
 			return CONTINUE;
 		}
 
@@ -428,7 +448,54 @@ class CNotifoMod : public CModule
 		 */
 		EModRet OnUserAction(CString& target, CString& message)
 		{
-			last_active_time[target] = time(NULL);
+			last_active_time[target] = idle_time = time(NULL);
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle the user joining a channel.
+		 *
+		 * @param channel Channel name
+		 * @param key Channel key
+		 */
+		EModRet OnUserJoin(CString& channel, CString& key)
+		{
+			idle_time = time(NULL);
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle the user parting a channel.
+		 *
+		 * @param channel Channel name
+		 * @param message Part message
+		 */
+		EModRet OnUserPart(CString& channel, CString& message)
+		{
+			idle_time = time(NULL);
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle the user setting the channel topic.
+		 *
+		 * @param channel Channel name
+		 * @param topic Topic message
+		 */
+		EModRet OnUserTopic(CString& channel, CString& topic)
+		{
+			idle_time = time(NULL);
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle the user requesting the channel topic.
+		 *
+		 * @param channel Channel name
+		 */
+		EModRet OnUserTopicRequest(CString& channel)
+		{
+			idle_time = time(NULL);
 			return CONTINUE;
 		}
 
@@ -552,6 +619,12 @@ class CNotifoMod : public CModule
 				table.AddRow();
 				table.SetCell("Condition", "client_count");
 				table.SetCell("Status", CString(client_count()));
+
+				unsigned int ago = time(NULL) - idle_time;
+
+				table.AddRow();
+				table.SetCell("Condition", "idle");
+				table.SetCell("Status", CString(ago) + " seconds");
 
 				PutModule(table);
 			}
