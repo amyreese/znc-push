@@ -195,11 +195,6 @@ Configuration
 Roadmap
 -------
 
-### Conditions
-
-*   User inactivity: How long, in seconds, since the last action made by user, in any
-    channel or query window.
-
 ### Settings
 
 *   Customizable notification titles and message formats.
