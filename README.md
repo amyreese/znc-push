@@ -74,6 +74,11 @@ Commands
     Allows you to add a string to end of a configuration value.  Automatically adds a
     space to separate the appended value from the existing value.
 
+*   `prepend <option> <value>`
+
+    Allows you to add a string to beginning of a configuration value.  Automatically adds
+    a space to separate the prepended value from the existing value.
+
 *   `get [<option>]`
 
     Allows you to see current configuration values.

@@ -548,7 +548,7 @@ class CNotifoMod : public CModule
 				{
 					options[option] = value;
 					options[option].Trim();
-					SetNV(option, value);
+					SetNV(option, options[option]);
 
 					authencode();
 				}
@@ -574,7 +574,33 @@ class CNotifoMod : public CModule
 				{
 					options[option] += " " + value;
 					options[option].Trim();
-					SetNV(option, value);
+					SetNV(option, options[option]);
+
+					authencode();
+				}
+			}
+			// PREPEND command
+			else if (action == "prepend")
+			{
+				if (token_count < 3)
+				{
+					PutModule("Usage: prepend <option> <value>");
+					return;
+				}
+
+				CString option = tokens[1].AsLower();
+				CString value = command.Token(2, true, " ");
+				MCString::iterator pos = options.find(option);
+
+				if (pos == options.end())
+				{
+					PutModule("Error: invalid option name");
+				}
+				else
+				{
+					options[option] = value + " " + options[option];
+					options[option].Trim();
+					SetNV(option, options[option]);
 
 					authencode();
 				}
