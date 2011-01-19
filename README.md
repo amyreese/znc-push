@@ -69,6 +69,11 @@ Commands
 
     Allows you to modify configuration values.
 
+*   `append <option> <value>`
+
+    Allows you to add a string to end of a configuration value.  Automatically adds a
+    space to separate the appended value from the existing value.
+
 *   `get [<option>]`
 
     Allows you to see current configuration values.

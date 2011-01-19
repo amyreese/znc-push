@@ -547,6 +547,33 @@ class CNotifoMod : public CModule
 				else
 				{
 					options[option] = value;
+					options[option].Trim();
+					SetNV(option, value);
+
+					authencode();
+				}
+			}
+			// APPEND command
+			else if (action == "append")
+			{
+				if (token_count < 3)
+				{
+					PutModule("Usage: append <option> <value>");
+					return;
+				}
+
+				CString option = tokens[1].AsLower();
+				CString value = command.Token(2, true, " ");
+				MCString::iterator pos = options.find(option);
+
+				if (pos == options.end())
+				{
+					PutModule("Error: invalid option name");
+				}
+				else
+				{
+					options[option] += " " + value;
+					options[option].Trim();
 					SetNV(option, value);
 
 					authencode();
