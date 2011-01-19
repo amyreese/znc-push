@@ -200,9 +200,6 @@ Roadmap
 *   User inactivity: How long, in seconds, since the last action made by user, in any
     channel or query window.
 
-*   Highlights: Strings to trigger a channel notification, in addition to the default
-    highlight when your nick is mentioned.
-
 ### Settings
 
 *   Customizable notification titles and message formats.
