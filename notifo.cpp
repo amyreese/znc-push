@@ -85,6 +85,7 @@ class CNotifoMod : public CModule
 			defaults["away_only"] = "no";
 #endif
 			defaults["client_count_less_than"] = "0";
+			defaults["highlight"] = "";
 			defaults["idle"] = "0";
 			defaults["last_active"] = "180";
 			defaults["last_notification"] = "300";
@@ -212,6 +213,35 @@ class CNotifoMod : public CModule
 		 */
 		bool highlight(const CString& message)
 		{
+			CString msg = " " + message.AsLower() + " ";
+
+			VCString values;
+			options["highlight"].Split(" ", values, false);
+
+			for (VCString::iterator i = values.begin(); i != values.end(); i++)
+			{
+				CString value = i->AsLower();
+				char prefix = value[0];
+				bool notify = true;
+
+				if (prefix == '-')
+				{
+					notify = false;
+					value.LeftChomp(1);
+				}
+				else if (prefix == '_')
+				{
+					value = " " + value.LeftChomp_n(1) + " ";
+				}
+
+				value = "*" + value + "*";
+
+				if (msg.WildCmp(value))
+				{
+					return notify;
+				}
+			}
+
 			CNick nick = user->GetIRCNick();
 
 			if (message.find(nick.GetNick()) != string::npos)

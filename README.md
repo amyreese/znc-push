@@ -115,6 +115,31 @@ Configuration
     Notifications will only be sent if the number of connected IRC clients is less than this
     value.  A value of 0 (zero) will disable this condition.
 
+*   `highlight = ""`
+
+    Space-separated list of highlight strings to match against channel messages using
+    case-insensitive, wildcard matching.    Strings will be compared in order they appear in the configuration value, and
+    the first string to match will end the search, meaning that earlier strings take priority
+    over later values.
+
+    Individual strings may be prefixed with:
+
+    *   `-` (hypen) to negate the match, which makes the string act as a filter rather than
+        a search
+
+    *   `_` (underscore) to trigger a "whole-word" match, where it must be surrounded by
+        whitespace to match the value
+
+    *   `*` (asterisk) to match highlight strings that start with any of the above prefixes
+
+    As an example, a highlight value of "-pinto car" will trigger notification on the
+    message "I like cars", but will prevent notifications for "My favorite car is the Pinto"
+    *and* "I like pinto beans".  Conversely, a highlight value of "car -pinto" will trigger
+    notifications for the first two messages, and only prevent notification of the last one.
+
+    As another example, a value of "_car" will trigger notification for the message "my car
+    is awesome", but will not match the message "I like cars".
+
 *   `idle = 0`
 
     Time in seconds since the last activity by the user on any channel or query window,
