@@ -9,6 +9,11 @@ for everyday usage.  Users are more than welcome to submit feature requests or p
 discussion or inclusion.  Bug reports and feature requests can be submitted to
 [my bug tracker][mantis] or sent via email.
 
+For full functionality, this module requires ZNC version 0.090 or newer, but should compile
+and run with a reduced feature set on versions as old as 0.078, the current version used by
+Ubuntu.  However, development and testing is done exclusively against the latest source
+distribution, so feedback on older releases of ZNC is needed to continue supporting them.
+
 ZNC to Notifo was created by [John Reese](http://johnmreese.com) and designed to fill a
 personal need.  It may not fit your use cases, but any and all feedback would be greatly
 appreciated.
@@ -16,6 +21,12 @@ appreciated.
 
 Compiling
 ---------
+
+If you have installed ZNC from a Linux distribution's repository, you will most likely
+need to install the development package before building this module.  On Ubuntu, this can
+be installed with:
+
+    $ sudo aptitude install znc-dev
 
 If you have `make` installed, you can compile the module with:
 
@@ -85,6 +96,9 @@ Configuration
 *   `away_only = "no"`
 
     If set to "yes", notifications will only be sent if the user has set their `/away` status.
+
+    This condition requires version 0.090 of ZNC to operate, and will be disabled when
+    compiled against older versions.
 
 *   `client_count_less_than = 0`
 
