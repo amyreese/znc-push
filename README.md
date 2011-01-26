@@ -177,6 +177,11 @@ Configuration
     like "channelbot", "FooBot", or "Robot".  Care must be used to not accidentally
     blacklist legitimate nicks with wildcards.
 
+*   `replied = "yes"`
+
+    If set to "yes", notifications will only be sent if you have replied to the channel or
+    query window more recently than the last time a notification was sent for that context.
+
 
 ### Notifications
 

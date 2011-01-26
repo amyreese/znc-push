@@ -48,6 +48,9 @@ class CNotifoMod : public CModule
 		// Time last notification was sent for a given context
 		map <CString, unsigned int> last_notification_time;
 
+		// Time of last message by user to a given context
+		map <CString, unsigned int> last_reply_time;
+
 		// Time of last activity by user for a given context
 		map <CString, unsigned int> last_active_time;
 
@@ -90,6 +93,7 @@ class CNotifoMod : public CModule
 			defaults["last_active"] = "180";
 			defaults["last_notification"] = "300";
 			defaults["nick_blacklist"] = "";
+			defaults["replied"] = "yes";
 
 			// Notification settings
 			defaults["message_length"] = "100";
@@ -320,6 +324,18 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Check if the replied condition is met.
+		 *
+		 * @param context Channel or nick context
+		 * @return True if last_reply_time > last_notification_time or if replied is not "yes"
+		 */
+		bool replied(const CString& context)
+		{
+			CString value = options["replied"].AsLower();
+			return value != "yes" || last_notification_time[context] < last_reply_time[context];
+		}
+
+		/**
 		 * Determine when to notify the user of a channel message.
 		 *
 		 * @param nick Nick that sent the message
@@ -337,6 +353,7 @@ class CNotifoMod : public CModule
 				&& last_active(context)
 				&& last_notification(context)
 				&& nick_blacklist(nick)
+				&& replied(context)
 				&& true;
 		}
 
@@ -354,6 +371,7 @@ class CNotifoMod : public CModule
 				&& last_active(context)
 				&& last_notification(context)
 				&& nick_blacklist(nick)
+				&& replied(context)
 				&& true;
 		}
 
@@ -477,7 +495,7 @@ class CNotifoMod : public CModule
 		 */
 		EModRet OnUserMsg(CString& target, CString& message)
 		{
-			last_active_time[target] = idle_time = time(NULL);
+			last_reply_time[target] = last_active_time[target] = idle_time = time(NULL);
 			return CONTINUE;
 		}
 
@@ -489,7 +507,7 @@ class CNotifoMod : public CModule
 		 */
 		EModRet OnUserAction(CString& target, CString& message)
 		{
-			last_active_time[target] = idle_time = time(NULL);
+			last_reply_time[target] = last_active_time[target] = idle_time = time(NULL);
 			return CONTINUE;
 		}
 
@@ -752,6 +770,10 @@ class CNotifoMod : public CModule
 						ago = now - last_notification_time[context];
 						table.SetCell("Status", CString(ago) + " seconds");
 					}
+
+					table.AddRow();
+					table.SetCell("Condition", "replied");
+					table.SetCell("Status", replied(context) ? "yes" : "no");
 				}
 
 				PutModule(table);
