@@ -332,7 +332,9 @@ class CNotifoMod : public CModule
 		bool replied(const CString& context)
 		{
 			CString value = options["replied"].AsLower();
-			return value != "yes" || last_notification_time[context] < last_reply_time[context];
+			return value != "yes"
+				|| last_notification_time[context] == 0
+				|| last_notification_time[context] < last_reply_time[context];
 		}
 
 		/**
