@@ -83,6 +83,10 @@ class CNotifoMod : public CModule
 			defaults["username"] = "";
 			defaults["secret"] = "";
 
+			// Condition strings
+			defaults["channel_conditions"] = "all";
+			defaults["query_conditions"] = "all";
+
 			// Notification conditions
 #ifdef NOTIFO_AWAY
 			defaults["away_only"] = "no";
@@ -170,6 +174,91 @@ class CNotifoMod : public CModule
 			sock->Close(Csock::CLT_AFTERWRITE);
 			AddSocket(sock);
 		}
+
+		/**
+		 * Evaluate a boolean expression using condition values.
+		 * All tokens must be separated by spaces, using "and" and "or" for
+		 * boolean operators, "(" and ")" to enclose sub-expressions, and
+		 * condition option names to evaluate each condition.
+		 *
+		 * @param expression Boolean expression string
+		 * @param context Notification context
+		 * @param nick Sender nick
+		 * @param message Message contents
+		 * @return Result of boolean evaluation
+		 */
+		bool eval(const CString& expression, const CString& context=CString(""), const CNick& nick=CNick(""), const CString& message=" ")
+		{
+			CString padded = expression.Replace_n("(", " ( ");
+			padded.Replace(")", " ) ");
+
+			VCString tokens;
+			padded.Split(" ", tokens, false);
+
+			return eval_tokens(tokens.begin(), tokens.end(), context, nick, message);
+		}
+
+#define expr(x, y) else if (token == x) { value = oper ? value && y : value || y; }
+
+		/**
+		 * Evaluate a tokenized boolean expression, or sub-expression.
+		 *
+		 * @param pos Token vector iterator current position
+		 * @param end Token vector iterator end position
+		 * @param context Notification context
+		 * @param nick Sender nick
+		 * @param message Message contents
+		 * @return Result of boolean expression
+		 */
+		bool eval_tokens(VCString::iterator pos, VCString::iterator end, const CString& context, const CNick& nick, const CString& message)
+		{
+			bool oper = true;
+			bool value = true;
+
+			for(; pos != end; pos++)
+			{
+				CString token = pos->AsLower();
+
+				if (token == "(")
+				{
+					bool inner = eval_tokens(++pos, end, context, nick, message);
+					value = oper ? value && inner : value || inner;
+				}
+				else if (token == ")")
+				{
+					pos++;
+					return value;
+				}
+				else if (token == "and")
+				{
+					oper = true;
+				}
+				else if (token == "or")
+				{
+					oper = false;
+				}
+
+				expr("true", true)
+				expr("false", false)
+				expr("away_only", away_only())
+				expr("client_count_less_than", client_count_less_than())
+				expr("highlight", highlight(message))
+				expr("idle", idle())
+				expr("last_active", last_active(context))
+				expr("last_notification", last_notification(context))
+				expr("nick_blacklist", nick_blacklist(nick))
+				expr("replied", replied(context))
+
+				else
+				{
+					PutModule("Error: Unexpected token \"" + token + "\"");
+				}
+			}
+
+			return value;
+		}
+
+#undef expr
 
 	protected:
 
@@ -348,6 +437,13 @@ class CNotifoMod : public CModule
 		bool notify_channel(const CNick& nick, const CChan& channel, const CString& message)
 		{
 			CString context = channel.GetName();
+
+			CString expression = options["channel_conditions"].AsLower();
+			if (expression != "all")
+			{
+				return eval(expression, context, nick, message);
+			}
+
 			return away_only()
 				&& client_count_less_than()
 				&& highlight(message)
@@ -365,9 +461,16 @@ class CNotifoMod : public CModule
 		 * @param nick Nick that sent the message
 		 * @return Notification should be sent
 		 */
-		bool notify_pm(const CNick& nick)
+		bool notify_pm(const CNick& nick, const CString& message)
 		{
 			CString context = nick.GetNick();
+
+			CString expression = options["query_conditions"].AsLower();
+			if (expression != "all")
+			{
+				return eval(expression, context, nick, message);
+			}
+
 			return away_only()
 				&& client_count_less_than()
 				&& idle()
@@ -458,7 +561,7 @@ class CNotifoMod : public CModule
 		 */
 		EModRet OnPrivMsg(CNick& nick, CString& message)
 		{
-			if (notify_pm(nick))
+			if (notify_pm(nick, message))
 			{
 				CString title = "Private Message";
 				CString msg = "From " + nick.GetNick();
@@ -478,7 +581,7 @@ class CNotifoMod : public CModule
 		 */
 		EModRet OnPrivAction(CNick& nick, CString& message)
 		{
-			if (notify_pm(nick))
+			if (notify_pm(nick, message))
 			{
 				CString title = "Private Message";
 				CString msg = "* " + nick.GetNick();
@@ -597,6 +700,14 @@ class CNotifoMod : public CModule
 				}
 				else
 				{
+					if (option == "channel_conditions" || option == "query_conditions")
+					{
+						if (value != "all")
+						{
+							eval(value);
+						}
+					}
+
 					options[option] = value;
 					options[option].Trim();
 					SetNV(option, options[option]);
@@ -791,6 +902,12 @@ class CNotifoMod : public CModule
 			else if (action == "help")
 			{
 				PutModule("View the detailed documentation at https://github.com/jreese/znc-notifo/blob/master/README.md");
+			}
+			// EVAL command
+			else if (action == "eval")
+			{
+				CString value = command.Token(1, true, " ");
+				PutModule(eval(value) ? "true" : "false");
 			}
 			else
 			{

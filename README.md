@@ -97,6 +97,11 @@ Commands
     Manually trigger a notification with the given message.  Useful for testing to validate
     credentials, etc.
 
+*   `eval <expression>`
+
+    Evaluate the given expression in an empty context.  Useful for testing to validate that
+    a given expression is properly formatted and does not contain invalid tokens.
+
 
 Configuration
 -------------
@@ -195,6 +200,39 @@ Configuration
 
     URI that will be sent with the notification to Notifo.  This could be a web address or a
     local scheme to access a mobile application.
+
+### Advanced
+
+*   `channel_conditions = "all"`
+
+    This option allows customization of the boolean logic used to determine how conditional
+    values are used to filter notifications for channel messages.  It evaluates as a full
+    boolean logic expression,  including the use of sub-expressions.  The default value of
+    "all" will bypass this evaluation and simply require all conditions to be true.
+
+    The expression consists of space-separated tokens in the following grammar:
+
+    *   `expression = expression operator expression | "(" expression ")" | value`
+    *   `operator = "and" | "or"`
+    *   `value = "true" | "false" | condition`
+    *   `condition = <any condition option>`
+
+    As a simple example, to replicate the default "all" value, would be the value of
+    `away_only and client_count_less_than and highlight and idle and last_active and
+    last_notification and nick_blacklist and replied`.
+
+    Alternately, setting a value of `true` would send a notification for *every* message,
+    while a value of `false` would *never* send a notification.
+
+    For a more complicated example, the value of `client_count_less_than and highlight and
+    (last_active or last_notification or replied) and nick_blacklist` would send a
+    notification if any of the three conditions in the sub-expression are met, while still
+    requiring all of the conditions outside of the parentheses to also be met.
+
+*   `query_conditions = "all"`
+
+    This option is more or less identical to `channel_conditions`, except that it is used
+    to filter notifications for private messages.
 
 
 Roadmap
