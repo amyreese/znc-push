@@ -369,6 +369,7 @@ class CNotifoMod : public CModule
 		{
 			CString context = nick.GetNick();
 			return away_only()
+				&& client_count_less_than()
 				&& idle()
 				&& last_active(context)
 				&& last_notification(context)
