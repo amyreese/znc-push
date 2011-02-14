@@ -212,20 +212,20 @@ Configuration
 
     The expression consists of space-separated tokens in the following grammar:
 
-    *   `expression = expression operator expression | "(" expression ")" | value`
-    *   `operator = "and" | "or"`
-    *   `value = "true" | "false" | condition`
-    *   `condition = <any condition option>`
+    *   expression = expression operator expression | "(" expression ")" | value
+    *   operator = "and" | "or"
+    *   value = "true" | "false" | condition
+    *   condition = <any condition option>
 
     As a simple example, to replicate the default "all" value, would be the value of
-    `away_only and client_count_less_than and highlight and idle and last_active and
-    last_notification and nick_blacklist and replied`.
+    "away_only and client_count_less_than and highlight and idle and last_active and
+    last_notification and nick_blacklist and replied".
 
-    Alternately, setting a value of `true` would send a notification for *every* message,
-    while a value of `false` would *never* send a notification.
+    Alternately, setting a value of "true" would send a notification for *every* message,
+    while a value of "false" would *never* send a notification.
 
-    For a more complicated example, the value of `client_count_less_than and highlight and
-    (last_active or last_notification or replied) and nick_blacklist` would send a
+    For a more complicated example, the value of "client_count_less_than and highlight and
+    (last_active or last_notification or replied) and nick_blacklist" would send a
     notification if any of the three conditions in the sub-expression are met, while still
     requiring all of the conditions outside of the parentheses to also be met.
 
