@@ -25,6 +25,15 @@
 #define NOTIFO_AWAY
 #endif
 
+// Debug output
+#define NOTIFO_DEBUG 0
+
+#if NOTIFO_DEBUG
+#define PutDebug(s) PutModule(s)
+#else
+#define PutDebug(s) //s
+#endif
+
 class CNotifoMod : public CModule
 {
 	protected:
@@ -195,10 +204,17 @@ class CNotifoMod : public CModule
 			VCString tokens;
 			padded.Split(" ", tokens, false);
 
-			return eval_tokens(tokens.begin(), tokens.end(), context, nick, message);
+			PutDebug("Evaluating message: <" + nick.GetNick() + "> " + message);
+			bool result = eval_tokens(tokens.begin(), tokens.end(), context, nick, message);
+
+			return result;
 		}
 
-#define expr(x, y) else if (token == x) { value = oper ? value && y : value || y; }
+#define expr(x, y) else if (token == x) { \
+	bool result = y; \
+	dbg += CString(x) + "/" + CString(result ? "true" : "false") + " "; \
+	value = oper ? value && result : value || result; \
+}
 
 		/**
 		 * Evaluate a tokenized boolean expression, or sub-expression.
@@ -215,26 +231,54 @@ class CNotifoMod : public CModule
 			bool oper = true;
 			bool value = true;
 
+			CString dbg = "";
+
 			for(; pos != end; pos++)
 			{
 				CString token = pos->AsLower();
 
 				if (token == "(")
 				{
+					// recursively evaluate sub-expressions
 					bool inner = eval_tokens(++pos, end, context, nick, message);
+					dbg += "( inner/" + CString(inner ? "true" : "false") + " ) ";
 					value = oper ? value && inner : value || inner;
+
+					// search ahead to the matching parenthesis token
+					unsigned int parens = 1;
+					while(pos != end)
+					{
+						if (*pos == "(")
+						{
+							parens++;
+						}
+						else if (*pos == ")")
+						{
+							parens--;
+						}
+
+						if (parens == 0)
+						{
+							break;
+						}
+
+						pos++;
+					}
 				}
 				else if (token == ")")
 				{
 					pos++;
+					PutDebug(dbg);
 					return value;
 				}
 				else if (token == "and")
 				{
+					dbg += "and ";
 					oper = true;
 				}
 				else if (token == "or")
 				{
+					dbg += "or ";
 					oper = false;
 				}
 
@@ -255,6 +299,7 @@ class CNotifoMod : public CModule
 				}
 			}
 
+			PutDebug(dbg);
 			return value;
 		}
 
