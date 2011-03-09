@@ -49,7 +49,9 @@ Now, load the module in ZNC:
 
     /msg *status loadmod notifo
 
-Then set your Notifo username and API secret:
+Then set your Notifo username and API secret.  The API secret is not your password, and
+can be obtained by logging into Notifo's website, clicking Settings, and then "Click to
+Show" next to the "API Secret" heading:
 
     /msg *notifo set username foo
 	/msg *notifo set secret ...
