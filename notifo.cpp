@@ -167,7 +167,7 @@ class CNotifoMod : public CModule
 		 * @param title Message title to use
 		 * @param context Channel or nick context
 		 */
-		void send_message(const CString& message, const CString& title="New Message", const CString& context="")
+		void send_message(const CString& message, const CString& title="New Message", const CString& context="*notifo", const CNick& nick=CString("*notifo"))
 		{
 			// Set the last notification time
 			last_notification_time[context] = time(NULL);
@@ -180,12 +180,28 @@ class CNotifoMod : public CModule
 				short_message = message.Ellipsize(message_length);
 			}
 
+			// Generate an ISO8601 date string
+			time_t rawtime;
+			struct tm * timeinfo;
+			time(&rawtime);
+			timeinfo = localtime(&rawtime);
+			char iso8601 [20];
+			strftime(iso8601, 20, "%Y-%m-%d %H:%M:%S", timeinfo);
+
+			// URI string replacements
+			MCString replace;
+			replace["{context}"] = context;
+			replace["{nick}"] = nick.GetNick();
+			replace["{datetime}"] = CString(iso8601);
+			replace["{unixtime}"] = CString(time(NULL));
+			CString uri = expand(options["message_uri"], replace);
+
 			// POST body parameters for the request
 			CString post = "to=" + urlencode(options["username"]);
 			post += "&msg=" + urlencode(short_message);
 			post += "&label=" + urlencode(app);
 			post += "&title=" + urlencode(title);
-			post += "&uri=" + urlencode(options["message_uri"]);
+			post += "&uri=" + urlencode(uri);
 
 			// Request headers and POST body
 			CString request = "POST " + notifo_url + " HTTP/1.1" + crlf;

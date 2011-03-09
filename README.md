@@ -202,7 +202,18 @@ Configuration
 *   `message_url = ""`
 
     URI that will be sent with the notification to Notifo.  This could be a web address or a
-    local scheme to access a mobile application.
+    local scheme to access a mobile application.  Keyword expansion is performed on this
+    value each time a notification is sent; the following keywords will be replaced with
+    the appropriate value:
+
+    *   `{context}`: the channel or query window context
+    *   `{nick}`: the nick that sent the message
+    *   `{datetime}`: [ISO 8601][] date string, in server-local time
+    *   `{unixtime}`: unix-style integer timestamp
+
+    As an example, a value of "http://domain/{context}/{datetime}" would be expanded to
+    something similar to "http://domain/#channel/2011-03-09 14:25:09", or
+    "http://domain/{nick}/{unixtime}" to "http://domain/somenick/1299685136".
 
 ### Advanced
 
@@ -256,5 +267,6 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [mantis]: http://leetcode.net/mantis
 [Notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
+[ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601 Date Format"
 
 <!-- vim:set ft= expandtab tabstop=4 shiftwidth=4: -->
