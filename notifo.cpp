@@ -138,6 +138,27 @@ class CNotifoMod : public CModule
 		}
 
 		/**
+		 * Performs string expansion on a set of keywords.
+		 * Given an initial string and a dictionary of string replacments,
+		 * iterate over the dictionary, expanding keywords one-by-one.
+		 *
+		 * @param content String contents
+		 * @param replace Dictionary of string replacements
+		 * @return Result of string replacements
+		 */
+		CString expand(const CString& content, MCString& replace)
+		{
+			CString result = content.c_str();
+
+			for(MCString::iterator i = replace.begin(); i != replace.end(); i++)
+			{
+				result.Replace(i->first, i->second);
+			}
+
+			return result;
+		}
+
+		/**
 		 * Send a message to the currently-configured Notifo account.
 		 * Requires (and assumes) that the user has already configured their
 		 * username and API secret using the 'set' command.
