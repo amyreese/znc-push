@@ -7,7 +7,8 @@ for any private message or channel highlight that matches a configurable set of 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
 discussion or inclusion.  Bug reports and feature requests can be submitted to
-[my bug tracker][mantis] or sent via email.
+[my bug tracker][mantis] by selecting the "ZNC to Notifo" project from the top right, or
+sent via email.
 
 For full functionality, this module requires ZNC version 0.090 or newer, but should compile
 and run with a reduced feature set on versions as old as 0.078, the current version used by
