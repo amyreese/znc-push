@@ -90,6 +90,15 @@ Commands
 
     Allows you to reset a configuration option back to the default value.
 
+*   `save <filename>`
+
+    Writes your options to a file with the given path and name.
+
+*   `load <filename>`
+
+    Loads your options from a file with the given path and name.  Caution should be taken,
+    as this will lose any options that aren't already saved to the given file.
+
 *   `status [<context>]`
 
     Check the status of current conditions.  Specifying the "context" of either a channel

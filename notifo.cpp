@@ -912,6 +912,72 @@ class CNotifoMod : public CModule
 					PutModule(option + CString(": \"") + options[option] + CString("\""));
 				}
 			}
+			// SAVE command
+			else if (action == "save")
+			{
+				if (token_count < 2)
+				{
+					PutModule("Usage: save <filepath>");
+				}
+
+				CString file_path = command.Token(1, true, " ");
+				MCString::status_t status = options.WriteToDisk(file_path);
+
+				if (status == MCString::MCS_SUCCESS)
+				{
+					PutModule("Options saved to " + file_path);
+				}
+				else
+				{
+					switch (status)
+					{
+						case MCString::MCS_EOPEN:
+						case MCString::MCS_EWRITE:
+						case MCString::MCS_EWRITEFIL:
+							PutModule("Failed to save options to " + file_path);
+							break;
+						default:
+							PutModule("Failure");
+							break;
+					}
+				}
+			}
+			// LOAD command
+			else if (action == "load")
+			{
+				if (token_count < 2)
+				{
+					PutModule("Usage: load <filename>");
+				}
+
+				CString file_path = command.Token(1, true, " ");
+				
+				if (!CFile::Exists(file_path))
+				{
+					PutModule("File does not exist: " + file_path);
+					return;
+				}
+
+				MCString::status_t status = options.ReadFromDisk(file_path);
+
+				if (status == MCString::MCS_SUCCESS)
+				{
+					PutModule("Options loaded from " + file_path);
+				}
+				else
+				{
+					switch (status)
+					{
+						case MCString::MCS_EOPEN:
+						case MCString::MCS_EREADFIL:
+							PutModule("Failed to read options from " + file_path);
+							break;
+						default:
+							PutModule("Failure");
+							break;
+					}
+				}
+			}
 			// STATUS command
 			else if (action == "status")
 			{
