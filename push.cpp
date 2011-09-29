@@ -43,72 +43,8 @@ class CPushSocket : public CSocket
 			user_agent = "ZNC Push";
 		}
 
-		/**
-		 * Send an HTTP request.
-		 *
-		 * @param post POST command
-		 * @param host Host domain
-		 * @param url Resource path
-		 * @param parameters Query parameters
-		 * @param auth Basic authentication string
-		 */
-		void Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth="")
-		{
-			// query string for the request
-			bool more = false;
-			CString query;
-			CString key;
-			CString value;
-			for (MCString::iterator param = parameters.begin(); param != parameters.end(); param++)
-			{
-				key = urlencode(param->first);
-				value = urlencode(param->second);
-
-				if (more)
-				{
-					query += "&" + key + "=" + value;
-				}
-				else
-				{
-					query += key + "=" + value;
-					more = true;
-				}
-			}
-
-			// Request headers and POST body
-			CString request;
-
-			if (post)
-			{
-				request += "POST " + url + " HTTP/1.1" + crlf;
-				request += "Host: " + host + crlf;
-				request += "Content-Type: application/x-www-form-urlencoded" + crlf;
-				request += "Content-Length: " + CString(query.length()) + crlf;
-				request += "User-Agent: " + user_agent + crlf;
-			}
-			else
-			{
-				request += "GET " + url + "?" + query + " HTTP/1.1" + crlf;
-				request += "Host: " + host + crlf;
-				request += "User-Agent: " + user_agent + crlf;
-			}
-
-			if (auth != "")
-			{
-				request += "Authorization: Basic " + auth + crlf;
-			}
-
-			request += crlf;
-
-			if (post)
-			{
-				request += query + crlf;
-			}
-
-			Write(request);
-		}
-
 		// Implemented after CPushMod
+		void Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth="");
 		virtual void ReadLine(const CString& data);
 		virtual void Disconnected();
 
@@ -1202,6 +1138,76 @@ class CPushMod : public CModule
 };
 
 /**
+ * Send an HTTP request.
+ *
+ * @param post POST command
+ * @param host Host domain
+ * @param url Resource path
+ * @param parameters Query parameters
+ * @param auth Basic authentication string
+ */
+void CPushSocket::Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth)
+{
+	parent->PutDebug("Building notification to " + host + url + "...");
+
+	// query string for the request
+	bool more = false;
+	CString query;
+	CString key;
+	CString value;
+	for (MCString::iterator param = parameters.begin(); param != parameters.end(); param++)
+	{
+		key = urlencode(param->first);
+		value = urlencode(param->second);
+
+		if (more)
+		{
+			query += "&" + key + "=" + value;
+		}
+		else
+		{
+			query += key + "=" + value;
+			more = true;
+		}
+	}
+
+	parent->PutDebug("Query string: " + query);
+
+	// Request headers and POST body
+	CString request;
+
+	if (post)
+	{
+		request += "POST " + url + " HTTP/1.1" + crlf;
+		request += "Host: " + host + crlf;
+		request += "Content-Type: application/x-www-form-urlencoded" + crlf;
+		request += "Content-Length: " + CString(query.length()) + crlf;
+		request += "User-Agent: " + user_agent + crlf;
+	}
+	else
+	{
+		request += "GET " + url + "?" + query + " HTTP/1.1" + crlf;
+		request += "Host: " + host + crlf;
+		request += "User-Agent: " + user_agent + crlf;
+	}
+
+	if (auth != "")
+	{
+		request += "Authorization: Basic " + auth + crlf;
+	}
+
+	request += crlf;
+
+	if (post)
+	{
+		request += query + crlf;
+	}
+
+	Write(request);
+	parent->PutDebug("Request sending");
+}
+
+/**
  * Read each line of data returned from the HTTP request.
  */
 void CPushSocket::ReadLine(const CString& data)
@@ -1223,7 +1229,8 @@ void CPushSocket::ReadLine(const CString& data)
 
 void CPushSocket::Disconnected()
 {
-	Close();
+	parent->PutDebug("Disconnected.");
+	Close(CSocket::CLT_AFTERWRITE);
 }
 
 MODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")
