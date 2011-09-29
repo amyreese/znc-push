@@ -1,8 +1,8 @@
 /**
- * ZNC Notifo Module
+ * ZNC Push Module
  *
- * Allows the user to enter a Notifo user and API token, and sends
- * channel highlights and personal messages to Notifo.
+ * Allows the user to enter a Push user and API token, and sends
+ * channel highlights and personal messages to Push.
  *
  * Copyright (c) 2011 John Reese
  * Licensed under the MIT license
@@ -22,19 +22,19 @@
 
 // Handle versions of ZNC older than 0.090 by disabling the away_only condition
 #if VERSION_MAJOR == 0 && VERSION_MINOR >= 90
-#define NOTIFO_AWAY
+#define PUSH_AWAY
 #endif
 
 // Debug output
-#define NOTIFO_DEBUG 0
+#define PUSH_DEBUG 0
 
-#if NOTIFO_DEBUG
+#if PUSH_DEBUG
 #define PutDebug(s) PutModule(s)
 #else
 #define PutDebug(s) //s
 #endif
 
-class CNotifoMod : public CModule
+class CPushMod : public CModule
 {
 	protected:
 
@@ -75,7 +75,7 @@ class CNotifoMod : public CModule
 
 	public:
 
-		MODCONSTRUCTOR(CNotifoMod) {
+		MODCONSTRUCTOR(CPushMod) {
 			app = "ZNC";
 			crlf = "\r\n";
 
@@ -83,7 +83,7 @@ class CNotifoMod : public CModule
 			notifo_auth = "";
 			notifo_host = "api.notifo.com";
 			notifo_url = "/v1/send_notification";
-			user_agent = "ZNC To Notifo";
+			user_agent = "ZNC Push";
 
 			// Current user
 			user = GetUser();
@@ -97,7 +97,7 @@ class CNotifoMod : public CModule
 			defaults["query_conditions"] = "all";
 
 			// Notification conditions
-#ifdef NOTIFO_AWAY
+#ifdef PUSH_AWAY
 			defaults["away_only"] = "no";
 #endif
 			defaults["client_count_less_than"] = "0";
@@ -112,7 +112,7 @@ class CNotifoMod : public CModule
 			defaults["message_length"] = "100";
 			defaults["message_uri"] = "";
 		}
-		virtual ~CNotifoMod() {}
+		virtual ~CPushMod() {}
 
 	protected:
 
@@ -167,7 +167,7 @@ class CNotifoMod : public CModule
 		 * @param title Message title to use
 		 * @param context Channel or nick context
 		 */
-		void send_message(const CString& message, const CString& title="New Message", const CString& context="*notifo", const CNick& nick=CString("*notifo"))
+		void send_message(const CString& message, const CString& title="New Message", const CString& context="*push", const CNick& nick=CString("*push"))
 		{
 			// Set the last notification time
 			last_notification_time[context] = time(NULL);
@@ -351,7 +351,7 @@ class CNotifoMod : public CModule
 		 */
 		bool away_only()
 		{
-#ifdef NOTIFO_AWAY
+#ifdef PUSH_AWAY
 			CString value = options["away_only"].AsLower();
 			return value != "yes" || user->IsIRCAway();
 #else
@@ -397,11 +397,11 @@ class CNotifoMod : public CModule
 			{
 				CString value = i->AsLower();
 				char prefix = value[0];
-				bool notify = true;
+				bool push = true;
 
 				if (prefix == '-')
 				{
-					notify = false;
+					push = false;
 					value.LeftChomp(1);
 				}
 				else if (prefix == '_')
@@ -413,7 +413,7 @@ class CNotifoMod : public CModule
 
 				if (msg.WildCmp(value))
 				{
-					return notify;
+					return push;
 				}
 			}
 
@@ -747,7 +747,7 @@ class CNotifoMod : public CModule
 		}
 
 		/**
-		 * Handle direct commands to the *notifo virtual user.
+		 * Handle direct commands to the *push virtual user.
 		 *
 		 * @param command Command string
 		 */
@@ -951,7 +951,7 @@ class CNotifoMod : public CModule
 				}
 
 				CString file_path = command.Token(1, true, " ");
-				
+
 				if (!CFile::Exists(file_path))
 				{
 					PutModule("File does not exist: " + file_path);
@@ -986,7 +986,7 @@ class CNotifoMod : public CModule
 				table.AddColumn("Condition");
 				table.AddColumn("Status");
 
-#ifdef NOTIFO_AWAY
+#ifdef PUSH_AWAY
 				table.AddRow();
 				table.SetCell("Condition", "away");
 				table.SetCell("Status", user->IsIRCAway() ? "yes" : "no");
@@ -1049,7 +1049,7 @@ class CNotifoMod : public CModule
 			// HELP command
 			else if (action == "help")
 			{
-				PutModule("View the detailed documentation at https://github.com/jreese/znc-notifo/blob/master/README.md");
+				PutModule("View the detailed documentation at https://github.com/jreese/znc-push/blob/master/README.md");
 			}
 			// EVAL command
 			else if (action == "eval")
@@ -1064,4 +1064,4 @@ class CNotifoMod : public CModule
 		}
 };
 
-MODULEDEFS(CNotifoMod, "Send highlights and personal messages to a Notifo account")
+MODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")

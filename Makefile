@@ -1,5 +1,5 @@
-notifo.so: notifo.cpp
-	znc-buildmod notifo.cpp
+push.so: push.cpp
+	znc-buildmod push.cpp
 
 clean:
-	-rm -f notifo.so
+	-rm -f push.so

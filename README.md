@@ -1,13 +1,13 @@
-ZNC to Notifo
+ZNC Push
 =============
 
-ZNC to Notifo is a module for [ZNC][] that will send notifications to a [Notifo][] account
+ZNC Push is a module for [ZNC][] that will send notifications to a [Notifo][] account
 for any private message or channel highlight that matches a configurable set of conditions.
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
 discussion or inclusion.  Bug reports and feature requests can be submitted to
-[my bug tracker][mantis] by selecting the "ZNC to Notifo" project from the top right, or
+[my bug tracker][mantis] by selecting the "ZNC Push" project from the top right, or
 sent via email.
 
 For full functionality, this module requires ZNC version 0.090 or newer, but should compile
@@ -15,7 +15,7 @@ and run with a reduced feature set on versions as old as 0.078, the current vers
 Ubuntu.  However, development and testing is done exclusively against the latest source
 distribution, so feedback on older releases of ZNC is needed to continue supporting them.
 
-ZNC to Notifo was created by [John Reese](http://johnmreese.com) and designed to fill a
+ZNC Push was created by [John Reese](http://johnmreese.com) and designed to fill a
 personal need.  It may not fit your use cases, but any and all feedback would be greatly
 appreciated.
 
@@ -35,7 +35,7 @@ If you have `make` installed, you can compile the module with:
 
 Otherwise, run the full command:
 
-    $ znc-build notifo.cpp
+    $ znc-build push.cpp
 
 
 Installation
@@ -43,22 +43,33 @@ Installation
 
 Copy the compiled module into your ZNC profile:
 
-    $ cp notifo.so ~/.znc/modules/
+    $ cp push.so ~/.znc/modules/
 
 Now, load the module in ZNC:
 
-    /msg *status loadmod notifo
+    /msg *status loadmod push
 
 Then set your Notifo username and API secret.  The API secret is not your password, and
 can be obtained by logging into Notifo's website, clicking Settings, and then "Click to
 Show" next to the "API Secret" heading:
 
-    /msg *notifo set username foo
-	/msg *notifo set secret ...
+    /msg *push set username foo
+	/msg *push set secret ...
 
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
+
+
+Migrating From Notifo
+---------------------
+
+Before uninstalling the old Notifo module, save your settings to a file.  When you have the
+new Push module installed, you can then load those settings back in, rather than needing
+to set your configuration all over again:
+
+    /msg *notifo save /tmp/znc_notifo
+    /msg *push load /tmp/znc_notifo
 
 
 Commands
