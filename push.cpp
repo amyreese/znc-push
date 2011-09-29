@@ -963,6 +963,26 @@ class CPushMod : public CModule
 				if (status == MCString::MCS_SUCCESS)
 				{
 					PutModule("Options loaded from " + file_path);
+
+					// Restore any defaults that aren't in the loaded dictionary,
+					// and save loaded options to ZNC's data store
+					for (MCString::iterator i = defaults.begin(); i != defaults.end(); i++)
+					{
+						CString option = i->first;
+						MCString::iterator pos = options.find(option);
+
+						if (pos == options.end())
+						{
+							options[option] = defaults[option];
+							DelNV(option);
+						}
+						else
+						{
+							SetNV(option, options[option]);
+						}
+					}
+
+					authencode();
 				}
 				else
 				{
