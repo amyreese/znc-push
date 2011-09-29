@@ -288,8 +288,15 @@ class CPushMod : public CModule
 			CString service_auth;
 			MCString params;
 
+			// Service-specific profiles
 			if (service == "notifo")
 			{
+				if (options["username"] == "" || options["secret"] == "")
+				{
+					PutModule("Error: username or secret not set");
+					return;
+				}
+
 				service_host = "api.notifo.com";
 				service_url = "/v1/send_notification";
 
