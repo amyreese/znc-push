@@ -144,13 +144,6 @@ class CPushMod : public CModule
 		// Application name
 		CString app;
 
-		// BASIC auth string, needs to be encoded each time username/secret is changed
-		CString notifo_auth;
-
-		// Host and URL to send messages to
-		CString notifo_host;
-		CString notifo_url;
-
 		// Time last notification was sent for a given context
 		map <CString, unsigned int> last_notification_time;
 
@@ -176,9 +169,6 @@ class CPushMod : public CModule
 			app = "ZNC";
 
 			idle_time = time(NULL);
-			notifo_auth = "";
-			notifo_host = "api.notifo.com";
-			notifo_url = "/v1/send_notification";
 
 			// Current user
 			user = GetUser();
@@ -228,16 +218,6 @@ class CPushMod : public CModule
 		}
 
 	protected:
-
-		/**
-		 * Re-encode the authentication credentials.
-		 */
-		void authencode()
-		{
-			// BASIC auth, base64-encoded username:password
-			CString auth = options["username"] + CString(":") + options["secret"];
-			notifo_auth = auth.Base64Encode_n();
-		}
 
 		/**
 		 * Performs string expansion on a set of keywords.
@@ -298,17 +278,41 @@ class CPushMod : public CModule
 			replace["{unixtime}"] = CString(time(NULL));
 			CString uri = expand(options["message_uri"], replace);
 
+			// Set up the connection profile
+			CString service = options["service"];
+			bool use_post = true;
+			int use_port = 443;
+			bool use_ssl = true;
+			CString service_host;
+			CString service_url;
+			CString service_auth;
 			MCString params;
-			params["to"] = options["username"];
-			params["msg"] = short_message;
-			params["label"] = app;
-			params["title"] = title;
-			params["uri"] = uri;
+
+			if (service == "notifo")
+			{
+				service_host = "api.notifo.com";
+				service_url = "/v1/send_notification";
+
+				// BASIC auth, base64-encoded username:password
+				service_auth = options["username"] + CString(":") + options["secret"];
+				service_auth.Base64Encode();
+
+				params["to"] = options["username"];
+				params["msg"] = short_message;
+				params["label"] = app;
+				params["title"] = title;
+				params["uri"] = uri;
+			}
+			else
+			{
+				PutModule("Error: service type not selected");
+				return;
+			}
 
 			// Create the socket connection, write to it, and add it to the queue
 			CPushSocket *sock = new CPushSocket(this);
-			sock->Connect(notifo_host, 443, true);
-			sock->Request(true, notifo_host, notifo_url, params, notifo_auth);
+			sock->Connect(service_host, use_port, use_ssl);
+			sock->Request(use_post, service_host, service_url, params, service_auth);
 			AddSocket(sock);
 		}
 
@@ -677,8 +681,6 @@ class CPushMod : public CModule
 				}
 			}
 
-			authencode();
-
 			return true;
 		}
 
@@ -903,8 +905,6 @@ class CPushMod : public CModule
 
 					options[option] = value;
 					SetNV(option, options[option]);
-
-					authencode();
 				}
 			}
 			// APPEND command
@@ -933,8 +933,6 @@ class CPushMod : public CModule
 					options[option] += " " + value;
 					options[option].Trim();
 					SetNV(option, options[option]);
-
-					authencode();
 				}
 			}
 			// PREPEND command
@@ -963,8 +961,6 @@ class CPushMod : public CModule
 					options[option] = value + " " + options[option];
 					options[option].Trim();
 					SetNV(option, options[option]);
-
-					authencode();
 				}
 			}
 			// UNSET command
@@ -987,8 +983,6 @@ class CPushMod : public CModule
 				{
 					options[option] = defaults[option];
 					DelNV(option);
-
-					authencode();
 				}
 			}
 			// GET command
@@ -1099,8 +1093,6 @@ class CPushMod : public CModule
 							SetNV(option, options[option]);
 						}
 					}
-
-					authencode();
 				}
 				else
 				{
