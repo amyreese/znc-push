@@ -88,7 +88,8 @@ class CPushMod : public CModule
 			// Current user
 			user = GetUser();
 
-			// Notifo user account and secret
+			// Push service information
+			defaults["service"] = "";
 			defaults["username"] = "";
 			defaults["secret"] = "";
 
@@ -782,6 +783,8 @@ class CPushMod : public CModule
 				}
 				else
 				{
+					value.Trim();
+
 					if (option == "channel_conditions" || option == "query_conditions")
 					{
 						if (value != "all")
@@ -789,9 +792,26 @@ class CPushMod : public CModule
 							eval(value);
 						}
 					}
+					else if (option == "service")
+					{
+						value.MakeLower();
+
+						if (value == "notifo")
+						{
+							PutModule("Note: Notifo requires setting both 'username' and 'secret' options");
+						}
+						else if (value == "boxcar")
+						{
+							PutModule("Note: Boxcar requires setting the 'username' option");
+						}
+						else
+						{
+							PutModule("Error: unknown service name");
+							return;
+						}
+					}
 
 					options[option] = value;
-					options[option].Trim();
 					SetNV(option, options[option]);
 
 					authencode();
@@ -813,6 +833,10 @@ class CPushMod : public CModule
 				if (pos == options.end())
 				{
 					PutModule("Error: invalid option name");
+				}
+				else if (option == "service")
+				{
+					PutModule("Error: cannot append to this option");
 				}
 				else
 				{
@@ -839,6 +863,10 @@ class CPushMod : public CModule
 				if (pos == options.end())
 				{
 					PutModule("Error: invalid option name");
+				}
+				else if (option == "service")
+				{
+					PutModule("Error: cannot prepend to this option");
 				}
 				else
 				{

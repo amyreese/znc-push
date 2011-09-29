@@ -53,6 +53,7 @@ Then set your Notifo username and API secret.  The API secret is not your passwo
 can be obtained by logging into Notifo's website, clicking Settings, and then "Click to
 Show" next to the "API Secret" heading:
 
+    /msg *push set service notifo
     /msg *push set username foo
 	/msg *push set secret ...
 
@@ -70,6 +71,7 @@ to set your configuration all over again:
 
     /msg *notifo save /tmp/znc_notifo
     /msg *push load /tmp/znc_notifo
+    /msg *push set service notifo
 
 
 Commands
