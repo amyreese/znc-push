@@ -25,15 +25,118 @@
 #define PUSH_AWAY
 #endif
 
-// Debug output
-#define PUSH_DEBUG 0
+// Forward declaration
+class CPushMod;
 
-#if PUSH_DEBUG
-#define PutDebug(s) PutModule(s)
-#else
-#define PutDebug(s) //s
-#endif
+/**
+ * Socket class for generating HTTP requests.
+ */
+class CPushSocket : public CSocket
+{
+	public:
+		CPushSocket(CModule *p) : CSocket(p)
+		{
+			EnableReadLine();
+			parent = (CPushMod*) p;
+			first = true;
+			crlf = "\r\n";
+			user_agent = "ZNC Push";
+		}
 
+		/**
+		 * Send an HTTP request.
+		 *
+		 * @param post POST command
+		 * @param host Host domain
+		 * @param url Resource path
+		 * @param parameters Query parameters
+		 * @param auth Basic authentication string
+		 */
+		void Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth="")
+		{
+			// query string for the request
+			bool more = false;
+			CString query;
+			CString key;
+			CString value;
+			for (MCString::iterator param = parameters.begin(); param != parameters.end(); param++)
+			{
+				key = urlencode(param->first);
+				value = urlencode(param->second);
+
+				if (more)
+				{
+					query += "&" + key + "=" + value;
+				}
+				else
+				{
+					query += key + "=" + value;
+					more = true;
+				}
+			}
+
+			// Request headers and POST body
+			CString request;
+
+			if (post)
+			{
+				request += "POST " + url + " HTTP/1.1" + crlf;
+				request += "Host: " + host + crlf;
+				request += "Content-Type: application/x-www-form-urlencoded" + crlf;
+				request += "Content-Length: " + CString(query.length()) + crlf;
+				request += "User-Agent: " + user_agent + crlf;
+			}
+			else
+			{
+				request += "GET " + url + "?" + query + " HTTP/1.1" + crlf;
+				request += "Host: " + host + crlf;
+				request += "User-Agent: " + user_agent + crlf;
+			}
+
+			if (auth != "")
+			{
+				request += "Authorization: Basic " + auth + crlf;
+			}
+
+			request += crlf;
+
+			if (post)
+			{
+				request += query + crlf;
+			}
+
+			Write(request);
+		}
+
+		// Implemented after CPushMod
+		virtual void ReadLine(const CString& data);
+		virtual void Disconnected();
+
+	private:
+		CPushMod *parent;
+		bool first;
+
+		// Too lazy to add CString("\r\n\") everywhere
+		CString crlf;
+
+		// User agent to use
+		CString user_agent;
+
+		/**
+		 * Shorthand for encoding a string for a URL.
+		 *
+		 * @param str String to be encoded
+		 * @return Encoded string
+		 */
+		CString urlencode(const CString& str)
+		{
+			return str.Escape_n(CString::EASCII, CString::EURL);
+		}
+};
+
+/**
+ * Push notification module.
+ */
 class CPushMod : public CModule
 {
 	protected:
@@ -41,18 +144,12 @@ class CPushMod : public CModule
 		// Application name
 		CString app;
 
-		// Too lazy to add CString("\r\n\") everywhere
-		CString crlf;
-
 		// BASIC auth string, needs to be encoded each time username/secret is changed
 		CString notifo_auth;
 
 		// Host and URL to send messages to
 		CString notifo_host;
 		CString notifo_url;
-
-		// User agent to use
-		CString user_agent;
 
 		// Time last notification was sent for a given context
 		map <CString, unsigned int> last_notification_time;
@@ -77,13 +174,11 @@ class CPushMod : public CModule
 
 		MODCONSTRUCTOR(CPushMod) {
 			app = "ZNC";
-			crlf = "\r\n";
 
 			idle_time = time(NULL);
 			notifo_auth = "";
 			notifo_host = "api.notifo.com";
 			notifo_url = "/v1/send_notification";
-			user_agent = "ZNC Push";
 
 			// Current user
 			user = GetUser();
@@ -112,21 +207,27 @@ class CPushMod : public CModule
 			// Notification settings
 			defaults["message_length"] = "100";
 			defaults["message_uri"] = "";
+
+			defaults["debug"] = "off";
 		}
 		virtual ~CPushMod() {}
 
-	protected:
+	public:
 
 		/**
-		 * Shorthand for encoding a string for a URL.
+		 * Debugging messages.  Prints to *push when the debug option is enabled.
 		 *
-		 * @param str String to be encoded
-		 * @return Encoded string
+		 * @param data Debug message
 		 */
-		CString urlencode(const CString& str)
+		void PutDebug(const CString& data)
 		{
-			return str.Escape_n(CString::EASCII, CString::EURL);
+			if (options["debug"] == "on")
+			{
+				PutModule(data);
+			}
 		}
+
+	protected:
 
 		/**
 		 * Re-encode the authentication credentials.
@@ -197,28 +298,17 @@ class CPushMod : public CModule
 			replace["{unixtime}"] = CString(time(NULL));
 			CString uri = expand(options["message_uri"], replace);
 
-			// POST body parameters for the request
-			CString post = "to=" + urlencode(options["username"]);
-			post += "&msg=" + urlencode(short_message);
-			post += "&label=" + urlencode(app);
-			post += "&title=" + urlencode(title);
-			post += "&uri=" + urlencode(uri);
-
-			// Request headers and POST body
-			CString request = "POST " + notifo_url + " HTTP/1.1" + crlf;
-			request += "Host: " + notifo_host + crlf;
-			request += "Content-Type: application/x-www-form-urlencoded" + crlf;
-			request += "Content-Length: " + CString(post.length()) + crlf;
-			request += "User-Agent: " + user_agent + crlf;
-			request += "Authorization: Basic " + notifo_auth + crlf;
-			request += crlf;
-			request += post + crlf;
+			MCString params;
+			params["to"] = options["username"];
+			params["msg"] = short_message;
+			params["label"] = app;
+			params["title"] = title;
+			params["uri"] = uri;
 
 			// Create the socket connection, write to it, and add it to the queue
-			CSocket *sock = new CSocket(this);
+			CPushSocket *sock = new CPushSocket(this);
 			sock->Connect(notifo_host, 443, true);
-			sock->Write(request);
-			sock->Close(Csock::CLT_AFTERWRITE);
+			sock->Request(true, notifo_host, notifo_url, params, notifo_auth);
 			AddSocket(sock);
 		}
 
@@ -1111,5 +1201,30 @@ class CPushMod : public CModule
 			}
 		}
 };
+
+/**
+ * Read each line of data returned from the HTTP request.
+ */
+void CPushSocket::ReadLine(const CString& data)
+{
+	if (first)
+	{
+		CString status = data.Token(1);
+		CString message = data.Token(2, true);
+
+		parent->PutDebug(status);
+		parent->PutDebug(message);
+		first = false;
+	}
+	else
+	{
+		parent->PutDebug(data);
+	}
+}
+
+void CPushSocket::Disconnected()
+{
+	Close();
+}
 
 MODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")
