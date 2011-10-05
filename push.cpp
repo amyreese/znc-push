@@ -246,6 +246,25 @@ class CPushMod : public CModule
 				params["title"] = title;
 				params["uri"] = uri;
 			}
+			else if (service == "boxcar")
+			{
+				if (options["username"] == "")
+				{
+					PutModule("Error: username not set");
+					return;
+				}
+
+				CString boxcar_api_key = "puSd2qp2gCDZO7nWkvb9";
+				CString boxcar_api_secret = "wLQQKSyGybIOkggbiKipefeYGLni9B3FPZabopHp";
+
+				service_host = "boxcar.io";
+				service_url = "/devices/providers/" + boxcar_api_key + "/notifications";
+
+				params["email"] = options["username"];
+				params["notification[from_screen_name]"] = context;
+				params["notification[message]"] = short_message;
+				params["notification[source_url]"] = uri;
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
