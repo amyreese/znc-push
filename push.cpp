@@ -265,6 +265,23 @@ class CPushMod : public CModule
 				params["notification[message]"] = short_message;
 				params["notification[source_url]"] = uri;
 			}
+			else if (service == "nma")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret not set");
+					return;
+				}
+
+				service_host = "www.notifymyandroid.com";
+				service_url = "/publicapi/notify";
+
+				params["apikey"] = options["secret"];
+				params["application"] = app;
+				params["event"] = title;
+				params["description"] = short_message;
+				params["url"] = uri;
+			}
 			else if (service == "prowl")
 			{
 				if (options["secret"] == "")
@@ -874,6 +891,10 @@ class CPushMod : public CModule
 						else if (value == "boxcar")
 						{
 							PutModule("Note: Boxcar requires setting the 'username' option");
+						}
+						else if (value == "nma")
+						{
+							PutModule("Note: NMA requires setting the 'secret' option");
 						}
 						else if (value == "prowl")
 						{
