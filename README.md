@@ -303,6 +303,12 @@ Configuration
     This option is more or less identical to `channel_conditions`, except that it is used
     to filter notifications for private messages.
 
+*   `debug = "off"`
+
+    When set to "on", this option enables debug output for various features, and is useful
+    in troubleshooting problems like failed push notifications.  Debug output will show up
+    in your `*push` window.
+
 
 Roadmap
 -------
