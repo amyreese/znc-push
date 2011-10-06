@@ -15,6 +15,7 @@
 #include "User.h"
 #include "Modules.h"
 #include "time.h"
+#include "FileUtils.h"
 
 #if (!defined(VERSION_MAJOR) || !defined(VERSION_MINOR) || (VERSION_MAJOR == 0 && VERSION_MINOR < 72))
 #error This module needs ZNC 0.072 or newer.
