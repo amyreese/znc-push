@@ -1,8 +1,14 @@
 ZNC Push
 =============
 
-ZNC Push is a module for [ZNC][] that will send notifications to a [Notifo][] account
-for any private message or channel highlight that matches a configurable set of conditions.
+ZNC Push is a module for [ZNC][] that will send notifications to multiple push notification
+services for any private message or channel highlight that matches a configurable set of
+conditions.  ZNC Push current supports the following services:
+
+* [Boxcar][]
+* [Notifo][]
+* [Notify My Android][] (NMA)
+* [Prowl][]
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
@@ -49,9 +55,9 @@ Now, load the module in ZNC:
 
     /msg *status loadmod push
 
-Then set your Notifo username and API secret.  The API secret is not your password, and
-can be obtained by logging into Notifo's website, clicking Settings, and then "Click to
-Show" next to the "API Secret" heading:
+Then select the push service you want to use, and set your username and secret as needed.
+The secret is not your password, and can be obtained by logging into the service's website
+and looking in your profile or settings:
 
     /msg *push set service notifo
     /msg *push set username foo
@@ -131,6 +137,33 @@ Commands
 Configuration
 -------------
 
+### Push Services
+
+*   `service = ""`
+
+    Short name for the push notification service that you want to use.  Must be set before
+    ZNC Push can send any notifications.
+
+    Possible values include:
+
+    *   "boxcar"
+    *   "notifo"
+    *   "nma"
+    *   "prowl"
+
+*   `username = ""`
+
+    User account that should receive push notifications.
+
+    This option must be set when using Boxcar or Notifo.
+
+*   `secret = ""`
+
+    Authentication token for push notifications.
+
+    This option must be set when using Notifo, Notify My Android, or Prowl.
+
+
 ### Conditions
 
 *   `away_only = "no"`
@@ -148,9 +181,9 @@ Configuration
 *   `highlight = ""`
 
     Space-separated list of highlight strings to match against channel messages using
-    case-insensitive, wildcard matching.    Strings will be compared in order they appear in the configuration value, and
-    the first string to match will end the search, meaning that earlier strings take priority
-    over later values.
+    case-insensitive, wildcard matching.  Strings will be compared in order they appear in
+    the configuration value, and the first string to match will end the search, meaning
+    that earlier strings take priority over later values.
 
     Individual strings may be prefixed with:
 
@@ -286,8 +319,12 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 
 
 
+[Boxcar]: http://boxcar.io
+[Notifo]: http://notifo.com
+[Notify My Android]: http://www.notifymyandroid.com
+[Prowl]: http://www.prowlapp.com
+
 [mantis]: http://leetcode.net/mantis
-[Notifo]: http://notifo.com "Notifo, Mobile Notifications for Everything"
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 [ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601 Date Format"
 
