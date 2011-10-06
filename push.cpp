@@ -265,6 +265,23 @@ class CPushMod : public CModule
 				params["notification[message]"] = short_message;
 				params["notification[source_url]"] = uri;
 			}
+			else if (service == "prowl")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret not set");
+					return;
+				}
+
+				service_host = "api.prowlapp.com";
+				service_url = "/publicapi/add";
+
+				params["apikey"] = options["secret"];
+				params["application"] = app;
+				params["event"] = title;
+				params["description"] = short_message;
+				params["url"] = uri;
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -857,6 +874,10 @@ class CPushMod : public CModule
 						else if (value == "boxcar")
 						{
 							PutModule("Note: Boxcar requires setting the 'username' option");
+						}
+						else if (value == "prowl")
+						{
+							PutModule("Note: Prowl requires setting the 'secret' option");
 						}
 						else
 						{
