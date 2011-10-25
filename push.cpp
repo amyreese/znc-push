@@ -1175,6 +1175,46 @@ class CPushMod : public CModule
 
 				PutModule(table);
 			}
+			// SUBSCRIBE command
+			else if (action == "subscribe")
+			{
+				// Set up the connection profile
+				CString service = options["service"];
+				bool use_post = true;
+				int use_port = 443;
+				bool use_ssl = true;
+				CString service_host;
+				CString service_url;
+				CString service_auth;
+				MCString params;
+
+				if (service == "boxcar")
+				{
+					if (options["username"] == "")
+					{
+						PutModule("Error: username not set");
+						return;
+					}
+
+					CString boxcar_api_key = "puSd2qp2gCDZO7nWkvb9";
+
+					service_host = "boxcar.io";
+					service_url = "/devices/providers/" + boxcar_api_key + "/notifications/subscribe";
+
+					params["email"] = options["username"];
+				}
+				else
+				{
+					PutModule("Error: service does not support subscribe command");
+					return;
+				}
+
+				// Create the socket connection, write to it, and add it to the queue
+				CPushSocket *sock = new CPushSocket(this);
+				sock->Connect(service_host, use_port, use_ssl);
+				sock->Request(use_post, service_host, service_url, params, service_auth);
+				AddSocket(sock);
+			}
 			// SEND command
 			else if (action == "send")
 			{
