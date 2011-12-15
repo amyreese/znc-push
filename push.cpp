@@ -1241,17 +1241,17 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 	if (post)
 	{
 		request += "POST " + url + " HTTP/1.1" + crlf;
-		request += "Host: " + host + crlf;
 		request += "Content-Type: application/x-www-form-urlencoded" + crlf;
 		request += "Content-Length: " + CString(query.length()) + crlf;
-		request += "User-Agent: " + user_agent + crlf;
 	}
 	else
 	{
 		request += "GET " + url + "?" + query + " HTTP/1.1" + crlf;
-		request += "Host: " + host + crlf;
-		request += "User-Agent: " + user_agent + crlf;
 	}
+
+	request += "Host: " + host + crlf;
+	request += "Connection: close" + crlf;
+	request += "User-Agent: " + user_agent + crlf;
 
 	if (auth != "")
 	{
@@ -1262,7 +1262,7 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 
 	if (post)
 	{
-		request += query + crlf;
+		request += query;
 	}
 
 	Write(request);
