@@ -300,6 +300,26 @@ class CPushMod : public CModule
 				params["description"] = short_message;
 				params["url"] = uri;
 			}
+			else if (service == "supertoasty")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (device id) not set");
+					return;
+				}
+
+				use_post = false;
+				use_port = 80;
+				use_ssl = false;
+
+				service_host = "api.supertoasty.com";
+				service_url = "/notify/"+options["secret"];
+
+				params["title"] = title;
+				params["text"] = short_message;
+				params["image"] = "https://github.com/jreese/znc-push/raw/supertoasty/logo.png";
+				params["sender"] = "ZNC Push";
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -900,6 +920,10 @@ class CPushMod : public CModule
 						else if (value == "prowl")
 						{
 							PutModule("Note: Prowl requires setting the 'secret' option");
+						}
+						else if (value == "supertoasty")
+						{
+							PutModule("Note: Supertoasty requires setting the 'secret' option with device id");
 						}
 						else
 						{
