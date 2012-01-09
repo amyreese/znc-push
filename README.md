@@ -63,6 +63,11 @@ and looking in your profile or settings:
     /msg *push set username foo
 	/msg *push set secret ...
 
+If you're using Boxcar, you need to use the following command to send a subscription request
+to your account, before ZNC Push can start working:
+
+    /msg *push subscribe
+
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
@@ -122,6 +127,12 @@ Commands
 
     Check the status of current conditions.  Specifying the "context" of either a channel
     or nick name will provide status values specific to that context.
+
+*   `subscribe`
+
+    Send a subscription request for the selected service to your configured account.  This
+    is required by certain services, such as Boxcar, before ZNC Push can send any messages
+    to your account.
 
 *   `send <message>`
 
