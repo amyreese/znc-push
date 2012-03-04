@@ -1038,7 +1038,7 @@ class CPushMod : public CModule
 				}
 
 				CString file_path = command.Token(1, true, " ");
-				MCString::status_t status = options.WriteToDisk(file_path);
+				int status = options.WriteToDisk(file_path);
 
 				if (status == MCString::MCS_SUCCESS)
 				{
@@ -1075,7 +1075,7 @@ class CPushMod : public CModule
 					return;
 				}
 
-				MCString::status_t status = options.ReadFromDisk(file_path);
+				int status = options.ReadFromDisk(file_path);
 
 				if (status == MCString::MCS_SUCCESS)
 				{
