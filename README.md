@@ -9,6 +9,7 @@ conditions.  ZNC Push current supports the following services:
 * [Notifo][]
 * [Notify My Android][] (NMA)
 * [Prowl][]
+* [supertoasty][]
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
@@ -161,6 +162,7 @@ Configuration
     *   "notifo"
     *   "nma"
     *   "prowl"
+    *   "supertoasty"
 
 *   `username = ""`
 
@@ -172,7 +174,7 @@ Configuration
 
     Authentication token for push notifications.
 
-    This option must be set when using Notifo, Notify My Android, or Prowl.
+    This option must be set when using Notifo, Notify My Android, Prowl or supertoasty.
 
 
 ### Conditions
@@ -340,6 +342,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Notifo]: http://notifo.com
 [Notify My Android]: http://www.notifymyandroid.com
 [Prowl]: http://www.prowlapp.com
+[supertoasty]: http://www.supertoasty.com
 
 [mantis]: http://leetcode.net/mantis
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
