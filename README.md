@@ -320,6 +320,26 @@ Configuration
     in troubleshooting problems like failed push notifications.  Debug output will show up
     in your `*push` window.
 
+### Email
+
+*   `from_email = ""`
+
+    This will be the address it will pretend to send from.
+
+*  `to_email = ""`
+
+    This will be the addresss to send notifications to.
+
+Email
+-----
+**Currently requires a local MTA (sendmail, postfix, etc)**
+
+For example, to send notifications via SMS to a Google Voice enabled phone.
+
+1. In Google Voice Settings, under **Voicemail & Text** enable **Text Forwarding**
+2. Send a SMS to your own number
+3. Grab the unique **From** address IE: *19395550113.19395550113.Jk4k234hVB@txt.voice.google.com*
+4. Set `to_email` to that address and `from_email` to the address GVoice forwards the email to
 
 Roadmap
 -------
