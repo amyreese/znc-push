@@ -71,6 +71,25 @@ class CPushSocket : public CSocket
 		}
 };
 
+class CEmailSocket : public CSocket
+{
+	public:
+		CEmailSocket(CPushMod *p, const CString& from_email, const CString& to_email, const CString& email_body)
+			: CSocket((CModule*) p), m_sFrom(from_email), m_sTo(to_email), m_sEmail(email_body) {
+				m_pPushMod = p;
+				m_uStep = 0;
+		}
+
+		virtual void ReadLine(const CString& sLine);
+	private:
+	protected:
+		CPushMod* m_pPushMod;
+		CString   m_sFrom;
+		CString   m_sTo;
+		CString   m_sEmail;
+		unsigned short m_uStep;
+};
+
 /**
  * Push notification module.
  */
@@ -114,6 +133,9 @@ class CPushMod : public CModule
 			defaults["service"] = "";
 			defaults["username"] = "";
 			defaults["secret"] = "";
+
+			defaults["from_email"] = "";
+			defaults["to_email"] = "";
 
 			// Condition strings
 			defaults["channel_conditions"] = "all";
@@ -218,7 +240,7 @@ class CPushMod : public CModule
 			// Set up the connection profile
 			CString service = options["service"];
 			bool use_post = true;
-			int use_port = 443;
+			unsigned short use_port = 443;
 			bool use_ssl = true;
 			CString service_host;
 			CString service_url;
@@ -299,6 +321,24 @@ class CPushMod : public CModule
 				params["event"] = title;
 				params["description"] = short_message;
 				params["url"] = uri;
+			}
+			else if (service == "email")
+			{
+				if (options["from_email"] == "" || options["to_email"] == "")
+				{
+					PutModule("Error: from_email and to_email must be set");
+					return;
+				}
+
+				service_host = "127.0.0.1";
+				use_port = 25;
+				use_ssl = false;
+
+				// Ugly but hopefully temporary
+				CEmailSocket *sock = new CEmailSocket(this, options["from_email"], options["to_email"], short_message);
+				sock->Connect(service_host, use_port, use_ssl);
+				AddSocket(sock);
+				return;
 			}
 			else
 			{
@@ -901,6 +941,10 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Prowl requires setting the 'secret' option");
 						}
+						else if (value == "email")
+						{
+							PutModule("Not: Email requests settings the 'from_email' and 'to_email' options");
+						}
 						else
 						{
 							PutModule("Error: unknown service name");
@@ -1333,6 +1377,56 @@ void CPushSocket::Disconnected()
 {
 	parent->PutDebug("Disconnected.");
 	Close(CSocket::CLT_AFTERWRITE);
+}
+
+void CEmailSocket::ReadLine(const CString& sLine) {
+	m_pPushMod->PutDebug(sLine);
+	switch (sLine.Token(0).ToInt()) {
+		case 220:
+			m_pPushMod->PutDebug("helo");
+			Write("HELO localhost.localdomain\r\n");
+			m_uStep += 1;
+			break;
+		case 221:
+			Close();
+			break;
+		case 250:
+			switch (m_uStep) {
+				case 1:
+					m_pPushMod->PutDebug("mail from: " + m_sFrom);
+					Write("MAIL FROM: " + m_sFrom + "\r\n");
+					break;
+				case 2:
+					m_pPushMod->PutDebug("rcpt to: " + m_sTo);
+					Write("RCPT TO: " + m_sTo + "\r\n");
+					break;
+				case 3:
+					m_pPushMod->PutDebug("data");
+					Write("DATA\r\n");
+					break;
+				case 5:
+					m_pPushMod->PutDebug("quit");
+					Write("QUIT\r\n");
+					break;
+			}
+			m_uStep += 1;
+			break;
+		case 354:
+		{
+			CString envelope;
+			envelope = "From: " + m_sFrom + "\r\n";
+			envelope += "To: " + m_sTo + "\r\n";
+			envelope += m_sEmail + "\r\n";
+			envelope += ".\r\n";
+			Write(envelope);
+			m_uStep += 1;
+			break;
+		}
+		default:
+			m_pPushMod->PutDebug("unknown response");
+			Write("QUIT\r\n");
+			break;
+	}
 }
 
 MODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")
