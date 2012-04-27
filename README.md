@@ -326,14 +326,29 @@ Configuration
 
     This will be the address it will pretend to send from.
 
-*  `to_email = ""`
+*   `to_email = ""`
 
     This will be the addresss to send notifications to.
 
+*   `smtp_server = "127.0.0.1:25"`
+
+    The SMTP server to use to send emails from.
+
+*   `smtp_tls = "off"`
+
+    Enable TLS on the connection (usually port 587). Also, required to use `smtp_username`
+    and `smtp_password`. Currently only AUTH PLAIN is supported.
+
+*   `smtp_username = ""`
+
+    Username to authenticate to the SMTP server.
+
+*   `smtp_password = ""`
+
+    Password to authenticate to the SMTP server.
+
 Email
 -----
-**Currently requires a local MTA (sendmail, postfix, etc)**
-
 For example, to send notifications via SMS to a Google Voice enabled phone.
 
 1. In Google Voice Settings, under **Voicemail & Text** enable **Text Forwarding**
