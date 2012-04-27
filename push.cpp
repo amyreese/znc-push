@@ -74,10 +74,11 @@ class CPushSocket : public CSocket
 class CEmailSocket : public CSocket
 {
 	public:
-		CEmailSocket(CPushMod *p, const CString& from_email, const CString& to_email, const CString& email_body)
-			: CSocket((CModule*) p), m_sFrom(from_email), m_sTo(to_email), m_sEmail(email_body) {
+		CEmailSocket(CPushMod *p, const CString& from_email, const CString& to_email, const CString& email_body, const bool use_tls, const CString& username, const CString& password)
+			: CSocket((CModule*) p), m_sFrom(from_email), m_sTo(to_email), m_sEmail(email_body), m_bTLS(use_tls), m_sUsername(username), m_sPassword(password) {
 				m_pPushMod = p;
 				m_uStep = 0;
+				m_bStartTls = false;
 		}
 
 		virtual void ReadLine(const CString& sLine);
@@ -87,7 +88,12 @@ class CEmailSocket : public CSocket
 		CString   m_sFrom;
 		CString   m_sTo;
 		CString   m_sEmail;
+		bool m_bTLS;
+		CString   m_sUsername;
+		CString   m_sPassword;
+
 		unsigned short m_uStep;
+		bool m_bStartTls;
 };
 
 /**
@@ -134,6 +140,10 @@ class CPushMod : public CModule
 			defaults["username"] = "";
 			defaults["secret"] = "";
 
+			defaults["smtp_server"] = "127.0.0.1:25";
+			defaults["smtp_tls"] = "off";
+			defaults["smtp_username"] = "";
+			defaults["smtp_password"] = "";
 			defaults["from_email"] = "";
 			defaults["to_email"] = "";
 
@@ -330,12 +340,18 @@ class CPushMod : public CModule
 					return;
 				}
 
-				service_host = "127.0.0.1";
-				use_port = 25;
+				bool use_tls = options["smtp_tls"] == "on";
+				service_host = options["smtp_server"].Token(0, false, ":");
+				if (options["smtp_server"].Token(1, false, ":").empty()) {
+					use_port = use_tls ? 587 : 25;
+				} else {
+					use_port = options["smtp_server"].Token(1, false, ":").ToUShort();
+				}
 				use_ssl = false;
 
 				// Ugly but hopefully temporary
-				CEmailSocket *sock = new CEmailSocket(this, options["from_email"], options["to_email"], short_message);
+				CEmailSocket *sock = new CEmailSocket(this, options["from_email"], options["to_email"], short_message,
+										use_tls, options["smtp_username"], options["smtp_password"]);
 				sock->Connect(service_host, use_port, use_ssl);
 				AddSocket(sock);
 				return;
@@ -1381,35 +1397,93 @@ void CPushSocket::Disconnected()
 
 void CEmailSocket::ReadLine(const CString& sLine) {
 	m_pPushMod->PutDebug(sLine);
-	switch (sLine.Token(0).ToInt()) {
+
+	unsigned short code = sLine.Left(3).ToUShort();
+	bool pipeline = sLine.LeftChomp_n(3).Equals("-", false, 1);
+
+	switch (code) {
 		case 220:
-			m_pPushMod->PutDebug("helo");
-			Write("HELO localhost.localdomain\r\n");
-			m_uStep += 1;
+			switch (m_uStep) {
+				case 2:
+					if (m_bTLS) {
+						m_pPushMod->PutDebug("socket starttls");
+						// StartTLS() in >0.208
+						ConnectSSL();
+					} else {
+						m_pPushMod->PutDebug("unexpected 220");
+						Write("QUIT\r\n");
+						break;
+					}
+				case 0:
+					m_pPushMod->PutDebug("ehlo");
+					Write("EHLO [" + GetLocalIP() + "]\r\n");
+					m_uStep += 1;
+					break;
+			}
 			break;
 		case 221:
+			m_pPushMod->PutDebug("closing socket");
 			Close();
 			break;
+		case 235:
+			m_pPushMod->PutDebug("authentication successful");
+			m_uStep += 1;
 		case 250:
 			switch (m_uStep) {
-				case 1:
-					m_pPushMod->PutDebug("mail from: " + m_sFrom);
-					Write("MAIL FROM: " + m_sFrom + "\r\n");
-					break;
-				case 2:
-					m_pPushMod->PutDebug("rcpt to: " + m_sTo);
-					Write("RCPT TO: " + m_sTo + "\r\n");
-					break;
 				case 3:
+					if (m_bTLS) {
+						if (!pipeline) {
+							m_pPushMod->PutDebug("auth plain");
+							{
+								CString sAuth('\0' + m_sUsername + '\0' + m_sPassword);
+								sAuth.Base64Encode();
+								Write("AUTH PLAIN " + sAuth + "\r\n");
+								m_sPassword.clear();
+							}
+						}
+						break;
+					}
+				case 1:
+					if (m_bTLS) {
+						if (sLine.AsLower().WildCmp("*starttls*")) {
+							m_bStartTls = true;
+						}
+						if (!pipeline) {
+							if (m_bStartTls) {
+								m_pPushMod->PutDebug("starttls");
+								Write("STARTTLS\r\n");
+							} else {
+								m_pPushMod->PutDebug("starttls unsupported");
+								Write("QUIT\r\n");
+							}
+						}
+						break;
+					} else {
+						if (!pipeline) {
+							// skip STARTTLS, EHLO, AUTH PLAIN
+							m_uStep += 4;
+						} else {
+							break;
+						}
+					}
+				case 5:
+					m_pPushMod->PutDebug("mail from: <" + m_sFrom + ">");
+					Write("MAIL FROM: <" + m_sFrom + ">\r\n");
+					break;
+				case 6:
+					m_pPushMod->PutDebug("rcpt to: <" + m_sTo + ">");
+					Write("RCPT TO: <" + m_sTo + ">\r\n");
+					break;
+				case 7:
 					m_pPushMod->PutDebug("data");
 					Write("DATA\r\n");
 					break;
-				case 5:
+				case 9:
 					m_pPushMod->PutDebug("quit");
 					Write("QUIT\r\n");
 					break;
 			}
-			m_uStep += 1;
+			m_uStep += !pipeline;
 			break;
 		case 354:
 		{
@@ -1418,6 +1492,7 @@ void CEmailSocket::ReadLine(const CString& sLine) {
 			envelope += "To: " + m_sTo + "\r\n";
 			envelope += m_sEmail + "\r\n";
 			envelope += ".\r\n";
+			m_pPushMod->PutDebug("body: " + m_sEmail);
 			Write(envelope);
 			m_uStep += 1;
 			break;
