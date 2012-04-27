@@ -1490,6 +1490,7 @@ void CEmailSocket::ReadLine(const CString& sLine) {
 			CString envelope;
 			envelope = "From: " + m_sFrom + "\r\n";
 			envelope += "To: " + m_sTo + "\r\n";
+			envelope += "\r\n";
 			envelope += m_sEmail + "\r\n";
 			envelope += ".\r\n";
 			m_pPushMod->PutDebug("body: " + m_sEmail);
