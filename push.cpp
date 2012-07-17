@@ -10,12 +10,13 @@
 
 #define REQUIRESSL
 
-#include "znc.h"
-#include "Chan.h"
-#include "User.h"
-#include "Modules.h"
+#include <znc/znc.h>
+#include <znc/Chan.h>
+#include <znc/User.h>
+#include <znc/IRCNetwork.h>
+#include <znc/Modules.h>
+#include <znc/FileUtils.h>
 #include "time.h"
-#include "FileUtils.h"
 
 #if (!defined(VERSION_MAJOR) || !defined(VERSION_MINOR) || (VERSION_MAJOR == 0 && VERSION_MINOR < 72))
 #error This module needs ZNC 0.072 or newer.
@@ -494,9 +495,9 @@ class CPushMod : public CModule
 		{
 #ifdef PUSH_AWAY
 			CString value = options["away_only"].AsLower();
-			return value != "yes" || user->IsIRCAway();
+			return value != "yes" || GetNetwork()->IsIRCAway();
 #else
-			return true
+			return true;
 #endif
 		}
 
@@ -507,7 +508,7 @@ class CPushMod : public CModule
 		 */
 		unsigned int client_count()
 		{
-			return user->GetClients().size();
+			return user->GetUserClients().size();
 		}
 
 		/**
@@ -558,7 +559,7 @@ class CPushMod : public CModule
 				}
 			}
 
-			CNick nick = user->GetIRCNick();
+			CNick nick = user->GetNick();
 
 			if (message.find(nick.GetNick()) != string::npos)
 			{
@@ -1189,7 +1190,7 @@ class CPushMod : public CModule
 #ifdef PUSH_AWAY
 				table.AddRow();
 				table.SetCell("Condition", "away");
-				table.SetCell("Status", user->IsIRCAway() ? "yes" : "no");
+				table.SetCell("Status", GetNetwork()->IsIRCAway() ? "yes" : "no");
 #endif
 
 				table.AddRow();
