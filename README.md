@@ -8,6 +8,7 @@ conditions.  ZNC Push current supports the following services:
 * [Boxcar][]
 * [Notifo][]
 * [Notify My Android][] (NMA)
+* [Pushover][]
 * [Prowl][]
 * [Supertoasty][]
 
@@ -160,6 +161,7 @@ Configuration
     *   "boxcar"
     *   "notifo"
     *   "nma"
+    *   "pushover"
     *   "prowl"
     *   "supertoasty"
 
@@ -173,7 +175,7 @@ Configuration
 
     Authentication token for push notifications.
 
-    This option must be set when using Notifo, Notify My Android, Prowl or Supertoasty.
+    This option must be set when using Notifo, Notify My Android, Pushover, Prowl or Supertoasty.
 
 
 ### Conditions
@@ -340,6 +342,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Boxcar]: http://boxcar.io
 [Notifo]: http://notifo.com
 [Notify My Android]: http://www.notifymyandroid.com
+[Pushover]: http://pushover.net
 [Prowl]: http://www.prowlapp.com
 [Supertoasty]: http://www.supertoasty.com
 

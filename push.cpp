@@ -283,6 +283,25 @@ class CPushMod : public CModule
 				params["description"] = short_message;
 				params["url"] = uri;
 			}
+			else if (service == "pushover")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (user key) not set");
+					return;
+				}
+
+				CString pushover_api_token = "h6RToHDU7gNnB3IMyUb94SuwKtBzOD";
+
+				service_host = "api.pushover.net";
+				service_url = "/1/messages.json";
+
+				params["token"] = pushover_api_token;
+				params["user"] = options["secret"];
+				//params["device"] = short_message;
+				params["title"] = title;
+				params["message"] = short_message;
+			}
 			else if (service == "prowl")
 			{
 				if (options["secret"] == "")
@@ -916,6 +935,10 @@ class CPushMod : public CModule
 						else if (value == "nma")
 						{
 							PutModule("Note: NMA requires setting the 'secret' option");
+						}
+						else if (value == "pushover")
+						{
+							PutModule("Note: Pushover requires setting the 'secret' option");
 						}
 						else if (value == "prowl")
 						{
