@@ -18,15 +18,6 @@
 #include <znc/FileUtils.h>
 #include "time.h"
 
-#if (!defined(VERSION_MAJOR) || !defined(VERSION_MINOR) || (VERSION_MAJOR == 0 && VERSION_MINOR < 72))
-#error This module needs ZNC 0.072 or newer.
-#endif
-
-// Handle versions of ZNC older than 0.090 by disabling the away_only condition
-#if VERSION_MAJOR == 0 && VERSION_MINOR >= 90
-#define PUSH_AWAY
-#endif
-
 // Forward declaration
 class CPushMod;
 
@@ -122,9 +113,7 @@ class CPushMod : public CModule
 			defaults["query_conditions"] = "all";
 
 			// Notification conditions
-#ifdef PUSH_AWAY
 			defaults["away_only"] = "no";
-#endif
 			defaults["client_count_less_than"] = "0";
 			defaults["highlight"] = "";
 			defaults["idle"] = "0";
@@ -493,12 +482,8 @@ class CPushMod : public CModule
 		 */
 		bool away_only()
 		{
-#ifdef PUSH_AWAY
 			CString value = options["away_only"].AsLower();
 			return value != "yes" || GetNetwork()->IsIRCAway();
-#else
-			return true;
-#endif
 		}
 
 		/**
@@ -1187,11 +1172,9 @@ class CPushMod : public CModule
 				table.AddColumn("Condition");
 				table.AddColumn("Status");
 
-#ifdef PUSH_AWAY
 				table.AddRow();
 				table.SetCell("Condition", "away");
 				table.SetCell("Status", GetNetwork()->IsIRCAway() ? "yes" : "no");
-#endif
 
 				table.AddRow();
 				table.SetCell("Condition", "client_count");
