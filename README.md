@@ -324,14 +324,6 @@ Configuration
     in your `*push` window.
 
 
-Roadmap
--------
-
-### Settings
-
-*   Customizable notification titles and message formats.
-
-
 License
 -------
 
