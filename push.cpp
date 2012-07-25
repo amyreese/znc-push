@@ -114,6 +114,7 @@ class CPushMod : public CModule
 			defaults["service"] = "";
 			defaults["username"] = "";
 			defaults["secret"] = "";
+			defaults["target"] = "";
 
 			// Condition strings
 			defaults["channel_conditions"] = "all";
@@ -298,9 +299,13 @@ class CPushMod : public CModule
 
 				params["token"] = pushover_api_token;
 				params["user"] = options["secret"];
-				//params["device"] = short_message;
 				params["title"] = title;
 				params["message"] = short_message;
+
+				if (options["target"] != "")
+				{
+					params["device"] = options["target"];
+				}
 			}
 			else if (service == "prowl")
 			{

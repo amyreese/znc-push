@@ -177,6 +177,13 @@ Configuration
 
     This option must be set when using Notifo, Notify My Android, Pushover, Prowl or Supertoasty.
 
+*   `target = ""`
+
+    Device or target name for push notifications.
+
+    When using Pushover, this option allows you to specify a single device name to send
+    notifications to; if blank or unset, notifications will be sent to all devices.
+
 
 ### Conditions
 
