@@ -423,6 +423,7 @@ class CPushMod : public CModule
 
 			// Create the socket connection, write to it, and add it to the queue
 			CPushSocket *sock = new CPushSocket(this);
+			sock->SetAFRequire(CSSockAddr::RAF_INET); // force ipv4 for networks using ipv6 to work around problems in CSocket
 			sock->Connect(service_host, use_port, use_ssl);
 			sock->Request(use_post, service_host, service_url, params, service_auth);
 			AddSocket(sock);
