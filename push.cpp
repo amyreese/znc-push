@@ -17,6 +17,7 @@
 #include <znc/Modules.h>
 #include <znc/FileUtils.h>
 #include "time.h"
+#include <string.h>
 
 // Forward declaration
 class CPushMod;
@@ -74,13 +75,13 @@ class CPushMod : public CModule
 		CString app;
 
 		// Time last notification was sent for a given context
-		map <CString, unsigned int> last_notification_time;
+        std::map <CString, unsigned int> last_notification_time;
 
 		// Time of last message by user to a given context
-		map <CString, unsigned int> last_reply_time;
+        std::map <CString, unsigned int> last_reply_time;
 
 		// Time of last activity by user for a given context
-		map <CString, unsigned int> last_active_time;
+        std::map <CString, unsigned int> last_active_time;
 
 		// Time of last activity by user in any context
 		unsigned int idle_time;
@@ -497,7 +498,7 @@ class CPushMod : public CModule
 
 			CNick nick = user->GetNick();
 
-			if (message.find(nick.GetNick()) != string::npos)
+			if (message.find(nick.GetNick()) != std::string::npos)
 			{
 				return true;
 			}
