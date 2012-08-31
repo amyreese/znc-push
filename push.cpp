@@ -10,21 +10,14 @@
 
 #define REQUIRESSL
 
-#include "znc.h"
-#include "Chan.h"
-#include "User.h"
-#include "Modules.h"
+#include <znc/znc.h>
+#include <znc/Chan.h>
+#include <znc/User.h>
+#include <znc/IRCNetwork.h>
+#include <znc/Modules.h>
+#include <znc/FileUtils.h>
 #include "time.h"
-#include "FileUtils.h"
-
-#if (!defined(VERSION_MAJOR) || !defined(VERSION_MINOR) || (VERSION_MAJOR == 0 && VERSION_MINOR < 72))
-#error This module needs ZNC 0.072 or newer.
-#endif
-
-// Handle versions of ZNC older than 0.090 by disabling the away_only condition
-#if VERSION_MAJOR == 0 && VERSION_MINOR >= 90
-#define PUSH_AWAY
-#endif
+#include <string.h>
 
 // Forward declaration
 class CPushMod;
@@ -82,13 +75,13 @@ class CPushMod : public CModule
 		CString app;
 
 		// Time last notification was sent for a given context
-		map <CString, unsigned int> last_notification_time;
+        std::map <CString, unsigned int> last_notification_time;
 
 		// Time of last message by user to a given context
-		map <CString, unsigned int> last_reply_time;
+        std::map <CString, unsigned int> last_reply_time;
 
 		// Time of last activity by user for a given context
-		map <CString, unsigned int> last_active_time;
+        std::map <CString, unsigned int> last_active_time;
 
 		// Time of last activity by user in any context
 		unsigned int idle_time;
@@ -121,9 +114,7 @@ class CPushMod : public CModule
 			defaults["query_conditions"] = "all";
 
 			// Notification conditions
-#ifdef PUSH_AWAY
 			defaults["away_only"] = "no";
-#endif
 			defaults["client_count_less_than"] = "0";
 			defaults["highlight"] = "";
 			defaults["idle"] = "0";
@@ -487,12 +478,8 @@ class CPushMod : public CModule
 		 */
 		bool away_only()
 		{
-#ifdef PUSH_AWAY
 			CString value = options["away_only"].AsLower();
-			return value != "yes" || user->IsIRCAway();
-#else
-			return true
-#endif
+			return value != "yes" || GetNetwork()->IsIRCAway();
 		}
 
 		/**
@@ -502,7 +489,7 @@ class CPushMod : public CModule
 		 */
 		unsigned int client_count()
 		{
-			return user->GetClients().size();
+			return user->GetUserClients().size();
 		}
 
 		/**
@@ -553,9 +540,9 @@ class CPushMod : public CModule
 				}
 			}
 
-			CNick nick = user->GetIRCNick();
+			CNick nick = user->GetNick();
 
-			if (message.find(nick.GetNick()) != string::npos)
+			if (message.find(nick.GetNick()) != std::string::npos)
 			{
 				return true;
 			}
@@ -1173,11 +1160,9 @@ class CPushMod : public CModule
 				table.AddColumn("Condition");
 				table.AddColumn("Status");
 
-#ifdef PUSH_AWAY
 				table.AddRow();
 				table.SetCell("Condition", "away");
-				table.SetCell("Status", user->IsIRCAway() ? "yes" : "no");
-#endif
+				table.SetCell("Status", GetNetwork()->IsIRCAway() ? "yes" : "no");
 
 				table.AddRow();
 				table.SetCell("Condition", "client_count");
