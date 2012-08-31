@@ -16,6 +16,7 @@
 #include <znc/IRCNetwork.h>
 #include <znc/Modules.h>
 #include <znc/FileUtils.h>
+#include <znc/Client.h>
 #include "time.h"
 #include <string.h>
 
@@ -445,7 +446,7 @@ class CPushMod : public CModule
 		 */
 		unsigned int client_count()
 		{
-			return user->GetUserClients().size();
+			return GetNetwork()->GetClients().size();
 		}
 
 		/**
