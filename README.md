@@ -275,7 +275,7 @@ Configuration
     truncated and ellipsized at or before this length is reached.  A value of 0 (zero) will
     disable this option.
 
-*   `message_url = ""`
+*   `message_uri = ""`
 
     URI that will be sent with the notification to Notifo.  This could be a web address or a
     local scheme to access a mobile application.  Keyword expansion is performed on this
