@@ -10,6 +10,9 @@
 
 #define REQUIRESSL
 
+#ifdef WIN_MSVC
+#include "stdafx.hpp"
+#endif
 #include "znc.h"
 #include "Chan.h"
 #include "User.h"
