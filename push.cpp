@@ -10,9 +10,6 @@
 
 #define REQUIRESSL
 
-#ifdef WIN_MSVC
-#include "stdafx.hpp"
-#endif
 #include "znc.h"
 #include "Chan.h"
 #include "User.h"
@@ -304,6 +301,11 @@ class CPushMod : public CModule
 				params["user"] = options["secret"];
 				params["title"] = title;
 				params["message"] = short_message;
+
+				if (uri != "")
+				{
+					params["url"] = uri;
+				}
 
 				if (options["target"] != "")
 				{
