@@ -967,6 +967,8 @@ class CPushMod : public CModule
 
 					options[option] = value;
 					SetNV(option, options[option]);
+
+					PutModule("Ok");
 				}
 			}
 			// APPEND command
@@ -995,6 +997,8 @@ class CPushMod : public CModule
 					options[option] += " " + value;
 					options[option].Trim();
 					SetNV(option, options[option]);
+
+					PutModule("Ok");
 				}
 			}
 			// PREPEND command
@@ -1023,6 +1027,8 @@ class CPushMod : public CModule
 					options[option] = value + " " + options[option];
 					options[option].Trim();
 					SetNV(option, options[option]);
+
+					PutModule("Ok");
 				}
 			}
 			// UNSET command
@@ -1045,6 +1051,8 @@ class CPushMod : public CModule
 				{
 					options[option] = defaults[option];
 					DelNV(option);
+
+					PutModule("Ok");
 				}
 			}
 			// GET command
@@ -1271,12 +1279,16 @@ class CPushMod : public CModule
 				sock->Connect(service_host, use_port, use_ssl);
 				sock->Request(use_post, service_host, service_url, params, service_auth);
 				AddSocket(sock);
+
+				PutModule("Ok");
 			}
 			// SEND command
 			else if (action == "send")
 			{
 				CString message = command.Token(1, true, " ", true);
 				send_message(message);
+
+				PutModule("Ok");
 			}
 			// HELP command
 			else if (action == "help")
