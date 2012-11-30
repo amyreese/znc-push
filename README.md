@@ -21,6 +21,8 @@ For full functionality, this module requires ZNC version 0.090 or newer, but sho
 and run with a reduced feature set on versions as old as 0.078, the current version used by
 Ubuntu.  However, development and testing is done exclusively against the latest source
 distribution, so feedback on older releases of ZNC is needed to continue supporting them.
+If you want to use ZNC versions before 1.0 (0.206 or older), you will need to check out the
+"legacy" branch in order to compile it correctly.
 
 ZNC Push was created by [John Reese](http://johnmreese.com) and designed to fill a
 personal need.  It may not fit your use cases, but any and all feedback would be greatly
