@@ -540,7 +540,7 @@ class CPushMod : public CModule
 
 				value = "*" + value + "*";
 
-				if (msg.WildCmp(value))
+				if (msg.WildCmp(this->ExpandString(value).MakeLower()))
 				{
 					return push;
 				}
@@ -614,7 +614,7 @@ class CPushMod : public CModule
 
 			for (VCString::iterator i = blacklist.begin(); i != blacklist.end(); i++)
 			{
-				if (name.WildCmp(i->AsLower()))
+				if (name.WildCmp(this->ExpandString(i->AsLower()).MakeLower()))
 				{
 					return false;
 				}
