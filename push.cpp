@@ -538,7 +538,17 @@ class CPushMod : public CModule
 					value = " " + value.LeftChomp_n(1) + " ";
 				}
 
-				value = "*" + value + "*";
+				// Expand substrings like %nick%
+				if (m_pNetwork)
+				{
+					value = m_pNetwork->ExpandString(value);
+				}
+				else
+				{
+					value = GetUser()->ExpandString(value);
+				}
+
+				value = "*" + value.AsLower() + "*";
 
 				if (msg.WildCmp(value))
 				{
@@ -614,7 +624,19 @@ class CPushMod : public CModule
 
 			for (VCString::iterator i = blacklist.begin(); i != blacklist.end(); i++)
 			{
-				if (name.WildCmp(i->AsLower()))
+				CString value;
+
+				// Expand substrings like %nick%
+				if (m_pNetwork)
+				{
+					value = m_pNetwork->ExpandString(*i);
+				}
+				else
+				{
+					value = GetUser()->ExpandString(*i);
+				}
+
+				if (name.WildCmp(value.AsLower()))
 				{
 					return false;
 				}
