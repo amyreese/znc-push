@@ -151,6 +151,29 @@ Commands
 Configuration
 -------------
 
+### Keyword Expansion
+
+Some configuration options allow for optional keyword expansion, which happens
+while preparing to send the push notification.  Expansion is performed each time
+a notification is sent.  Expansion is only performed on options that explicitly
+
+
+The following keywords will be replaced with the appropriate value:
+
+*   `{context}`: the channel or query window context
+*   `{nick}`: the nick that sent the message
+*   `{datetime}`: [ISO 8601][] date string, in server-local time
+*   `{unixtime}`: unix-style integer timestamp
+*   `{title}`: the default title for the notification
+*   `{message}`: the shortened message contents
+*   `{username}`: the configured username string
+*   `{secret}`: the configured secret string
+
+As an example, a value of "http://domain/{context}/{datetime}" would be expanded
+to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
+"http://domain/{nick}/{unixtime}" to "http://domain/somenick/1299685136".
+
+
 ### Push Services
 
 *   `service = ""`
@@ -279,19 +302,20 @@ Configuration
 
 *   `message_uri = ""`
 
-    URI that will be sent with the notification to Notifo.  This could be a web address or a
+    URI that will be sent with the push notification.  This could be a web address or a
     local scheme to access a mobile application.  Keyword expansion is performed on this
-    value each time a notification is sent; the following keywords will be replaced with
-    the appropriate value:
+    value.
 
-    *   `{context}`: the channel or query window context
-    *   `{nick}`: the nick that sent the message
-    *   `{datetime}`: [ISO 8601][] date string, in server-local time
-    *   `{unixtime}`: unix-style integer timestamp
+*   `message_title = "{title}"`
 
-    As an example, a value of "http://domain/{context}/{datetime}" would be expanded to
-    something similar to "http://domain/#channel/2011-03-09 14:25:09", or
-    "http://domain/{nick}/{unixtime}" to "http://domain/somenick/1299685136".
+    Title that will be provided for the push notification.  Keyword expansion is performed
+    on this value.
+
+*   `message_content = "{message}"`
+
+    Message content that will be sent for the push notification.  Keyword expansion is
+    performed on this value.
+
 
 ### Advanced
 

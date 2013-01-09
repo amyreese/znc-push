@@ -127,6 +127,8 @@ class CPushMod : public CModule
 			// Notification settings
 			defaults["message_length"] = "100";
 			defaults["message_uri"] = "";
+			defaults["message_title"] = "{title}";
+			defaults["message_content"] = "{message}";
 
 			defaults["debug"] = "off";
 		}
@@ -200,13 +202,20 @@ class CPushMod : public CModule
 			char iso8601 [20];
 			strftime(iso8601, 20, "%Y-%m-%d %H:%M:%S", timeinfo);
 
-			// URI string replacements
+			// Message string replacements
 			MCString replace;
 			replace["{context}"] = context;
 			replace["{nick}"] = nick.GetNick();
 			replace["{datetime}"] = CString(iso8601);
 			replace["{unixtime}"] = CString(time(NULL));
-			CString uri = expand(options["message_uri"], replace);
+			replace["{message}"] = short_message;
+			replace["{title}"] = title;
+			replace["{username}"] = options["username"];
+			replace["{secret}"] = options["secret"];
+
+			CString message_uri = expand(options["message_uri"], replace);
+			CString message_title = expand(options["message_title"], replace);
+			CString message_content = expand(options["message_content"], replace);
 
 			// Set up the connection profile
 			CString service = options["service"];
@@ -235,10 +244,10 @@ class CPushMod : public CModule
 				service_auth.Base64Encode();
 
 				params["to"] = options["username"];
-				params["msg"] = short_message;
+				params["msg"] = message_content;
 				params["label"] = app;
-				params["title"] = title;
-				params["uri"] = uri;
+				params["title"] = message_title;
+				params["uri"] = message_uri;
 			}
 			else if (service == "boxcar")
 			{
@@ -256,8 +265,8 @@ class CPushMod : public CModule
 
 				params["email"] = options["username"];
 				params["notification[from_screen_name]"] = context;
-				params["notification[message]"] = short_message;
-				params["notification[source_url]"] = uri;
+				params["notification[message]"] = message_content;
+				params["notification[source_url]"] = message_uri;
 			}
 			else if (service == "nma")
 			{
@@ -272,9 +281,9 @@ class CPushMod : public CModule
 
 				params["apikey"] = options["secret"];
 				params["application"] = app;
-				params["event"] = title;
-				params["description"] = short_message;
-				params["url"] = uri;
+				params["event"] = message_title;
+				params["description"] = message_content;
+				params["url"] = message_uri;
 			}
 			else if (service == "pushover")
 			{
@@ -291,12 +300,12 @@ class CPushMod : public CModule
 
 				params["token"] = pushover_api_token;
 				params["user"] = options["secret"];
-				params["title"] = title;
-				params["message"] = short_message;
+				params["title"] = message_title;
+				params["message"] = message_content;
 
-				if (uri != "")
+				if (message_uri != "")
 				{
-					params["url"] = uri;
+					params["url"] = message_uri;
 				}
 
 				if (options["target"] != "")
@@ -317,9 +326,9 @@ class CPushMod : public CModule
 
 				params["apikey"] = options["secret"];
 				params["application"] = app;
-				params["event"] = title;
-				params["description"] = short_message;
-				params["url"] = uri;
+				params["event"] = message_title;
+				params["description"] = message_content;
+				params["url"] = message_uri;
 			}
 			else if (service == "supertoasty")
 			{
@@ -336,8 +345,8 @@ class CPushMod : public CModule
 				service_host = "api.supertoasty.com";
 				service_url = "/notify/"+options["secret"];
 
-				params["title"] = title;
-				params["text"] = short_message;
+				params["title"] = message_title;
+				params["text"] = message_content;
 				params["image"] = "https://github.com/jreese/znc-push/raw/supertoasty/logo.png";
 				params["sender"] = "ZNC Push";
 			}
