@@ -352,15 +352,15 @@ class CPushMod : public CModule
 			}
 			else if (service == "url")
 			{
-				if (options["target"] == "")
+				if (options["message_uri"] == "")
 				{
-					PutModule("Error: target (url) not set");
+					PutModule("Error: message_uri not set");
 					return;
 				}
 
 				int count;
 				VCString parts;
-				CString url = options["target"];
+				CString url = options["message_uri"];
 
 				// Verify that the URL begins with either http:// or https://
 				count = url.Split("://", parts, false);
@@ -1044,7 +1044,7 @@ class CPushMod : public CModule
 						}
 						else if (value == "url")
 						{
-							PutModule("Note: URL requires setting the 'target' option with the full URL");
+							PutModule("Note: URL requires setting the 'message_uri' option with the full URL");
 						}
 						else
 						{
