@@ -330,6 +330,10 @@ Configuration
 
     This will be the addresss to send notifications to.
 
+*   `email_subject = ""`
+
+    This will be the subject of notification emails.
+
 *   `smtp_server = "127.0.0.1:25"`
 
     The SMTP server to use to send emails from.
