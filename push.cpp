@@ -350,6 +350,71 @@ class CPushMod : public CModule
 				params["image"] = "https://github.com/jreese/znc-push/raw/supertoasty/logo.png";
 				params["sender"] = "ZNC Push";
 			}
+			else if (service == "url")
+			{
+				if (options["target"] == "")
+				{
+					PutModule("Error: target (url) not set");
+					return;
+				}
+
+				int count;
+				VCString parts;
+				CString url = options["target"];
+
+				// Verify that the URL begins with either http:// or https://
+				count = url.Split("://", parts, false);
+
+				if (count != 2)
+				{
+					PutModule("Error: invalid url format");
+					return;
+				}
+
+				use_post = false;
+
+				if (parts[0] == "https")
+				{
+					use_ssl = true;
+					use_port = 443;
+				}
+				else if (parts[0] == "http")
+				{
+					use_ssl = false;
+					use_port = 80;
+				}
+				else
+				{
+					PutModule("Error: invalid url schema");
+					return;
+				}
+
+				// Process the remaining portion of the URL
+				url = parts[1];
+
+				// Split out the host and optional port number; this breaks with raw IPv6 addresses
+				CString host = url.Token(0, false, "/");
+				count = host.Split(":", parts, false);
+
+				if (count > 1)
+				{
+					use_port = parts[1].ToInt();
+				}
+
+				service_host = parts[0];
+
+				// Split remaining URL into path and query components
+				url = "/" + url.Token(1, true, "/");
+				service_url = expand(url.Token(0, false, "?"), replace);
+
+				// Parse and expand query parameter values
+				url = url.Token(1, true, "?");
+				url.URLSplit(params);
+
+				for (MCString::iterator i = params.begin(); i != params.end(); i++) {
+					i->second = expand(i->second, replace);
+				}
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -976,6 +1041,10 @@ class CPushMod : public CModule
 						else if (value == "supertoasty")
 						{
 							PutModule("Note: Supertoasty requires setting the 'secret' option with device id");
+						}
+						else if (value == "url")
+						{
+							PutModule("Note: URL requires setting the 'target' option with the full URL");
 						}
 						else
 						{

@@ -11,6 +11,7 @@ conditions.  ZNC Push current supports the following services:
 * [Pushover][]
 * [Prowl][]
 * [Supertoasty][]
+* Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
@@ -189,6 +190,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   "pushover"
     *   "prowl"
     *   "supertoasty"
+    *   "url"
 
 *   `username = ""`
 
@@ -208,6 +210,12 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
+
+    When using URL, this options allows you to specify the URL to send a GET request
+    to, and has keyword expansion performed on portions of it, including the path and
+    any query parameter values.
+
+    This option must be set when using URL.
 
 
 ### Conditions
