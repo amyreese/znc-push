@@ -74,8 +74,8 @@ class CPushSocket : public CSocket
 class CEmailSocket : public CSocket
 {
 	public:
-		CEmailSocket(CPushMod *p, const CString& from_email, const CString& to_email, const CString& email_body, const bool use_tls, const CString& username, const CString& password)
-			: CSocket((CModule*) p), m_sFrom(from_email), m_sTo(to_email), m_sEmail(email_body), m_bTLS(use_tls), m_sUsername(username), m_sPassword(password) {
+		CEmailSocket(CPushMod *p, const CString& from_email, const CString& to_email, const CString& email_subject, const CString& email_body, const bool use_tls, const CString& username, const CString& password)
+			: CSocket((CModule*) p), m_sFrom(from_email), m_sTo(to_email), m_sSubject(email_subject), m_sEmail(email_body), m_bTLS(use_tls), m_sUsername(username), m_sPassword(password) {
 				m_pPushMod = p;
 				m_uStep = 0;
 				m_bStartTls = false;
@@ -87,6 +87,7 @@ class CEmailSocket : public CSocket
 		CPushMod* m_pPushMod;
 		CString   m_sFrom;
 		CString   m_sTo;
+		CString   m_sSubject;
 		CString   m_sEmail;
 		bool m_bTLS;
 		CString   m_sUsername;
@@ -146,15 +147,14 @@ class CPushMod : public CModule
 			defaults["smtp_password"] = "";
 			defaults["from_email"] = "";
 			defaults["to_email"] = "";
+			defaults["email_subject"] = "";
 
 			// Condition strings
 			defaults["channel_conditions"] = "all";
 			defaults["query_conditions"] = "all";
 
 			// Notification conditions
-#ifdef PUSH_AWAY
 			defaults["away_only"] = "no";
-#endif
 			defaults["client_count_less_than"] = "0";
 			defaults["highlight"] = "";
 			defaults["idle"] = "0";
@@ -350,7 +350,7 @@ class CPushMod : public CModule
 				use_ssl = false;
 
 				// Ugly but hopefully temporary
-				CEmailSocket *sock = new CEmailSocket(this, options["from_email"], options["to_email"], short_message,
+				CEmailSocket *sock = new CEmailSocket(this, options["from_email"], options["to_email"], options["email_subject"], short_message,
 										use_tls, options["smtp_username"], options["smtp_password"]);
 				sock->Connect(service_host, use_port, use_ssl);
 				AddSocket(sock);
@@ -1490,6 +1490,7 @@ void CEmailSocket::ReadLine(const CString& sLine) {
 			CString envelope;
 			envelope = "From: " + m_sFrom + "\r\n";
 			envelope += "To: " + m_sTo + "\r\n";
+			envelope += "Subject: " + m_sSubject + " \r\n";
 			envelope += "\r\n";
 			envelope += m_sEmail + "\r\n";
 			envelope += ".\r\n";
