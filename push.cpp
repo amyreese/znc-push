@@ -827,8 +827,8 @@ class CPushMod : public CModule
 			{
 				CString title = "Highlight";
 				CString msg = channel.GetName();
-				msg += ": <" + nick.GetNick();
-				msg += "> " + message;
+				msg += ": [" + nick.GetNick();
+				msg += "] " + message;
 
 				send_message(msg, title, channel.GetName());
 			}
