@@ -113,6 +113,7 @@ class CPushMod : public CModule
 			// Notification settings
 			defaults["message_sound"] = "";
 			defaults["message_uri"] = "";
+			defaults["message_uri_title"] = "";
 			defaults["message_length"] = "100";
 			defaults["message_title"] = "{title}";
 			defaults["message_content"] = "{message}";
@@ -307,6 +308,11 @@ class CPushMod : public CModule
 				{
 					params["url"] = message_uri;
 				}
+
+                if ( options["message_uri_title"] != "" )
+                {
+                    params["url_title"] = options["message_uri_title"];
+                }
 
 				if (options["target"] != "")
 				{
