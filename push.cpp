@@ -109,6 +109,7 @@ class CPushMod : public CModule
 			defaults["username"] = "";
 			defaults["secret"] = "";
 			defaults["target"] = "";
+			defaults["sound"] = "";
 
 			// Condition strings
 			defaults["channel_conditions"] = "all";
@@ -312,6 +313,11 @@ class CPushMod : public CModule
 				{
 					params["device"] = options["target"];
 				}
+
+                if ( options["sound"] != "" )
+                {
+                    params["sound"] = options["sound"];
+                }
 			}
 			else if (service == "prowl")
 			{
