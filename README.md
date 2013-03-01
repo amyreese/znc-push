@@ -216,7 +216,11 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 *   `message_sound = ""`
 
-    If you're using the Pushover.net API, you can specify a <a href="https://pushover.net/api#sounds">specific sound</a> for the notifications.
+    If you're using Pushover.net, you can specify a <a href="https://pushover.net/api#sounds">specific sound</a> for the notifications.
+
+*   `message_uri_title` = ""`
+
+    If you're using Pushover.net, you can specify a title for the <strong>message_uri</strong> option.
 
 *   `message_uri = ""`
 
