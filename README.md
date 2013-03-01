@@ -82,8 +82,8 @@ You can also load the module with options:
     /msg *status loadmod push <service> <username> <secret> <target> <sound>
 
 Note: Sound option is only available for Pushover.net API. Also, for some services, there is 
-no username, in that case you can replace <username> with the secret and replace <secret> 
-with "null" minus the quotes.
+no username, in that case you can replace &lt;username&gt; with the secret and replace &lt;secret&gt; 
+with <strong>null</strong>.
 
 Migrating From Notifo
 ---------------------
