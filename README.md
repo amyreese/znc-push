@@ -57,7 +57,7 @@ Copy the compiled module into your ZNC profile:
 
 Now, load the module in ZNC:
 
-    /msg *status loadmod push <service> <username> <secret> <target> <sound*>
+    /msg *status loadmod push
 
 Then select the push service you want to use, and set your username and secret as needed.
 The secret is not your password, and can be obtained by logging into the service's website
@@ -75,6 +75,11 @@ to your account, before ZNC Push can start working:
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
+
+
+You can also load the module with options:
+
+    /msg *status loadmod push <service> <username> <secret> <target> <sound*>
 
 * Sound option is only available for Pushover.net API
 
