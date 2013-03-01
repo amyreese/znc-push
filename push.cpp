@@ -110,9 +110,12 @@ class CPushMod : public CModule
 			defaults["secret"] = "";
 			defaults["target"] = "";
 
-			// Condition strings
-			defaults["channel_conditions"] = "all";
-			defaults["query_conditions"] = "all";
+			// Notification settings
+			defaults["message_sound"] = "";
+			defaults["message_uri"] = "";
+			defaults["message_length"] = "100";
+			defaults["message_title"] = "{title}";
+			defaults["message_content"] = "{message}";
 
 			// Notification conditions
 			defaults["away_only"] = "no";
@@ -124,12 +127,9 @@ class CPushMod : public CModule
 			defaults["nick_blacklist"] = "";
 			defaults["replied"] = "yes";
 
-			// Notification settings
-			defaults["message_length"] = "100";
-			defaults["message_uri"] = "";
-			defaults["message_title"] = "{title}";
-			defaults["message_content"] = "{message}";
-
+            // Advanced
+			defaults["channel_conditions"] = "all";
+			defaults["query_conditions"] = "all";
 			defaults["debug"] = "off";
 		}
 		virtual ~CPushMod() {}
@@ -312,6 +312,11 @@ class CPushMod : public CModule
 				{
 					params["device"] = options["target"];
 				}
+
+                if ( options["message_sound"] != "" )
+                {
+                    params["sound"] = options["message_sound"];
+                }
 			}
 			else if (service == "prowl")
 			{
