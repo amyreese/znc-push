@@ -109,7 +109,13 @@ class CPushMod : public CModule
 			defaults["username"] = "";
 			defaults["secret"] = "";
 			defaults["target"] = "";
+
+			// Notification settings
 			defaults["message_sound"] = "";
+			defaults["message_uri"] = "";
+			defaults["message_length"] = "100";
+			defaults["message_title"] = "{title}";
+			defaults["message_content"] = "{message}";
 
 			// Condition strings
 			defaults["channel_conditions"] = "all";
@@ -124,12 +130,6 @@ class CPushMod : public CModule
 			defaults["last_notification"] = "300";
 			defaults["nick_blacklist"] = "";
 			defaults["replied"] = "yes";
-
-			// Notification settings
-			defaults["message_length"] = "100";
-			defaults["message_uri"] = "";
-			defaults["message_title"] = "{title}";
-			defaults["message_content"] = "{message}";
 
 			defaults["debug"] = "off";
 		}
