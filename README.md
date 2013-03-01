@@ -304,17 +304,21 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 ### Notifications
 
-*   `message_length = 100`
+*   `message_sound = {sound}`
 
-    Maximum length of the notification message to be sent.  The message will be nicely
-    truncated and ellipsized at or before this length is reached.  A value of 0 (zero) will
-    disable this option.
+    If you're using the Pushover.net API, you can specify a <a href="https://pushover.net/api#sounds">specific sound</a> for the notifications.
 
 *   `message_uri = ""`
 
     URI that will be sent with the push notification.  This could be a web address or a
     local scheme to access a mobile application.  Keyword expansion is performed on this
     value.
+
+*   `message_length = 100`
+
+    Maximum length of the notification message to be sent.  The message will be nicely
+    truncated and ellipsized at or before this length is reached.  A value of 0 (zero) will
+    disable this option.
 
     When using the custom URL service, this options allows you to specify the URL to send
     a GET request to, and has keyword expansion performed on portions of it, including the
@@ -329,10 +333,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Message content that will be sent for the push notification.  Keyword expansion is
     performed on this value.
-
-*   `message_sound = {sound}`
-
-    If you're using the Pushover.net API, you can specify a <a href="https://pushover.net/api#sounds">specific sound</a> for the notifications.
 
 ### Advanced
 
