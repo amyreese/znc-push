@@ -77,14 +77,6 @@ or someone says your name in a channel.  If this is everything you wanted, congr
 you're done!
 
 
-You can also load the module with options:
-
-    /msg *status loadmod push <service> <username> <secret> <target> <message_sound> <message_uri>
-
-Note: The &lt;message_sound&gt; option is only available for <a href="https://pushover.net/api#sounds" target="_blank">Pushover.net API</a>. Also, for some services, there is 
-no username, in that case you can replace &lt;username&gt; with the secret and replace &lt;secret&gt; 
-with <strong>null</strong>.
-
 Migrating From Notifo
 ---------------------
 
