@@ -117,10 +117,6 @@ class CPushMod : public CModule
 			defaults["message_title"] = "{title}";
 			defaults["message_content"] = "{message}";
 
-			// Condition strings
-			defaults["channel_conditions"] = "all";
-			defaults["query_conditions"] = "all";
-
 			// Notification conditions
 			defaults["away_only"] = "no";
 			defaults["client_count_less_than"] = "0";
@@ -131,6 +127,9 @@ class CPushMod : public CModule
 			defaults["nick_blacklist"] = "";
 			defaults["replied"] = "yes";
 
+            // Advanced
+			defaults["channel_conditions"] = "all";
+			defaults["query_conditions"] = "all";
 			defaults["debug"] = "off";
 		}
 		virtual ~CPushMod() {}
