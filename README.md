@@ -57,7 +57,7 @@ Copy the compiled module into your ZNC profile:
 
 Now, load the module in ZNC:
 
-    /msg *status loadmod push
+    /msg *status loadmod push <service> <username> <secret> <target> <sound*>
 
 Then select the push service you want to use, and set your username and secret as needed.
 The secret is not your password, and can be obtained by logging into the service's website
@@ -76,6 +76,7 @@ At this point, it should start sending notifications every time you get a privat
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
 
+* Sound option is only available for Pushover.net API
 
 Migrating From Notifo
 ---------------------
@@ -322,6 +323,10 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     Message content that will be sent for the push notification.  Keyword expansion is
     performed on this value.
 
+*   `message_sound = {sound}`
+
+    If you're using the Pushover.net API, you can specify a specific sound for the notification: 
+    https://pushover.net/api#sounds
 
 ### Advanced
 
