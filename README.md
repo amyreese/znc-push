@@ -81,7 +81,7 @@ You can also load the module with options:
 
     /msg *status loadmod push <service> <username> <secret> <target> <sound>
 
-Note: Sound option is only available for Pushover.net API. Also, for some services, there is 
+Note: The <sound> option is only available for <a href="https://pushover.net/api#sounds">Pushover.net API</a>. Also, for some services, there is 
 no username, in that case you can replace &lt;username&gt; with the secret and replace &lt;secret&gt; 
 with <strong>null</strong>.
 
@@ -332,8 +332,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 *   `message_sound = {sound}`
 
-    If you're using the Pushover.net API, you can specify a specific sound for the notification: 
-    https://pushover.net/api#sounds
+    If you're using the Pushover.net API, you can specify a <a href="https://pushover.net/api#sounds">specific sound</a> for the notifications.
 
 ### Advanced
 
