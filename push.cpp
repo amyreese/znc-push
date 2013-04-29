@@ -117,6 +117,7 @@ class CPushMod : public CModule
 			defaults["message_length"] = "100";
 			defaults["message_title"] = "{title}";
 			defaults["message_content"] = "{message}";
+			defaults["message_priority"] = "0";
 
 			// Notification conditions
 			defaults["away_only"] = "no";
@@ -323,6 +324,11 @@ class CPushMod : public CModule
                 {
                     params["sound"] = options["message_sound"];
                 }
+
+				if (options["message_priority"] != "")
+				{
+					params["priority"] = options["message_priority"];
+				}
 			}
 			else if (service == "prowl")
 			{

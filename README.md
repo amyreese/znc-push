@@ -248,6 +248,11 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     Message content that will be sent for the push notification.  Keyword expansion is
     performed on this value.
 
+*   `message_priority = ""`
+
+    Priority level that will be used for the push notification.
+    Currently supported only by Pushover.net.
+
 
 ### Conditions
 
