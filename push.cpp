@@ -111,13 +111,13 @@ class CPushMod : public CModule
 			defaults["target"] = "";
 
 			// Notification settings
-			defaults["message_sound"] = "";
-			defaults["message_uri"] = "";
-			defaults["message_uri_title"] = "";
+			defaults["message_content"] = "{message}";
 			defaults["message_length"] = "100";
 			defaults["message_title"] = "{title}";
-			defaults["message_content"] = "{message}";
+			defaults["message_uri"] = "";
+			defaults["message_uri_title"] = "";
 			defaults["message_priority"] = "0";
+			defaults["message_sound"] = "";
 
 			// Notification conditions
 			defaults["away_only"] = "no";

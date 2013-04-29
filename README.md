@@ -214,19 +214,10 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 ### Notifications
 
-*   `message_sound = ""`
+*   `message_content = "{message}"`
 
-    If you're using Pushover.net, you can specify a <a href="https://pushover.net/api#sounds">specific sound</a> for the notifications.
-
-*   `message_uri_title` = ""`
-
-    If you're using Pushover.net, you can specify a title for the <strong>message_uri</strong> option.
-
-*   `message_uri = ""`
-
-    URI that will be sent with the push notification.  This could be a web address or a
-    local scheme to access a mobile application.  Keyword expansion is performed on this
-    value.
+    Message content that will be sent for the push notification.  Keyword expansion is
+    performed on this value.
 
 *   `message_length = 100`
 
@@ -243,15 +234,26 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     Title that will be provided for the push notification.  Keyword expansion is performed
     on this value.
 
-*   `message_content = "{message}"`
+*   `message_uri = ""`
 
-    Message content that will be sent for the push notification.  Keyword expansion is
-    performed on this value.
+    URI that will be sent with the push notification.  This could be a web address or a
+    local scheme to access a mobile application.  Keyword expansion is performed on this
+    value.
+
+*   `message_uri_title` = ""`
+
+    If you're using Pushover.net, you can specify a title for the `message_uri` option.
 
 *   `message_priority = ""`
 
     Priority level that will be used for the push notification.
     Currently supported only by Pushover.net.
+
+*   `message_sound = ""`
+
+    Notification sound to play with the push notification.
+    Currently only supported by Pushover.net.  Must be chosen from their list of
+    [supported sounds](https://pushover.net/api#sounds).
 
 
 ### Conditions
