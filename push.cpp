@@ -76,13 +76,13 @@ class CPushMod : public CModule
 		CString app;
 
 		// Time last notification was sent for a given context
-        std::map <CString, unsigned int> last_notification_time;
+		std::map <CString, unsigned int> last_notification_time;
 
 		// Time of last message by user to a given context
-        std::map <CString, unsigned int> last_reply_time;
+		std::map <CString, unsigned int> last_reply_time;
 
 		// Time of last activity by user for a given context
-        std::map <CString, unsigned int> last_active_time;
+		std::map <CString, unsigned int> last_active_time;
 
 		// Time of last activity by user in any context
 		unsigned int idle_time;
@@ -129,7 +129,7 @@ class CPushMod : public CModule
 			defaults["nick_blacklist"] = "";
 			defaults["replied"] = "yes";
 
-            // Advanced
+			// Advanced
 			defaults["channel_conditions"] = "all";
 			defaults["query_conditions"] = "all";
 			defaults["debug"] = "off";
@@ -310,20 +310,20 @@ class CPushMod : public CModule
 					params["url"] = message_uri;
 				}
 
-                if ( options["message_uri_title"] != "" )
-                {
-                    params["url_title"] = options["message_uri_title"];
-                }
+				if ( options["message_uri_title"] != "" )
+				{
+					params["url_title"] = options["message_uri_title"];
+				}
 
 				if (options["target"] != "")
 				{
 					params["device"] = options["target"];
 				}
 
-                if ( options["message_sound"] != "" )
-                {
-                    params["sound"] = options["message_sound"];
-                }
+				if ( options["message_sound"] != "" )
+				{
+					params["sound"] = options["message_sound"];
+				}
 
 				if (options["message_priority"] != "")
 				{
