@@ -251,6 +251,26 @@ class CPushMod : public CModule
 				params["title"] = message_title;
 				params["uri"] = message_uri;
 			}
+			else if (service == "pushbullet")
+			{
+				if (options["username"] == "" || options["secret"] == "")
+				{
+					PutModule("Error: username (device id) or secret (api key) not set");
+					return;
+				}
+
+				service_host = "www.pushbullet.com";
+				service_url = "/api/pushes";
+
+				// BASIC auth, base64-encoded APIKey:
+				service_auth = options["secret"] + CString(":");
+				service_auth.Base64Encode();
+				
+				params["device_id"] = options["username"];
+				params["type"] = "note";
+				params["title"] = message_title;
+				params["body"] = message_content;
+			}
 			else if (service == "boxcar")
 			{
 				if (options["username"] == "")
@@ -1038,6 +1058,10 @@ class CPushMod : public CModule
 						if (value == "notifo")
 						{
 							PutModule("Note: Notifo requires setting both 'username' and 'secret' options");
+						}
+						else if (value == "pushbullet")
+						{
+							PutModule("Note: Pushbullet requires setting both 'username' (to device id) and 'secret' (to api key) options");
 						}
 						else if (value == "boxcar")
 						{
