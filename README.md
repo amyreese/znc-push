@@ -45,7 +45,7 @@ If you have `make` installed, you can compile the module with:
 
 Otherwise, run the full command:
 
-    $ znc-build push.cpp
+    $ znc-buildmod push.cpp
 
 
 Installation
