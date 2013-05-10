@@ -253,9 +253,9 @@ class CPushMod : public CModule
 			}
 			else if (service == "pushbullet")
 			{
-				if (options["username"] == "" || options["secret"] == "")
+				if (options["target"] == "" || options["secret"] == "")
 				{
-					PutModule("Error: username (device id) or secret (api key) not set");
+					PutModule("Error: target (device id) or secret (api key) not set");
 					return;
 				}
 
@@ -266,7 +266,7 @@ class CPushMod : public CModule
 				service_auth = options["secret"] + CString(":");
 				service_auth.Base64Encode();
 				
-				params["device_id"] = options["username"];
+				params["device_id"] = options["target"];
 				params["type"] = "note";
 				params["title"] = message_title;
 				params["body"] = message_content;
@@ -1061,7 +1061,7 @@ class CPushMod : public CModule
 						}
 						else if (value == "pushbullet")
 						{
-							PutModule("Note: Pushbullet requires setting both 'username' (to device id) and 'secret' (to api key) options");
+							PutModule("Note: Pushbullet requires setting both 'target' (to device id) and 'secret' (to api key) options");
 						}
 						else if (value == "boxcar")
 						{
