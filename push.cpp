@@ -76,13 +76,13 @@ class CPushMod : public CModule
 		CString app;
 
 		// Time last notification was sent for a given context
-        std::map <CString, unsigned int> last_notification_time;
+		std::map <CString, unsigned int> last_notification_time;
 
 		// Time of last message by user to a given context
-        std::map <CString, unsigned int> last_reply_time;
+		std::map <CString, unsigned int> last_reply_time;
 
 		// Time of last activity by user for a given context
-        std::map <CString, unsigned int> last_active_time;
+		std::map <CString, unsigned int> last_active_time;
 
 		// Time of last activity by user in any context
 		unsigned int idle_time;
@@ -129,7 +129,7 @@ class CPushMod : public CModule
 			defaults["nick_blacklist"] = "";
 			defaults["replied"] = "yes";
 
-            // Advanced
+			// Advanced
 			defaults["channel_conditions"] = "all";
 			defaults["query_conditions"] = "all";
 			defaults["debug"] = "off";
@@ -251,6 +251,26 @@ class CPushMod : public CModule
 				params["title"] = message_title;
 				params["uri"] = message_uri;
 			}
+			else if (service == "pushbullet")
+			{
+				if (options["target"] == "" || options["secret"] == "")
+				{
+					PutModule("Error: target (device id) or secret (api key) not set");
+					return;
+				}
+
+				service_host = "www.pushbullet.com";
+				service_url = "/api/pushes";
+
+				// BASIC auth, base64-encoded APIKey:
+				service_auth = options["secret"] + CString(":");
+				service_auth.Base64Encode();
+				
+				params["device_id"] = options["target"];
+				params["type"] = "note";
+				params["title"] = message_title;
+				params["body"] = message_content;
+			}
 			else if (service == "boxcar")
 			{
 				if (options["username"] == "")
@@ -310,20 +330,20 @@ class CPushMod : public CModule
 					params["url"] = message_uri;
 				}
 
-                if ( options["message_uri_title"] != "" )
-                {
-                    params["url_title"] = options["message_uri_title"];
-                }
+				if ( options["message_uri_title"] != "" )
+				{
+					params["url_title"] = options["message_uri_title"];
+				}
 
 				if (options["target"] != "")
 				{
 					params["device"] = options["target"];
 				}
 
-                if ( options["message_sound"] != "" )
-                {
-                    params["sound"] = options["message_sound"];
-                }
+				if ( options["message_sound"] != "" )
+				{
+					params["sound"] = options["message_sound"];
+				}
 
 				if (options["message_priority"] != "")
 				{
@@ -1038,6 +1058,10 @@ class CPushMod : public CModule
 						if (value == "notifo")
 						{
 							PutModule("Note: Notifo requires setting both 'username' and 'secret' options");
+						}
+						else if (value == "pushbullet")
+						{
+							PutModule("Note: Pushbullet requires setting both 'target' (to device id) and 'secret' (to api key) options");
 						}
 						else if (value == "boxcar")
 						{
