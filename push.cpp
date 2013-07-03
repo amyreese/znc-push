@@ -1220,7 +1220,7 @@ class CPushMod : public CModule
 				}
 				else
 				{
-					PutModule(option + CString(": \"") + options[option] + CString("\""));
+					PutModule(option + CString(": ") + options[option]);
 				}
 			}
 			// SAVE command
