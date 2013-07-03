@@ -19,6 +19,8 @@ for everyday usage.  Users are more than welcome to submit feature requests or p
 discussion or inclusion.  Bug reports and feature requests can be submitted to
 [the repository issues list][issues], or sent via email.
 
+[![Stories in Ready](http://badge.waffle.io/jreese/znc-push.png)](http://waffle.io/jreese/znc-push)
+
 For full functionality, this module requires ZNC version 0.090 or newer, but should compile
 and run with a reduced feature set on versions as old as 0.078, the current version used by
 Ubuntu.  However, development and testing is done exclusively against the latest source
