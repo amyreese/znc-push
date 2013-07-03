@@ -1,3 +1,4 @@
+[![Stories in Ready](http://badge.waffle.io/jreese/znc-push.png)](http://waffle.io/jreese/znc-push)  
 ZNC Push
 =============
 
