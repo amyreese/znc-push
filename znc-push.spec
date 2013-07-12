@@ -1,16 +1,16 @@
-Name:       znc-push
-Version:    20130708
-Release:    2%{?dist}
-Summary:    Push notifications module for ZNC
+Name:     znc-push
+Version:  20130708
+Release:  3%{?dist}
+Summary:  Push notifications module for ZNC
 
-Group:      System Environment/Daemons
-License:    MIT
-URL:        https://github.com/jreese/znc-push
-Source0:    %{name}-%{version}.tar.gz
+Group:    System Environment/Daemons
+License:  MIT
+URL:      https://github.com/jreese/znc-push
+Source0:  %{name}-%{version}.tar.gz
 BuildRoot:  %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:  gcc-c++, znc-devel >= 0.90
-Requires:   znc >= 0.90
+BuildRequires:  gcc-c++, znc-devel >= 1.0
+Requires:  znc >= 1.0
 
 %description
 Push notifications module for ZNC
@@ -42,6 +42,9 @@ rm -rf %{buildroot}
 %doc %{_defaultdocdir}/%{name}-%{version}/LICENSE
 
 %changelog
+* Sat Jul 13 2013 Rene Cunningham <rene@linuxfoundation.org> - 20130708-3
+- bumped znc requires to 1.0.
+
 * Mon Jul 08 2013 Rene Cunningham <rene@linuxfoundation.org> - 20130708-2
 - Removed use of Makefile.
 - Added README & LICENSE.
