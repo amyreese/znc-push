@@ -109,6 +109,7 @@ class CPushMod : public CModule
 			defaults["username"] = "";
 			defaults["secret"] = "";
 			defaults["target"] = "";
+			defaults["token"] = "";
 
 			// Notification settings
 			defaults["message_content"] = "{message}";
@@ -315,12 +316,16 @@ class CPushMod : public CModule
 					return;
 				}
 
-				CString pushover_api_token = "h6RToHDU7gNnB3IMyUb94SuwKtBzOD";
+				if (options["token"] == "")
+				{
+					PutModule("Error: application token not set");
+					return;
+				}
 
 				service_host = "api.pushover.net";
 				service_url = "/1/messages.json";
 
-				params["token"] = pushover_api_token;
+				params["token"] = options["token"];
 				params["user"] = options["secret"];
 				params["title"] = message_title;
 				params["message"] = message_content;
@@ -1073,7 +1078,7 @@ class CPushMod : public CModule
 						}
 						else if (value == "pushover")
 						{
-							PutModule("Note: Pushover requires setting the 'secret' option");
+							PutModule("Note: Pushover requires setting both 'secret' (user key) and 'token' (application) options");
 						}
 						else if (value == "prowl")
 						{
