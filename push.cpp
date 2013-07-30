@@ -309,19 +309,22 @@ class CPushMod : public CModule
 			}
 			else if (service == "pushover")
 			{
-				if (options["secret"] == "")
+				if (options["username"] == "")
 				{
-					PutModule("Error: secret (user key) not set");
+					PutModule("Error: username (user key) not set");
 					return;
 				}
-
-				CString pushover_api_token = "h6RToHDU7gNnB3IMyUb94SuwKtBzOD";
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (application token/key) not set");
+					return;
+				}
 
 				service_host = "api.pushover.net";
 				service_url = "/1/messages.json";
 
-				params["token"] = pushover_api_token;
-				params["user"] = options["secret"];
+				params["token"] = options["secret"];
+				params["user"] = options["username"];
 				params["title"] = message_title;
 				params["message"] = message_content;
 

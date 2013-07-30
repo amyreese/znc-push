@@ -200,7 +200,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar or Notifo.
+    This option must be set when using Boxcar, Pushover or Notifo.
 
 *   `secret = ""`
 
