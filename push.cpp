@@ -1076,7 +1076,7 @@ class CPushMod : public CModule
 						}
 						else if (value == "pushover")
 						{
-							PutModule("Note: Pushover requires setting the 'secret' option");
+							PutModule("Note: Pushover requires setting both the 'username' (to user key) and the 'secret' (to application api key) option");
 						}
 						else if (value == "prowl")
 						{
