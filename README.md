@@ -99,6 +99,10 @@ Commands
 
     Links you to this fine document.
 
+*   `version`
+
+    Tells you the tagged build version currently running.
+
 *   `set <option> <value>`
 
     Allows you to modify configuration values.

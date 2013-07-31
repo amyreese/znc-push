@@ -9,6 +9,7 @@
  */
 
 #define REQUIRESSL
+#define PUSHVERSION "dev"
 
 #include <znc/znc.h>
 #include <znc/Chan.h>
@@ -1424,6 +1425,11 @@ class CPushMod : public CModule
 			else if (action == "help")
 			{
 				PutModule("View the detailed documentation at https://github.com/jreese/znc-push/blob/master/README.md");
+			}
+			// VERSION command
+			else if (action == "version")
+			{
+				PutModule("znc-push " + CString(PUSHVERSION));
 			}
 			// EVAL command
 			else if (action == "eval")
