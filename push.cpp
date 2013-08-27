@@ -176,7 +176,7 @@ class CPushMod : public CModule
 		}
 
 		/**
-		 * Send a message to the currently-configured Notifo account.
+		 * Send a message to the currently-configured push service.
 		 * Requires (and assumes) that the user has already configured their
 		 * username and API secret using the 'set' command.
 		 *
@@ -231,28 +231,7 @@ class CPushMod : public CModule
 			MCString params;
 
 			// Service-specific profiles
-			if (service == "notifo")
-			{
-				if (options["username"] == "" || options["secret"] == "")
-				{
-					PutModule("Error: username or secret not set");
-					return;
-				}
-
-				service_host = "api.notifo.com";
-				service_url = "/v1/send_notification";
-
-				// BASIC auth, base64-encoded username:password
-				service_auth = options["username"] + CString(":") + options["secret"];
-				service_auth.Base64Encode();
-
-				params["to"] = options["username"];
-				params["msg"] = message_content;
-				params["label"] = app;
-				params["title"] = message_title;
-				params["uri"] = message_uri;
-			}
-			else if (service == "pushbullet")
+			if (service == "pushbullet")
 			{
 				if (options["target"] == "" || options["secret"] == "")
 				{
@@ -1059,11 +1038,7 @@ class CPushMod : public CModule
 					{
 						value.MakeLower();
 
-						if (value == "notifo")
-						{
-							PutModule("Note: Notifo requires setting both 'username' and 'secret' options");
-						}
-						else if (value == "pushbullet")
+						if (value == "pushbullet")
 						{
 							PutModule("Note: Pushbullet requires setting both 'target' (to device id) and 'secret' (to api key) options");
 						}

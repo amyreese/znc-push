@@ -6,7 +6,6 @@ services for any private message or channel highlight that matches a configurabl
 conditions.  ZNC Push current supports the following services:
 
 * [Boxcar][]
-* [Notifo][]
 * [Notify My Android][] (NMA)
 * [Pushover][]
 * [Prowl][]
@@ -66,7 +65,7 @@ Then select the push service you want to use, and set your username and secret a
 The secret is not your password, and can be obtained by logging into the service's website
 and looking in your profile or settings:
 
-    /msg *push set service notifo
+    /msg *push set service pushover
     /msg *push set username foo
 	/msg *push set secret ...
 
@@ -78,18 +77,6 @@ to your account, before ZNC Push can start working:
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
-
-
-Migrating From Notifo
----------------------
-
-Before uninstalling the old Notifo module, save your settings to a file.  When you have the
-new Push module installed, you can then load those settings back in, rather than needing
-to set your configuration all over again:
-
-    /msg *notifo save /tmp/znc_notifo
-    /msg *push load /tmp/znc_notifo
-    /msg *push set service notifo
 
 
 Commands
@@ -192,7 +179,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     Possible values include:
 
     *   "boxcar"
-    *   "notifo"
     *   "nma"
     *   "pushover"
     *   "prowl"
@@ -204,13 +190,13 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar, Pushover or Notifo.
+    This option must be set when using Boxcar or Pushover.
 
 *   `secret = ""`
 
     Authentication token for push notifications.
 
-    This option must be set when using Notifo, Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
+    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
 
 *   `target = ""`
 
@@ -395,7 +381,6 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 
 
 [Boxcar]: http://boxcar.io
-[Notifo]: http://notifo.com
 [Notify My Android]: http://www.notifymyandroid.com
 [Pushover]: http://pushover.net
 [Prowl]: http://www.prowlapp.com
