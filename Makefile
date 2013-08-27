@@ -1,4 +1,4 @@
-version := $(shell git describe)
+version := $(shell git describe --dirty)
 
 push.so: push.cpp
 	sed -i -e "s|PUSHVERSION \".*\"|PUSHVERSION \"$(version)\"|" push.cpp
