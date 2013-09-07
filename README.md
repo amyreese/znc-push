@@ -78,6 +78,7 @@ At this point, it should start sending notifications every time you get a privat
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
 
+**Here is the [documenation](pushover.md) specifically for [Pushover][] after you install the module.**
 
 Commands
 --------
