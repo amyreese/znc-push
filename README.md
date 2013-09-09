@@ -1,5 +1,5 @@
 ZNC Push
-=============
+========
 
 ZNC Push is a module for [ZNC][] that will send notifications to multiple push notification
 services for any private message or channel highlight that matches a configurable set of
@@ -78,7 +78,11 @@ At this point, it should start sending notifications every time you get a privat
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
 
-**Here is the [documenation](pushover.md) specifically for [Pushover][] after you install the module.**
+For further, detailed instructions specific to each push notification service, the following
+documentation is available:
+
+*   [Pushover](doc/pushover.md)
+
 
 Commands
 --------
