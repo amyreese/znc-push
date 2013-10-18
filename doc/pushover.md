@@ -32,7 +32,7 @@ Configure push module
 
 Following these steps in your IRC client that is connected to your bouncer:
 
-* set secret to the **API Token/Key**: <code>/msg *push set secrete your-api-token-key</code>
+* set secret to the **API Token/Key**: <code>/msg *push set secret your-api-token-key</code>
 * set service to 'pushover': <code>/msg *push set service pushover</code>
 * set target to your device name: <code>/msg *push set target iphone4</code>
 * set username to your **user key**: <code>/msg *push set username your-user-key</code>
