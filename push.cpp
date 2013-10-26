@@ -77,16 +77,16 @@ class CPushMod : public CModule
 		CString app;
 
 		// Time last notification was sent for a given context
-		std::map <CString, unsigned int> last_notification_time;
+		std::map <CString, time_t> last_notification_time;
 
 		// Time of last message by user to a given context
-		std::map <CString, unsigned int> last_reply_time;
+		std::map <CString, time_t> last_reply_time;
 
 		// Time of last activity by user for a given context
-		std::map <CString, unsigned int> last_active_time;
+		std::map <CString, time_t> last_active_time;
 
 		// Time of last activity by user in any context
-		unsigned int idle_time;
+		time_t idle_time;
 
 		// User object
 		CUser *user;
@@ -378,7 +378,7 @@ class CPushMod : public CModule
 					return;
 				}
 
-				int count;
+				CString::size_type count;
 				VCString parts;
 				CString url = options["message_uri"];
 
@@ -587,7 +587,7 @@ class CPushMod : public CModule
 		 *
 		 * @return Number of connected clients
 		 */
-		unsigned int client_count()
+		size_t client_count()
 		{
 			return GetNetwork()->GetClients().size();
 		}
@@ -668,7 +668,7 @@ class CPushMod : public CModule
 		bool idle()
 		{
 			unsigned int value = options["idle"].ToUInt();
-			unsigned int now = time(NULL);
+			time_t now = time(NULL);
 			return value == 0
 				|| idle_time + value < now;
 		}
@@ -682,7 +682,7 @@ class CPushMod : public CModule
 		bool last_active(const CString& context)
 		{
 			unsigned int value = options["last_active"].ToUInt();
-			unsigned int now = time(NULL);
+			time_t now = time(NULL);
 			return value == 0
 				|| last_active_time.count(context) < 1
 				|| last_active_time[context] + value < now;
@@ -697,7 +697,7 @@ class CPushMod : public CModule
 		bool last_notification(const CString& context)
 		{
 			unsigned int value = options["last_notification"].ToUInt();
-			unsigned int now = time(NULL);
+			time_t now = time(NULL);
 			return value == 0
 				|| last_notification_time.count(context) < 1
 				|| last_notification_time[context] + value < now;
@@ -997,7 +997,7 @@ class CPushMod : public CModule
 		void OnModCommand(const CString& command)
 		{
 			VCString tokens;
-			int token_count = command.Split(" ", tokens, false);
+			CString::size_type token_count = command.Split(" ", tokens, false);
 
 			if (token_count < 1)
 			{
@@ -1302,8 +1302,8 @@ class CPushMod : public CModule
 				table.SetCell("Condition", "client_count");
 				table.SetCell("Status", CString(client_count()));
 
-				unsigned int now = time(NULL);
-				unsigned int ago = now - idle_time;
+				time_t now = time(NULL);
+				time_t ago = now - idle_time;
 
 				table.AddRow();
 				table.SetCell("Condition", "idle");
