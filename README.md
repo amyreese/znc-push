@@ -50,6 +50,16 @@ Otherwise, run the full command:
     $ znc-buildmod push.cpp
 
 
+### Advanced
+
+If you would like to compile ZNC Push using libcurl for http requests, you must use:
+
+    $ make curl=yes
+
+If libcurl is not in the default system library paths, you will need to populate `$CXXFLAGS`
+with the appropriate GCC flags so that it can find and link ZNC Push with libcurl.
+
+
 Installation
 ------------
 

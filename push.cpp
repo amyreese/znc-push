@@ -21,9 +21,25 @@
 #include "time.h"
 #include <string.h>
 
+#ifdef USE_CURL
+#include <curl/curl.h>
+#endif // USE_CURL
+
 // Forward declaration
 class CPushMod;
 
+/**
+ * Shorthand for encoding a string for a URL.
+ *
+ * @param str String to be encoded
+ * @return Encoded string
+ */
+CString urlencode(const CString& str)
+{
+	return str.Escape_n(CString::EASCII, CString::EURL);
+}
+
+#ifndef USE_CURL
 /**
  * Socket class for generating HTTP requests.
  */
@@ -54,17 +70,13 @@ class CPushSocket : public CSocket
 		// User agent to use
 		CString user_agent;
 
-		/**
-		 * Shorthand for encoding a string for a URL.
-		 *
-		 * @param str String to be encoded
-		 * @return Encoded string
-		 */
-		CString urlencode(const CString& str)
-		{
-			return str.Escape_n(CString::EASCII, CString::EURL);
-		}
 };
+#else
+// forward declaration
+CURLcode make_curl_request(const CString& service_host, const CString& service_url,
+						   const CString& service_auth, MCString& params, int port,
+						   bool use_ssl, bool use_post);
+#endif // USE_CURL
 
 /**
  * Push notification module.
@@ -98,6 +110,10 @@ class CPushMod : public CModule
 	public:
 
 		MODCONSTRUCTOR(CPushMod) {
+#ifdef USE_CURL
+			curl_global_init(CURL_GLOBAL_DEFAULT);
+#endif
+
 			app = "ZNC";
 
 			idle_time = time(NULL);
@@ -135,7 +151,12 @@ class CPushMod : public CModule
 			defaults["query_conditions"] = "all";
 			defaults["debug"] = "off";
 		}
-		virtual ~CPushMod() {}
+
+		virtual ~CPushMod() {
+#ifdef USE_CURL
+			curl_global_cleanup();
+#endif
+		}
 
 	public:
 
@@ -441,11 +462,15 @@ class CPushMod : public CModule
 				return;
 			}
 
+#ifdef USE_CURL
+			make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post);
+#else
 			// Create the socket connection, write to it, and add it to the queue
 			CPushSocket *sock = new CPushSocket(this);
 			sock->Connect(service_host, use_port, use_ssl);
 			sock->Request(use_post, service_host, service_url, params, service_auth);
 			AddSocket(sock);
+#endif
 		}
 
 		/**
@@ -1380,11 +1405,15 @@ class CPushMod : public CModule
 					return;
 				}
 
+#ifdef USE_CURL
+				make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post);
+#else
 				// Create the socket connection, write to it, and add it to the queue
 				CPushSocket *sock = new CPushSocket(this);
 				sock->Connect(service_host, use_port, use_ssl);
 				sock->Request(use_post, service_host, service_url, params, service_auth);
 				AddSocket(sock);
+#endif
 
 				PutModule("Ok");
 			}
@@ -1420,24 +1449,18 @@ class CPushMod : public CModule
 };
 
 /**
- * Send an HTTP request.
+ * Build a query string from a dictionary of request parameters.
  *
- * @param post POST command
- * @param host Host domain
- * @param url Resource path
- * @param parameters Query parameters
- * @param auth Basic authentication string
+ * @param params Request parameters
+ * @return query string
  */
-void CPushSocket::Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth)
+CString build_query_string(MCString& params)
 {
-	parent->PutDebug("Building notification to " + host + url + "...");
-
-	// query string for the request
 	bool more = false;
 	CString query;
 	CString key;
 	CString value;
-	for (MCString::iterator param = parameters.begin(); param != parameters.end(); param++)
+	for (MCString::iterator param = params.begin(); param != params.end(); param++)
 	{
 		key = urlencode(param->first);
 		value = urlencode(param->second);
@@ -1452,6 +1475,74 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 			more = true;
 		}
 	}
+
+	return query;
+}
+
+#ifdef USE_CURL
+/**
+ * Send an HTTP request using libcurl.
+ *
+ * @param service_host Host domain
+ * @param service_url Host path
+ * @param service_auth Basic auth string
+ * @param params Request parameters
+ * @param port Port number
+ * @param use_ssl Use SSL
+ * @param use_post Use POST method
+ */
+CURLcode make_curl_request(const CString& service_host, const CString& service_url,
+						   const CString& service_auth, MCString& params, int port,
+						   bool use_ssl, bool use_post)
+{
+	CURL *curl;
+	CURLcode result;
+
+	curl = curl_easy_init();
+
+	CString url = CString(use_ssl ? "https" : "http") + "://" + service_host + service_url;
+	CString query = build_query_string(params);
+
+	curl_easy_setopt(curl, CURLOPT_URL, url.data());
+	curl_easy_setopt(curl, CURLOPT_PORT, port);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "ZNC Push");
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3); // three seconds ought to be good enough for anyone, eh?
+
+	if (service_auth != "")
+	{
+		curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_easy_setopt(curl, CURLOPT_USERPWD, service_auth.data());
+	}
+
+	if (use_post)
+	{
+		curl_easy_setopt(curl, CURLOPT_POST, 1);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, query.data());
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, query.length());
+	}
+
+	result = curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+
+	return result;
+}
+
+#else
+
+/**
+ * Send an HTTP request.
+ *
+ * @param post POST command
+ * @param host Host domain
+ * @param url Resource path
+ * @param parameters Query parameters
+ * @param auth Basic authentication string
+ */
+void CPushSocket::Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth)
+{
+	parent->PutDebug("Building notification to " + host + url + "...");
+
+	CString query = build_query_string(parameters);
 
 	parent->PutDebug("Query string: " + query);
 
@@ -1514,5 +1605,6 @@ void CPushSocket::Disconnected()
 	parent->PutDebug("Disconnected.");
 	Close(CSocket::CLT_AFTERWRITE);
 }
+#endif // USE_CURL
 
 MODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")
