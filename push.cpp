@@ -75,7 +75,7 @@ class CPushSocket : public CSocket
 // forward declaration
 CURLcode make_curl_request(const CString& service_host, const CString& service_url,
 						   const CString& service_auth, MCString& params, int port,
-						   bool use_ssl, bool use_post);
+						   bool use_ssl, bool use_post, bool debug);
 #endif // USE_CURL
 
 /**
@@ -463,7 +463,7 @@ class CPushMod : public CModule
 			}
 
 #ifdef USE_CURL
-			make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post);
+			make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["debug"] == "on");
 #else
 			// Create the socket connection, write to it, and add it to the queue
 			CPushSocket *sock = new CPushSocket(this);
@@ -1406,7 +1406,7 @@ class CPushMod : public CModule
 				}
 
 #ifdef USE_CURL
-				make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post);
+				make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["debug"] == "on");
 #else
 				// Create the socket connection, write to it, and add it to the queue
 				CPushSocket *sock = new CPushSocket(this);
@@ -1493,7 +1493,7 @@ CString build_query_string(MCString& params)
  */
 CURLcode make_curl_request(const CString& service_host, const CString& service_url,
 						   const CString& service_auth, MCString& params, int port,
-						   bool use_ssl, bool use_post)
+						   bool use_ssl, bool use_post, bool debug)
 {
 	CURL *curl;
 	CURLcode result;
@@ -1502,6 +1502,11 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 
 	CString url = CString(use_ssl ? "https" : "http") + "://" + service_host + service_url;
 	CString query = build_query_string(params);
+
+	if (debug)
+	{
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+	}
 
 	curl_easy_setopt(curl, CURLOPT_URL, url.data());
 	curl_easy_setopt(curl, CURLOPT_PORT, port);
