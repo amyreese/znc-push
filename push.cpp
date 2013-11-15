@@ -260,7 +260,7 @@ class CPushMod : public CModule
 					return;
 				}
 
-				service_host = "www.pushbullet.com";
+				service_host = "api.pushbullet.com";
 				service_url = "/api/pushes";
 
 				// BASIC auth, base64-encoded APIKey:
