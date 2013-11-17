@@ -52,7 +52,7 @@ class CPushSocket : public CSocket
 			parent = (CPushMod*) p;
 			first = true;
 			crlf = "\r\n";
-			user_agent = "ZNC Push";
+			user_agent = "ZNC Push/" + CString(PUSHVERSION);
 		}
 
 		// Implemented after CPushMod
@@ -1500,6 +1500,8 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 
 	curl = curl_easy_init();
 
+	CString user_agent = "ZNC Push/" + CString(PUSHVERSION);
+
 	CString url = CString(use_ssl ? "https" : "http") + "://" + service_host + service_url;
 	CString query = build_query_string(params);
 
@@ -1508,9 +1510,12 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
 	}
 
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+
 	curl_easy_setopt(curl, CURLOPT_URL, url.data());
 	curl_easy_setopt(curl, CURLOPT_PORT, port);
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, "ZNC Push");
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent.c_str());
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 3); // three seconds ought to be good enough for anyone, eh?
 
 	if (service_auth != "")
