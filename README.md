@@ -31,15 +31,25 @@ ZNC Push was created by [John Reese](http://johnmreese.com) and designed to fill
 personal need.  It may not fit your use cases, but any and all feedback would be greatly
 appreciated.
 
-
-Compiling
----------
+Dependencies
+------------
 
 If you have installed ZNC from a Linux distribution's repository, you will most likely
-need to install the development package before building this module.  On Ubuntu, this can
+need to install the development package before building this module. On Ubuntu, this can
 be installed with:
 
     $ sudo aptitude install znc-dev
+
+Optionally, if you want to use libcurl for http requests, you also need to install cURL
+development header files.
+
+On Ubuntu, development headers can be installed by installing `libcurl3-dev` or
+`libcurl4-openssl-dev` package:
+
+    $ sudo aptitude install libcurl4-openssl-dev
+
+Compiling
+---------
 
 If you have `make` installed, you can compile the module with:
 
@@ -59,13 +69,16 @@ If you would like to compile ZNC Push using libcurl for http requests, you must 
 If libcurl is not in the default system library paths, you will need to populate `$CXXFLAGS`
 with the appropriate GCC flags so that it can find and link ZNC Push with libcurl.
 
+Note: You are strongly encouraged to use libcurl transport. The reason for that is, that
+the default CSocket transport doesn't verify server's SSL certificate which leaves you
+vulnerable to MITM attacks.
 
 Installation
 ------------
 
 Copy the compiled module into your ZNC profile:
 
-    $ cp push.so ~/.znc/modules/
+    $ make install
 
 Now, load the module in ZNC:
 
