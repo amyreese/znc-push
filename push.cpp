@@ -456,6 +456,37 @@ class CPushMod : public CModule
 					i->second = expand(i->second, replace);
 				}
 			}
+			else if (service == "im.kayac")
+			{
+        use_post = true;
+				use_port = 80;
+				use_ssl = false;
+
+				if (options["username"] == "")
+				{
+					PutModule("Error: username (user key) not set");
+					return;
+				}
+
+				service_host = "im.kayac.com";
+				service_url = "/api/post/" + options["username"];
+
+				params["title"] = message_title;
+				params["message"] = message_content;
+
+				if (options["sig"] != "")
+				{
+					params["sig"] = options["sig"];
+				}
+				if (options["password"] != "")
+				{
+					params["password"] = options["password"];
+				}
+				if (options["handler"] != "")
+				{
+					params["handler"] = options["handler"];
+				}
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -1090,6 +1121,10 @@ class CPushMod : public CModule
 						else if (value == "url")
 						{
 							PutModule("Note: URL requires setting the 'message_uri' option with the full URL");
+						}
+						else if (value == "im.kayac")
+						{
+							PutModule("Note: im.kayac requires setting the 'username' option with the full URL");
 						}
 						else
 						{
