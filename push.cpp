@@ -688,13 +688,13 @@ class CPushMod : public CModule
 		/**
 		 * Check if the idle condition is met.
 		 *
-		 * @return True if idle is zero or elapsed time is greater than idle
+		 * @return True if idle is less than or equal to zero or elapsed time is greater than idle
 		 */
 		bool idle()
 		{
-			unsigned int value = options["idle"].ToUInt();
+			int value = options["idle"].ToInt();
 			time_t now = time(NULL);
-			return value == 0
+			return value <= 0
 				|| idle_time + value < now;
 		}
 
@@ -702,13 +702,13 @@ class CPushMod : public CModule
 		 * Check if the last_active condition is met.
 		 *
 		 * @param context Channel or nick context
-		 * @return True if last_active is zero or elapsed time is greater than last_active
+		 * @return True if last_active is less than or equal to zero or elapsed time is greater than last_active
 		 */
 		bool last_active(const CString& context)
 		{
-			unsigned int value = options["last_active"].ToUInt();
+			int value = options["last_active"].ToInt();
 			time_t now = time(NULL);
-			return value == 0
+			return value <= 0
 				|| last_active_time.count(context) < 1
 				|| last_active_time[context] + value < now;
 		}
@@ -717,13 +717,13 @@ class CPushMod : public CModule
 		 * Check if the last_notification condition is met.
 		 *
 		 * @param context Channel or nick context
-		 * @return True if last_notification is zero or elapsed time is greater than last_nofication
+		 * @return True if last_notification is less than or equal to zero or elapsed time is greater than last_nofication
 		 */
 		bool last_notification(const CString& context)
 		{
-			unsigned int value = options["last_notification"].ToUInt();
+			int value = options["last_notification"].ToInt();
 			time_t now = time(NULL);
-			return value == 0
+			return value <= 0
 				|| last_notification_time.count(context) < 1
 				|| last_notification_time[context] + value < now;
 		}
