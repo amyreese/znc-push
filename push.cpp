@@ -474,17 +474,13 @@ class CPushMod : public CModule
 				params["title"] = message_title;
 				params["message"] = message_content;
 
-				if (options["sig"] != "")
+				if (options["secret"] != "")
 				{
-					params["sig"] = options["sig"];
+					params["password"] = options["secret"];
 				}
-				if (options["password"] != "")
+				if (options["message_uri"] != "")
 				{
-					params["password"] = options["password"];
-				}
-				if (options["handler"] != "")
-				{
-					params["handler"] = options["handler"];
+					params["handler"] = options["message_uri"];
 				}
 			}
 			else
