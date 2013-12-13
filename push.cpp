@@ -688,21 +688,20 @@ class CPushMod : public CModule
 		/**
 		 * Check if the idle condition is met.
 		 *
-		 * @return True if idle is zero or elapsed time is greater than idle
+		 * @return True if idle is less than or equal to zero or elapsed time is greater than idle
 		 */
 		bool idle()
 		{
 			unsigned int value = options["idle"].ToUInt();
 			time_t now = time(NULL);
-			return value == 0
-				|| idle_time + value < now;
+			return value == 0 || difftime(now, idle_time) >= value;
 		}
 
 		/**
 		 * Check if the last_active condition is met.
 		 *
 		 * @param context Channel or nick context
-		 * @return True if last_active is zero or elapsed time is greater than last_active
+		 * @return True if last_active is less than or equal to zero or elapsed time is greater than last_active
 		 */
 		bool last_active(const CString& context)
 		{
@@ -710,14 +709,14 @@ class CPushMod : public CModule
 			time_t now = time(NULL);
 			return value == 0
 				|| last_active_time.count(context) < 1
-				|| last_active_time[context] + value < now;
+				|| difftime(now, last_active_time[context]) >= value;
 		}
 
 		/**
 		 * Check if the last_notification condition is met.
 		 *
 		 * @param context Channel or nick context
-		 * @return True if last_notification is zero or elapsed time is greater than last_nofication
+		 * @return True if last_notification is less than or equal to zero or elapsed time is greater than last_nofication
 		 */
 		bool last_notification(const CString& context)
 		{
@@ -725,7 +724,7 @@ class CPushMod : public CModule
 			time_t now = time(NULL);
 			return value == 0
 				|| last_notification_time.count(context) < 1
-				|| last_notification_time[context] + value < now;
+				|| difftime(now, last_notification_time[context]) >= value;
 		}
 
 		/**
