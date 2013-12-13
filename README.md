@@ -11,6 +11,7 @@ conditions.  ZNC Push current supports the following services:
 * [Prowl][]
 * [Supertoasty][]
 * [PushBullet][]
+* [im.kayac][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
@@ -191,6 +192,7 @@ The following keywords will be replaced with the appropriate value:
 *   `{message}`: the shortened message contents
 *   `{username}`: the configured username string
 *   `{secret}`: the configured secret string
+*   `{password}`: the configured password string
 
 As an example, a value of "http://domain/{context}/{datetime}" would be expanded
 to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
@@ -212,6 +214,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   "prowl"
     *   "supertoasty"
     *   "pushbullet"
+    *   "im.kayac"
     *   "url"
 
 *   `username = ""`
@@ -225,6 +228,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     Authentication token for push notifications.
 
     This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
+
+    This option can be set when using Notify im.kayac. (optional)
 
 *   `target = ""`
 
@@ -414,6 +419,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Prowl]: http://www.prowlapp.com
 [Supertoasty]: http://www.supertoasty.com
 [PushBullet]: https://www.pushbullet.com/
+[im.kayac]: http://im.kayac.com/
 
 [issues]: http://github.com/jreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
