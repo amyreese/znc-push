@@ -692,10 +692,9 @@ class CPushMod : public CModule
 		 */
 		bool idle()
 		{
-			int value = options["idle"].ToInt();
+			unsigned int value = options["idle"].ToUInt();
 			time_t now = time(NULL);
-			return value <= 0
-				|| idle_time + value < now;
+			return value == 0 || difftime(now, idle_time) >= value;
 		}
 
 		/**
@@ -706,11 +705,11 @@ class CPushMod : public CModule
 		 */
 		bool last_active(const CString& context)
 		{
-			int value = options["last_active"].ToInt();
+			unsigned int value = options["last_active"].ToUInt();
 			time_t now = time(NULL);
-			return value <= 0
+			return value == 0
 				|| last_active_time.count(context) < 1
-				|| last_active_time[context] + value < now;
+				|| difftime(now, last_active_time[context]) >= value;
 		}
 
 		/**
@@ -721,11 +720,11 @@ class CPushMod : public CModule
 		 */
 		bool last_notification(const CString& context)
 		{
-			int value = options["last_notification"].ToInt();
+			unsigned int value = options["last_notification"].ToUInt();
 			time_t now = time(NULL);
-			return value <= 0
+			return value == 0
 				|| last_notification_time.count(context) < 1
-				|| last_notification_time[context] + value < now;
+				|| difftime(now, last_notification_time[context]) >= value;
 		}
 
 		/**
