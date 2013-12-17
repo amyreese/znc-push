@@ -640,6 +640,7 @@ class CPushMod : public CModule
 
 			VCString values;
 			options["highlight"].Split(" ", values, false);
+			values.push_back("%nick%");
 
 			for (VCString::iterator i = values.begin(); i != values.end(); i++)
 			{
@@ -673,13 +674,6 @@ class CPushMod : public CModule
 				{
 					return push;
 				}
-			}
-
-			CNick nick = user->GetNick();
-
-			if (message.find(nick.GetNick()) != std::string::npos)
-			{
-				return true;
 			}
 
 			return false;
