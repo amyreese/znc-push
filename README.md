@@ -96,6 +96,13 @@ If you're using Boxcar, you need to use the following command to send a subscrip
 to your account, before ZNC Push can start working:
 
     /msg *push subscribe
+    
+If you're using Pushbullet, you need to set the following settings. You can retrieve the needed
+keys from https://www.pushbullet.com/api. 
+
+    /msg *push set service pushbullet
+    /msg *push set secret <your api key>
+    /msg *push set target <your device id>
 
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
