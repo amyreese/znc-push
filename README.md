@@ -235,7 +235,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
 
-    This option must be set when using PushBullet and Airgram.
+    This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL. 
 
 ### Notifications
 
