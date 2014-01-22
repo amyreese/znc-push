@@ -475,6 +475,20 @@ class CPushMod : public CModule
 					i->second = expand(i->second, replace);
 				}
 			}
+			else if (service == "airgram")
+			{
+				if (options["target"] == "")
+				{
+					PutModule("Error: target (email) not set");
+					return;
+				}
+
+				service_host = "api.airgramapp.com";
+				service_url = "/1/send_as_guest";
+
+				params["email"] = options["target"];
+				params["msg"] = message_content;
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -1102,6 +1116,10 @@ class CPushMod : public CModule
 						else if (value == "url")
 						{
 							PutModule("Note: URL requires setting the 'message_uri' option with the full URL");
+						}						
+						else if (value == "airgram")
+						{
+							PutModule("Note: Airgram requires setting the 'target' with the email address of the recipient");
 						}
 						else
 						{
