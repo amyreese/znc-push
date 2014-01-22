@@ -197,6 +197,18 @@ class CPushMod : public CModule
 		}
 
 		/**
+		 * Verifies whether a given string contains only numbers.
+		 *
+		 * @param content String to verify
+		 */
+		bool is_number(const CString& content)
+		{
+			CString::const_iterator it = content.begin();
+			while(it != content.end() && std::isdigit(*it)) ++it;
+			return !content.empty() && it == content.end();
+		}
+
+		/**
 		 * Send a message to the currently-configured push service.
 		 * Requires (and assumes) that the user has already configured their
 		 * username and API secret using the 'set' command.
@@ -267,7 +279,14 @@ class CPushMod : public CModule
 				service_auth = options["secret"] + CString(":");
 				service_auth.Base64Encode();
 				
-				params["device_id"] = options["target"];
+				// Pushbullet uses numeric device_id but they
+				// are transitioning to an alphanumeric device_iden
+				if (is_number(options["target"]))
+				{
+					params["device_id"] = options["target"];
+				} else {
+					params["device_iden"] = options["target"];
+				}
 				params["type"] = "note";
 				params["title"] = message_title;
 				params["body"] = message_content;
