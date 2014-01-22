@@ -11,6 +11,7 @@ conditions.  ZNC Push current supports the following services:
 * [Prowl][]
 * [Supertoasty][]
 * [PushBullet][]
+* [Airgram][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
@@ -212,6 +213,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   "prowl"
     *   "supertoasty"
     *   "pushbullet"
+    *   "airgram"
     *   "url"
 
 *   `username = ""`
@@ -233,7 +235,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
 
-    This option must be set when using PushBullet.
+    This option must be set when using PushBullet and Airgram.
 
 ### Notifications
 
@@ -414,6 +416,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Prowl]: http://www.prowlapp.com
 [Supertoasty]: http://www.supertoasty.com
 [PushBullet]: https://www.pushbullet.com/
+[Airgram]: http://airgramapp.com/
 
 [issues]: http://github.com/jreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
