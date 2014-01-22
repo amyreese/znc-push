@@ -279,7 +279,7 @@ class CPushMod : public CModule
 				service_auth = options["secret"] + CString(":");
 				service_auth.Base64Encode();
 				
-				// Pushbullet uses number device_id but they
+				// Pushbullet uses numeric device_id but they
 				// are transitioning to an alphanumeric device_iden
 				if (is_number(options["target"]))
 				{
