@@ -277,7 +277,6 @@ class CPushMod : public CModule
 
 				// BASIC auth, base64-encoded APIKey:
 				service_auth = options["secret"] + CString(":");
-				service_auth.Base64Encode();
 				
 				// Pushbullet uses numeric device_id but they
 				// are transitioning to an alphanumeric device_iden
