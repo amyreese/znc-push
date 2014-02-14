@@ -431,6 +431,10 @@ class CPushMod : public CModule
 				{
 					params["notification[sound]"] = options["message_sound"];
 				}
+                if ( options["message_uri"] != "" )
+                {
+                    params["notification[run_command]"] = options["message_uri"];
+                }
 			}		
             else if (service == "url")
 			{
