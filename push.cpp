@@ -502,7 +502,6 @@ class CPushMod : public CModule
             PutDebug("use_port: " + CString(use_port));
             PutDebug("use_ssl: " + CString(use_ssl ? 1 : 0));
             PutDebug("use_post: " + CString(use_post ? 1 : 0));
-            //PutDebug("X: " + X);
 
 #ifdef USE_CURL
             PutDebug("using libcurl");
