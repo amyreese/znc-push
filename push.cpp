@@ -317,6 +317,10 @@ class CPushMod : public CModule
 					PutModule("Error: secret not set");
 					return;
 				}
+				if (options["message_priority"] != "")
+				{
+					params["priority"] = options["message_priority"];
+				}
 
 				service_host = "www.notifymyandroid.com";
 				service_url = "/publicapi/notify";
