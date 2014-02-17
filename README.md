@@ -272,7 +272,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_priority = ""`
 
     Priority level that will be used for the push notification.
-    Currently supported only by Pushover.net.
+    Currently supported only by Pushover.net and Notify My Android.
 
 *   `message_sound = ""`
 
