@@ -407,10 +407,36 @@ class CPushMod : public CModule
 
 				params["title"] = message_title;
 				params["text"] = message_content;
-				params["image"] = "https://github.com/jreese/znc-push/raw/supertoasty/logo.png";
+				params["image"] = "https://raw2.github.com/jreese/znc-push/master/logo.png";
 				params["sender"] = "ZNC Push";
 			}
-			else if (service == "url")
+	        else if (service == "faast")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret not set to apikey");
+					return;
+				}
+
+				service_host = "www.appnotifications.com";
+				service_url = "/account/notifications.json";
+
+				params["user_credentials"] = options["secret"];
+                params["notification[title]"] = message_title;
+				params["notification[subtitle]"] = context;
+				params["notification[message]"] = message_content;
+				params["notification[long_message]"] = message_content;
+				params["notification[icon_url]"] = "https://raw2.github.com/jreese/znc-push/master/logo.png";
+				if ( options["message_sound"] != "" )
+				{
+					params["notification[sound]"] = options["message_sound"];
+				}
+                if ( options["message_uri"] != "" )
+                {
+                    params["notification[run_command]"] = options["message_uri"];
+                }
+			}		
+            else if (service == "url")
 			{
 				if (options["message_uri"] == "")
 				{
@@ -1121,6 +1147,11 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Airgram requires setting the 'target' with the email address of the recipient");
 						}
+                        else if (value == "faast")
+                        {
+                            PutModule("Note: Faast requires setting the secret to your apikey");
+                        }
+                            
 						else
 						{
 							PutModule("Error: unknown service name");

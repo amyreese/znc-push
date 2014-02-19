@@ -12,6 +12,7 @@ conditions.  ZNC Push current supports the following services:
 * [Supertoasty][]
 * [PushBullet][]
 * [Airgram][]
+* [Faast][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
@@ -417,6 +418,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Supertoasty]: http://www.supertoasty.com
 [PushBullet]: https://www.pushbullet.com/
 [Airgram]: http://airgramapp.com/
+[Faast]: http://faast.io/
 
 [issues]: http://github.com/jreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
