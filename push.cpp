@@ -278,7 +278,7 @@ class CPushMod : public CModule
 				// BASIC auth, base64-encoded APIKey:
 				service_auth = options["secret"] + CString(":");
 				service_auth.Base64Encode();
-				
+
 				// Pushbullet uses numeric device_id but they
 				// are transitioning to an alphanumeric device_iden
 				if (is_number(options["target"]))
@@ -410,7 +410,7 @@ class CPushMod : public CModule
 				params["image"] = "https://raw2.github.com/jreese/znc-push/master/logo.png";
 				params["sender"] = "ZNC Push";
 			}
-	        else if (service == "faast")
+			else if (service == "faast")
 			{
 				if (options["secret"] == "")
 				{
@@ -422,7 +422,7 @@ class CPushMod : public CModule
 				service_url = "/account/notifications.json";
 
 				params["user_credentials"] = options["secret"];
-                params["notification[title]"] = message_title;
+				params["notification[title]"] = message_title;
 				params["notification[subtitle]"] = context;
 				params["notification[message]"] = message_content;
 				params["notification[long_message]"] = message_content;
@@ -431,12 +431,12 @@ class CPushMod : public CModule
 				{
 					params["notification[sound]"] = options["message_sound"];
 				}
-                if ( options["message_uri"] != "" )
-                {
-                    params["notification[run_command]"] = options["message_uri"];
-                }
-			}		
-            else if (service == "url")
+				if ( options["message_uri"] != "" )
+				{
+					params["notification[run_command]"] = options["message_uri"];
+				}
+			}
+			else if (service == "url")
 			{
 				if (options["message_uri"] == "")
 				{
@@ -1142,16 +1142,15 @@ class CPushMod : public CModule
 						else if (value == "url")
 						{
 							PutModule("Note: URL requires setting the 'message_uri' option with the full URL");
-						}						
+						}
 						else if (value == "airgram")
 						{
 							PutModule("Note: Airgram requires setting the 'target' with the email address of the recipient");
 						}
-                        else if (value == "faast")
-                        {
-                            PutModule("Note: Faast requires setting the secret to your apikey");
-                        }
-                            
+						else if (value == "faast")
+						{
+							PutModule("Note: Faast requires setting the secret to your apikey");
+						}
 						else
 						{
 							PutModule("Error: unknown service name");
