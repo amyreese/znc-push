@@ -525,9 +525,19 @@ class CPushMod : public CModule
 				return;
 			}
 
+            PutDebug("service: " + service);
+            PutDebug("service_host: " + service_host);
+            PutDebug("service_url: " + service_url);
+            PutDebug("service_auth: " + service_auth);
+            PutDebug("use_port: " + CString(use_port));
+            PutDebug("use_ssl: " + CString(use_ssl ? 1 : 0));
+            PutDebug("use_post: " + CString(use_post ? 1 : 0));
+
 #ifdef USE_CURL
+            PutDebug("using libcurl");
 			make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["debug"] == "on");
 #else
+            PutDebug("NOT using libcurl");
 			// Create the socket connection, write to it, and add it to the queue
 			CPushSocket *sock = new CPushSocket(this);
 			sock->Connect(service_host, use_port, use_ssl);
