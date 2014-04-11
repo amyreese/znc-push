@@ -14,7 +14,6 @@
 #include <znc/znc.h>
 #include <znc/Chan.h>
 #include <znc/User.h>
-#include <znc/IRCNetwork.h>
 #include <znc/Modules.h>
 #include <znc/FileUtils.h>
 #include <znc/Client.h>
@@ -24,6 +23,10 @@
 #ifdef USE_CURL
 #include <curl/curl.h>
 #endif // USE_CURL
+
+#ifdef HAS_IRCNETWORK_H
+#include <znc/IRCNetwork.h>
+#endif // HAS_IRCNETWORK_H
 
 // Forward declaration
 class CPushMod;
@@ -106,6 +109,10 @@ class CPushMod : public CModule
 		// Configuration options
 		MCString options;
 		MCString defaults;
+
+#ifndef HAS_IRCNETWORK_H
+		CUser *GetNetwork() { return user; }
+#endif
 
 	public:
 
@@ -732,9 +739,9 @@ class CPushMod : public CModule
 				}
 
 				// Expand substrings like %nick%
-				if (m_pNetwork)
+				if (GetNetwork())
 				{
-					value = m_pNetwork->ExpandString(value);
+					value = GetNetwork()->ExpandString(value);
 				}
 				else
 				{
@@ -812,9 +819,9 @@ class CPushMod : public CModule
 				CString value;
 
 				// Expand substrings like %nick%
-				if (m_pNetwork)
+				if (GetNetwork())
 				{
-					value = m_pNetwork->ExpandString(*i);
+					value = GetNetwork()->ExpandString(*i);
 				}
 				else
 				{
