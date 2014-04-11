@@ -89,6 +89,14 @@ Now, load the module in ZNC:
 
     /msg *status loadmod push
 
+Note: the above command will only enable ZNC Push for a single network in ZNC.  If instead
+you would like to load ZNC Push as a "user level" module, so that you can share configuration
+options across multiple networks, you will need to either use the web admin page for the
+user to enable the "push" module, or you will need to use ZNC's "controlpanel" module:
+
+    /msg *status loadmod controlpanel
+    /msg *controlpanel loadmod push
+
 Then select the push service you want to use, and set your username and secret as needed.
 The secret is not your password, and can be obtained by logging into the service's website
 and looking in your profile or settings:

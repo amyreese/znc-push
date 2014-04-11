@@ -1691,4 +1691,9 @@ void CPushSocket::Disconnected()
 }
 #endif // USE_CURL
 
-MODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")
+template<> void TModInfo<CPushMod>(CModInfo& Info) {
+	Info.AddType(CModInfo::UserModule);
+	Info.SetWikiPage("push");
+}
+
+NETWORKMODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")
