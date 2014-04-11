@@ -33,6 +33,7 @@ ZNC Push was created by [John Reese](http://johnmreese.com) and designed to fill
 personal need.  It may not fit your use cases, but any and all feedback would be greatly
 appreciated.
 
+
 Dependencies
 ------------
 
@@ -49,6 +50,7 @@ On Ubuntu, development headers can be installed by installing `libcurl3-dev` or
 `libcurl4-openssl-dev` package:
 
     $ sudo aptitude install libcurl4-openssl-dev
+
 
 Compiling
 ---------
@@ -74,6 +76,7 @@ with the appropriate GCC flags so that it can find and link ZNC Push with libcur
 Note: You are strongly encouraged to use libcurl transport. The reason for that is, that
 the default CSocket transport doesn't verify server's SSL certificate which leaves you
 vulnerable to MITM attacks.
+
 
 Installation
 ------------
@@ -237,6 +240,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     notifications to; if blank or unset, notifications will be sent to all devices.
 
     This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL. 
+
 
 ### Notifications
 
