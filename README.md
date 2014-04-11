@@ -75,7 +75,9 @@ with the appropriate GCC flags so that it can find and link ZNC Push with libcur
 
 Note: You are strongly encouraged to use libcurl transport. The reason for that is, that
 the default CSocket transport doesn't verify server's SSL certificate which leaves you
-vulnerable to MITM attacks.
+vulnerable to MITM attacks.  However, use of libcurl will *block* the main ZNC thread at every
+push notification; for installations with many users, libcurl is *not* yet ideal, even with
+the above security concerns in mind.
 
 
 Installation
