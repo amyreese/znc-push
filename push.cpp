@@ -1628,8 +1628,6 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 
 	CString query = build_query_string(parameters);
 
-	parent->PutDebug("Query string: " + query);
-
 	// Request headers and POST body
 	CString request;
 
@@ -1647,6 +1645,7 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 	request += "Host: " + host + crlf;
 	request += "Connection: close" + crlf;
 	request += "User-Agent: " + user_agent + crlf;
+	parent->PutDebug("User-Agent: " + user_agent);
 
 	if (auth != "")
 	{
@@ -1659,6 +1658,8 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 	{
 		request += query;
 	}
+
+	parent->PutDebug("Query string: " + query);
 
 	Write(request);
 	parent->PutDebug("Request sending");
@@ -1674,13 +1675,13 @@ void CPushSocket::ReadLine(const CString& data)
 		CString status = data.Token(1);
 		CString message = data.Token(2, true);
 
-		parent->PutDebug(status);
-		parent->PutDebug(message);
+		parent->PutDebug("Status: " + status);
+		parent->PutDebug("Message: " + message);
 		first = false;
 	}
 	else
 	{
-		parent->PutDebug(data);
+		parent->PutDebug("Data: " + data);
 	}
 }
 
