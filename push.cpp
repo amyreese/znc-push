@@ -277,16 +277,8 @@ class CPushMod : public CModule
 
 				// BASIC auth, base64-encoded APIKey:
 				service_auth = options["secret"] + CString(":");
-				service_auth.Base64Encode();
 
-				// Pushbullet uses numeric device_id but they
-				// are transitioning to an alphanumeric device_iden
-				if (is_number(options["target"]))
-				{
-					params["device_id"] = options["target"];
-				} else {
-					params["device_iden"] = options["target"];
-				}
+				params["device_iden"] = options["target"];
 				params["type"] = "note";
 				params["title"] = message_title;
 				params["body"] = message_content;
@@ -1649,7 +1641,9 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 
 	if (auth != "")
 	{
-		request += "Authorization: Basic " + auth + crlf;
+		CString auth_b64 = auth.Base64Encode_n();
+		request += "Authorization: Basic " + auth_b64 + crlf;
+		parent->PutDebug("Authorization: Basic " + auth_b64);
 	}
 
 	request += crlf;
