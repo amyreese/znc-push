@@ -132,6 +132,7 @@ class CPushMod : public CModule
 			defaults["message_length"] = "100";
 			defaults["message_title"] = "{title}";
 			defaults["message_uri"] = "";
+			defaults["message_uri_post"] = "no";
 			defaults["message_uri_title"] = "";
 			defaults["message_priority"] = "0";
 			defaults["message_sound"] = "";
@@ -453,7 +454,10 @@ class CPushMod : public CModule
 					return;
 				}
 
-				use_post = false;
+				if(options["message_uri_post"] != "yes")
+				{
+					use_post = false;
+				}
 
 				if (parts[0] == "https")
 				{
@@ -469,6 +473,12 @@ class CPushMod : public CModule
 				{
 					PutModule("Error: invalid url schema");
 					return;
+				}
+
+				// HTTP basic auth
+				if(options["username"] != "")
+				{
+					service_auth = options["username"] + CString(":") + options["secret"];
 				}
 
 				// Process the remaining portion of the URL
