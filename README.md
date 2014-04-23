@@ -236,8 +236,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     This option must be set when using Boxcar or Pushover.
 
-    When using the custom URL service, if this option is set it will be used as username
-    for HTTP basic authentication.
+    When using the custom URL service, if this option is set it will enable HTTP basic
+    authentication and be used as username.
 
 *   `secret = ""`
 
@@ -245,8 +245,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
 
-    When using the custom URL service, if this option is set it will be used as password
-    for HTTP basic authentication.
+    When using the custom URL service, if this option is set it will enable HTTP basic
+    authentication and be used as password.
 
 *   `target = ""`
 

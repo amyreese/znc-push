@@ -476,7 +476,7 @@ class CPushMod : public CModule
 				}
 
 				// HTTP basic auth
-				if(options["username"] != "")
+				if(options["username"] != "" || options["secret"] != "")
 				{
 					service_auth = options["username"] + CString(":") + options["secret"];
 				}
