@@ -6,6 +6,7 @@ services for any private message or channel highlight that matches a configurabl
 conditions.  ZNC Push current supports the following services:
 
 * [Boxcar][]
+* [Boxcar 2][]
 * [Notify My Android][] (NMA)
 * [Pushover][]
 * [Prowl][]
@@ -292,8 +293,9 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_sound = ""`
 
     Notification sound to play with the push notification.
-    Currently only supported by Pushover.net.  Must be chosen from their list of
-    [supported sounds](https://pushover.net/api#sounds).
+    Supported under Pushover, Faast, and Boxcar 2.  Must be chosen from the list of
+    [Pushover sounds](https://pushover.net/api#sounds), [Faast sounds](http://developer.faast.io/) 
+    or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
 
 
 ### Conditions
@@ -426,6 +428,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 
 
 [Boxcar]: http://boxcar.io
+[Boxcar 2]: http://boxcar.io
 [Notify My Android]: http://www.notifymyandroid.com
 [Pushover]: http://pushover.net
 [Prowl]: http://www.prowlapp.com
