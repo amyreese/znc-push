@@ -236,11 +236,17 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     This option must be set when using Boxcar or Pushover.
 
+    When using the custom URL service, if this option is set it will be used as username
+    for HTTP basic authentication.
+
 *   `secret = ""`
 
     Authentication token for push notifications.
 
     This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
+
+    When using the custom URL service, if this option is set it will be used as password
+    for HTTP basic authentication.
 
 *   `target = ""`
 
@@ -279,6 +285,11 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     URI that will be sent with the push notification.  This could be a web address or a
     local scheme to access a mobile application.  Keyword expansion is performed on this
     value.
+
+*   `message_uri_post = "no"`
+
+    When using the custom URL service, this option allows you to specify whether to use the
+    POST method instead of GET.
 
 *   `message_uri_title` = ""`
 
