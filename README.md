@@ -94,8 +94,12 @@ Now, load the module in ZNC:
 
 Note: the above command will only enable ZNC Push for a single network in ZNC.  If instead
 you would like to load ZNC Push as a "user level" module, so that you can share configuration
-options across multiple networks, you will need to either use the web admin page for the
-user to enable the "push" module, or you will need to use ZNC's "controlpanel" module:
+options across multiple networks, load it like this:
+
+    /msg *status loadmod --type=user push
+
+Or you can use either the web admin page for the user to enable the "push" module, or you can
+use ZNC's "controlpanel" module:
 
     /msg *status loadmod controlpanel
     /msg *controlpanel loadmod push
@@ -106,7 +110,7 @@ and looking in your profile or settings:
 
     /msg *push set service pushover
     /msg *push set username foo
-	/msg *push set secret ...
+    /msg *push set secret ...
 
 If you're using Boxcar, you need to use the following command to send a subscription request
 to your account, before ZNC Push can start working:
