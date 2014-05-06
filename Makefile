@@ -1,19 +1,16 @@
 version := $(shell git describe --dirty)
-curl=no
 
-ifneq ($(curl),no)
-	flags=-DUSE_CURL -lcurl
-else
-	flags=
-endif
+push.pyc: push.py
+	cp push.py push.py.orig
 
-push.so: push.cpp
-	sed -i -e "s|PUSHVERSION \".*\"|PUSHVERSION \"$(version)\"|" push.cpp
-	CXXFLAGS="$(CXXFLAGS) $(flags)" LIBS="$(LIBS) $(flags)" znc-buildmod push.cpp
-	sed -i -e "s|PUSHVERSION \".*\"|PUSHVERSION \"dev\"|" push.cpp
+	sed -i -e "s|VERSION = '.*'|VERSION = '$(version)'|" push.py
+	python3 -m compileall push.py
+	cp __pycache__/push.*.pyc push.pyc
 
-install: push.so
-	cp push.so $(HOME)/.znc/modules/push.so
+	mv push.py.orig push.py
+
+install: push.pyc
+	cp push.pyc $(HOME)/.znc/modules/push.pyc
 
 clean:
-	-rm -f push.so
+	-rm -rf push.pyc __pycache__
