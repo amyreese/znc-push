@@ -27,7 +27,9 @@ T = None
 
 
 class PushConfig(object):
-    def __init__(self):
+    def __init__(self, module):
+        self.module = module
+
         self.defaults = {
             # global options
             'lang': 'en_ca',
@@ -63,19 +65,67 @@ class PushConfig(object):
             'debug': 'off',
         }
 
-        self.globals = {'lang'}
+        self.globals = {'lang', 'debug'}
 
         # todo: deserialize values from znc registry
         self.user_overrides = {}
         self.network_overrides = defaultdict(dict)
         self.channel_overrides = defaultdict(dict)
 
-    def serialize(self):
-        return json.dumps({
+        self.load_config()
+
+    def load_config(self):
+        config_data = self.module.nv.get('config', None)
+        if not config_data:
+            return
+
+        data = json.loads(config_data)
+
+        for key, value in data['user'].items():
+            self.user_overrides[key] = value
+
+        for network, overrides in data['network'].items():
+            for key, value in overrides.items():
+                self.network_overrides[network][key] = value
+
+        for channel, overrides in data['channel'].items():
+            for key, value in overrides.items():
+                self.channel_overrides[channel][key] = value
+
+    def save_config(self):
+        data = json.dumps({
                           'user': self.user_overrides,
                           'network': self.network_overrides,
                           'channel': self.channel_overrides,
                           })
+
+        self.module.nv['config'] = data
+
+    def dump(self):
+        p = self.module.PutModule
+
+        networks = self.network_overrides.keys()
+        channels = self.channel_overrides.keys()
+
+        kv = '{0}: {1}'
+        no = '  /{0}: {1}'
+        co = '  {0}: {1}'
+
+        for key in sorted(self.defaults.keys()):
+
+            if key in self.user_overrides:
+                p(kv.format(key, self.user_overrides[key]))
+
+            else:
+                p(kv.format(key, self.defaults[key]))
+
+            for network in networks:
+                if key in self.network_overrides[network]:
+                    p(no.format(network, self.network_overrides[network][key]))
+
+            for channel in channels:
+                if key in self.channel_overrides[channel]:
+                    p(co.format(channel, self.channel_overrides[channel][key]))
 
     def get(self, key, network=None, channel=None):
         context = Context.current()
@@ -109,6 +159,23 @@ class PushConfig(object):
 
         return value
 
+    def has_overrides(self, key):
+        if key in self.globals:
+            return False
+
+        networks = self.network_overrides.keys()
+        channels = self.channel_overrides.keys()
+
+        for network in networks:
+            if key in self.network_overrides[network]:
+                return True
+
+        for channel in channels:
+            if key in self.channel_overrides[channel]:
+                return True
+
+        return False
+
     def set(self, key, value, network=None, channel=None):
         if key not in self.defaults:
             raise KeyError(T.e_option_not_valid.format(key))
@@ -136,6 +203,8 @@ class PushConfig(object):
         else:
             self.user_overrides[key] = value
 
+        self.save_config()
+
         return True
 
     def unset(self, key, network=None, channel=None):
@@ -153,6 +222,8 @@ class PushConfig(object):
 
         else:
             self.user_overrides.pop(key, None)
+
+        self.save_config()
 
         return True
 
@@ -196,19 +267,22 @@ class Context(object):
 
 class push(znc.Module):
     description = 'Send highlights and messages to a push notification service'
-    module_types = [znc.CModInfo.NetworkModule, znc.CModInfo.UserModule]
+    module_types = [znc.CModInfo.UserModule]
 
     config = None
 
     def PutDebug(self, message):
         if self.config.get('debug') == 'on':
-            self.PutStatus(message)
+            if type(message) != str:
+                message = str(message)
+
+            self.PutModule(message)
 
     def OnLoad(self, args, message):
         global T
         T = Translation()
 
-        self.config = PushConfig()
+        self.config = PushConfig(self)
         T = T.lang(self.config.get('lang'))
 
         if requests is None:
@@ -239,6 +313,9 @@ class push(znc.Module):
         s = 'znc-push {0}, python {1}'
         self.PutModule(s.format(VERSION, platform.python_version()))
 
+    def cmd_dump(self, tokens):
+        self.config.dump()
+
     def cmd_send(self, tokens):
         message = ' '.join(tokens)
 
@@ -250,16 +327,20 @@ class push(znc.Module):
 
     def cmd_get(self, tokens):
         network, channel, keys = self.parse_network_channel_value(tokens)
-        keys = keys.split()
 
-        if not keys:
+        if not keys or keys == 'all':
             keys = self.config.defaults.keys()
 
-        m = '{0} {1}'
+        else:
+            keys = keys.split()
+
+        m = '{0}{1} {2}'
         for key in sorted(keys):
             try:
                 value = self.config.get(key, network=network, channel=channel)
-                self.PutModule(m.format(key, value))
+                override = '*' if self.config.has_overrides(key) else ''
+
+                self.PutModule(m.format(key, override, value))
             except KeyError:
                 self.PutModule(T.e_option_not_valid.format(key))
 
@@ -285,18 +366,19 @@ class push(znc.Module):
 
         for key in keys:
             try:
-                value = self.config.unset(key, network=network, channel=channel)
+                self.config.unset(key, network=network, channel=channel)
             except KeyError:
                 self.PutModule(T.e_option_not_valid.format(key))
 
         self.PutModule(T.done)
 
     network_channel_value_re = re.compile(r'\s*(?:/([a-zA-Z0-9]+))?'
-                                          r'\s*(#+[a-zA-Z0-9]+)?\s+(.*)')
+                                          r'\s*(#+[a-zA-Z0-9]+)?\s*(.*)')
 
     def parse_network_channel_value(self, tokens):
         message = ' '.join(tokens)
         match = self.network_channel_value_re.match(message)
+        self.PutDebug(match.groups())
 
         if match:
             return match.group(1), match.group(2), match.group(3)
