@@ -1,13 +1,16 @@
 version := $(shell git describe --dirty)
 
 push.pyc: push.py
-	cp push.py push.py.orig
+	cp push.py push.copy.py
 
-	sed -i -e "s|VERSION = '.*'|VERSION = '$(version)'|" push.py
-	python3 -m compileall push.py
+	sed -i -e "s|VERSION = '.*'|VERSION = '$(version)'|" push.copy.py
+	python3 -m compileall push.copy.py
 	cp __pycache__/push.*.pyc push.pyc
 
-	mv push.py.orig push.py
+	rm push.copy.py
+
+lint: push.py
+	flake8 push.py
 
 install: push.pyc
 	cp push.pyc $(HOME)/.znc/modules/push.pyc
