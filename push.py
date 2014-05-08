@@ -231,7 +231,8 @@ class PushConfig(object):
 class Context(object):
     stack = []
 
-    def __init__(self, module, title, message, nick, channel, network):
+    def __init__(self, module, title=None, message=None,
+                 nick=None, channel=None, network=None):
         self.module = module
         self.title = title
         self.message = message
@@ -306,6 +307,20 @@ class push(znc.Module):
 
         method(tokens[1:])
 
+    network_channel_value_re = re.compile(r'\s*(?:/([a-zA-Z0-9]+))?'
+                                          r'\s*(#+[a-zA-Z0-9]+)?\s*(.*)')
+
+    def parse_network_channel_value(self, tokens):
+        message = ' '.join(tokens)
+        match = self.network_channel_value_re.match(message)
+        self.PutDebug(match.groups())
+
+        if match:
+            return match.group(1), match.group(2), match.group(3)
+
+        else:
+            return None, None, message
+
     def cmd_help(self, tokens):
         self.PutModule(T.help_website)
 
@@ -315,15 +330,6 @@ class push(znc.Module):
 
     def cmd_dump(self, tokens):
         self.config.dump()
-
-    def cmd_send(self, tokens):
-        message = ' '.join(tokens)
-
-        with Context(self, 'test message', message, nick='*push',
-                     channel='*push', network='aoeu'):
-            PushService.send_message(self.config)
-
-        self.PutModule(T.done)
 
     def cmd_get(self, tokens):
         network, channel, keys = self.parse_network_channel_value(tokens)
@@ -360,6 +366,44 @@ class push(znc.Module):
         except ValueError:
             self.PutModule(T.e_option_not_int)
 
+    def cmd_append(self, tokens):
+        network, channel, tokens = self.parse_network_channel_value(tokens)
+        tokens = tokens.split()
+        key = tokens[0]
+        value = ' '.join(tokens[1:])
+
+        try:
+            orig = self.config.get(key, network=network, channel=channel)
+            new_value = ' '.join((orig, value))
+
+            self.config.set(key, new_value, network=network, channel=channel)
+            self.PutModule(T.done)
+
+        except KeyError:
+            self.PutModule(T.e_option_not_valid.format(key))
+
+        except ValueError:
+            self.PutModule(T.e_option_not_int)
+
+    def cmd_prepend(self, tokens):
+        network, channel, tokens = self.parse_network_channel_value(tokens)
+        tokens = tokens.split()
+        key = tokens[0]
+        value = ' '.join(tokens[1:])
+
+        try:
+            orig = self.config.get(key, network=network, channel=channel)
+            new_value = ' '.join((value, orig))
+
+            self.config.set(key, new_value, network=network, channel=channel)
+            self.PutModule(T.done)
+
+        except KeyError:
+            self.PutModule(T.e_option_not_valid.format(key))
+
+        except ValueError:
+            self.PutModule(T.e_option_not_int)
+
     def cmd_unset(self, tokens):
         network, channel, keys = self.parse_network_channel_value(tokens)
         keys = keys.split()
@@ -372,25 +416,34 @@ class push(znc.Module):
 
         self.PutModule(T.done)
 
-    network_channel_value_re = re.compile(r'\s*(?:/([a-zA-Z0-9]+))?'
-                                          r'\s*(#+[a-zA-Z0-9]+)?\s*(.*)')
+    def cmd_subscribe(self, tokens):
+        network, channel, message = self.parse_network_channel_value(tokens)
 
-    def parse_network_channel_value(self, tokens):
-        message = ' '.join(tokens)
-        match = self.network_channel_value_re.match(message)
-        self.PutDebug(match.groups())
+        with Context(self, network=network, channel=channel):
+            PushService.send_subscribe(self.config)
 
-        if match:
-            return match.group(1), match.group(2), match.group(3)
+        self.PutModule(T.done)
 
-        else:
-            return None, None, message
+    def cmd_send(self, tokens):
+        network, channel, message = self.parse_network_channel_value(tokens)
+
+        network = network or '*push'
+        channel = channel or '*push'
+
+        with Context(self, title='Test Message', message=message, nick='*push',
+                     channel=channel, network=network):
+            PushService.send_message(self.config)
+
+        self.PutModule(T.done)
 
 
 class PushService(object):
     required = {}
 
-    def send(self, context):
+    def send(self, config):
+        return
+
+    def subscribe(self, config):
         return
 
     @classmethod
@@ -399,7 +452,8 @@ class PushService(object):
         if context is None:
             raise ValueError('No current context')
 
-        request = cls.service('pushover').send(config)
+        service = config.get('service')
+        request = cls.service(service).send(config)
 
         if not request:
             context.module.PutModule(T.e_bad_push_handler)
@@ -410,7 +464,26 @@ class PushService(object):
             context.module.PutModule(m.format(request.status_code))
 
         for line in request.text.split('\n'):
-            context.module.PutDebug(request.text)
+            context.module.PutDebug(line)
+
+    @classmethod
+    def send_subscribe(cls, config):
+        context = Context.current()
+
+        service = config.get('service')
+        request = cls.service(service).subscribe(config)
+
+        if not request:
+            m = T.e_no_subscribe
+            context.module.PutModule(m.format(service))
+            return
+
+        if request.status_code != 200:
+            m = T.e_send_subscribe
+            context.module.PutModule(m.format(request.status_code))
+
+        for line in request.text.split('\n'):
+            context.module.PutDebug(line)
 
     _cache = None
 
@@ -522,12 +595,14 @@ class Translation(object):
 
     e_send_status = 'Error: status {0} while sending message'
     e_bad_push_handler = 'Error: no request returned from handler'
+    e_no_subscribe = 'No need to subscribe for {0}'
+    e_send_subscribe = 'Error: status {0} while subscribing'
 
 
 class Canadian(Translation):
     _lang = 'en_ca'
 
-    done = 'ohkay'
+    done = 'okay'
 
     e_requests_missing = 'Sorry, could not import python requests module'
     e_invalid_command = 'Sorry, invalid command, try `help`'
@@ -537,3 +612,5 @@ class Canadian(Translation):
 
     e_send_status = 'Sorry, status {0} while sending message'
     e_bad_push_handler = 'Sorry, no request returned from handler'
+    e_no_subscribe = 'Sorry, no need to subscribe for {0}'
+    e_send_subscribe = 'Sorry, status {0} while subscribing'
