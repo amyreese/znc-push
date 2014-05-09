@@ -26,6 +26,44 @@ USER_AGENT = 'ZNC Push/' + VERSION
 T = None
 
 
+class Context(object):
+    stack = []
+
+    def __init__(self, module, title=None, message=None,
+                 nick=None, channel=None, network=None):
+        self.module = module
+        self.title = title
+        self.message = message
+        self.nick = nick
+        self.channel = channel
+        self.network = network
+
+    def __enter__(self):
+        Context.stack.append(self)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        assert Context.stack[-1] == self
+        Context.stack.pop()
+
+    @property
+    def values(self):
+        return {
+            'title': self.title,
+            'message': self.message,
+            'nick': self.nick,
+            'channel': self.channel,
+            'network': self.network,
+        }
+
+    @classmethod
+    def current(cls):
+        if cls.stack:
+            return cls.stack[-1]
+
+        return None
+
+
 class PushConfig(object):
     def __init__(self, module):
         self.module = module
@@ -229,44 +267,6 @@ class PushConfig(object):
         self.save_config()
 
         return True
-
-
-class Context(object):
-    stack = []
-
-    def __init__(self, module, title=None, message=None,
-                 nick=None, channel=None, network=None):
-        self.module = module
-        self.title = title
-        self.message = message
-        self.nick = nick
-        self.channel = channel
-        self.network = network
-
-    def __enter__(self):
-        Context.stack.append(self)
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        assert Context.stack[-1] == self
-        Context.stack.pop()
-
-    @property
-    def values(self):
-        return {
-            'title': self.title,
-            'message': self.message,
-            'nick': self.nick,
-            'channel': self.channel,
-            'network': self.network,
-        }
-
-    @classmethod
-    def current(cls):
-        if cls.stack:
-            return cls.stack[-1]
-
-        return None
 
 
 class push(znc.Module):
