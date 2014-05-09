@@ -17,6 +17,7 @@ from collections import defaultdict
 
 try:
     import requests
+    from requests import Request, Session
 except ImportError:
     requests = None
 
@@ -526,32 +527,61 @@ class push(znc.Module):
 
 
 class PushService(object):
+    """Framework for adding new push service implementations, by subclassing
+    PushService and implementing send(). The framework expects unprepared
+    Request objects, that it can potentially modify for proxy info, or execute
+    on a separate thread."""
+
     required = {}
+    """A dictionary of config values that are required by the push service.
+    Keys are the config options themselves, and the values are strings that
+    describe what the option should contain.  Eg, 'secret': 'API token'."""
 
     def send(self, config):
-        return
+        """Send a push notification for the given context.
+        This must return an unprepared Request object, which the framework will
+        handle and execute.  If the return type is None, then the framework
+        will assume a network request is not needed; otherwise, if the return
+        type is not either a Request object or None, then the framework will
+        treat this as an error."""
+
+        # error
+        return False
 
     def subscribe(self, config):
-        return
+        """Subscribe the user to their currently-configured push service.
+        For services that require subscribing before notifications can be
+        received, this should return an unprepared Request object.  If this is
+        not required by the push service, then return None; otherwise, if the
+        return type is not either a Request object or None, then the framework
+        will treat this as an error."""
+
+        # not required
+        return None
 
     @classmethod
     def send_message(cls, config):
         context = Context.current()
-        if context is None:
-            raise ValueError('No current context')
 
         service = config.get('service')
         request = cls.service(service).send(config)
 
-        if not request:
+        if request is None:
+            return
+
+        elif type(request) != Request:
             context.module.PutModule(T.e_bad_push_handler)
             return
 
-        if request.status_code != 200:
-            m = T.e_send_status
-            context.module.PutModule(m.format(request.status_code))
+        session = Session()
+        prepped = session.prepare_request(request)
+        response = session.send(prepped, verify=True)
 
-        for line in request.text.split('\n'):
+        if response.status_code != 200:
+            m = T.e_send_status
+            context.module.PutModule(m.format(response.status_code))
+
+        for line in response.text.split('\n'):
             context.module.PutDebug(line)
 
     @classmethod
@@ -561,16 +591,24 @@ class PushService(object):
         service = config.get('service')
         request = cls.service(service).subscribe(config)
 
-        if not request:
+        if request is None:
             m = T.e_no_subscribe
             context.module.PutModule(m.format(service))
             return
 
-        if request.status_code != 200:
-            m = T.e_send_subscribe
-            context.module.PutModule(m.format(request.status_code))
+        elif type(request) != Request:
+            context.module.PutModule(T.e_bad_push_handler)
+            return
 
-        for line in request.text.split('\n'):
+        session = Session()
+        prepped = session.prepare_request(request)
+        response = session.send(prepped, verify=True)
+
+        if response.status_code != 200:
+            m = T.e_send_subscribe
+            context.module.PutModule(m.format(response.status_code))
+
+        for line in response.text.split('\n'):
             context.module.PutDebug(line)
 
     _cache = None
@@ -637,7 +675,7 @@ class Pushover(PushService):
         if target:
             params['target'] = target
 
-        return requests.post(url, params=params)
+        return Request('POST', url, data=params)
 
 
 class Translation(object):
