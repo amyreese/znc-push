@@ -24,6 +24,7 @@ except ImportError:
 VERSION = 'v2.0.0-dev'
 USER_AGENT = 'ZNC Push/' + VERSION
 
+C = None
 T = None
 
 
@@ -290,14 +291,13 @@ class push(znc.Module):
     description = 'Send highlights and messages to a push notification service'
     module_types = [znc.CModInfo.UserModule]
 
-    config = None
     debug = True
 
     def UpdateGlobals(self):
         global T
-        T = T.lang(self.config.get('lang'))
+        T = T.lang(C.get('lang'))
 
-        self.debug = self.config.get('debug') == 'on'
+        self.debug = C.get('debug') == 'on'
 
     def PutDebug(self, message):
         if self.debug:
@@ -310,10 +310,10 @@ class push(znc.Module):
         """Entry point of the module.  Initialize config, translations, and
         verify that required modules are installed."""
 
-        global T
+        global T, C
         T = Translation()
+        C = PushConfig(self)
 
-        self.config = PushConfig(self)
         self.UpdateGlobals()
 
         if requests is None:
@@ -376,7 +376,7 @@ class push(znc.Module):
         """Print a list of all configuration options, listing all overrides
         for networks and channels as well as the global/user value."""
 
-        self.config.dump()
+        C.dump()
 
     def cmd_get(self, tokens):
         """Print the configured value for one or more options, following any
@@ -386,7 +386,7 @@ class push(znc.Module):
         network, channel, keys = self.parse_network_channel_value(tokens)
 
         if not keys or keys == 'all':
-            keys = self.config.defaults.keys()
+            keys = C.defaults.keys()
 
         else:
             keys = keys.split()
@@ -394,13 +394,13 @@ class push(znc.Module):
         m = '{0}{1} {2}'
         for key in sorted(keys):
             try:
-                value = self.config.get(key, network=network, channel=channel)
+                value = C.get(key, network=network, channel=channel)
                 modifier = ''
 
-                if self.config.is_global(key):
+                if C.is_global(key):
                     modifier += '@'
 
-                if self.config.has_overrides(key):
+                if C.has_overrides(key):
                     modifier += '*'
 
                 self.PutModule(m.format(key, modifier, value))
@@ -417,7 +417,7 @@ class push(znc.Module):
         value = ' '.join(tokens[1:])
 
         try:
-            self.config.set(key, value, network=network, channel=channel)
+            C.set(key, value, network=network, channel=channel)
             self.PutModule(T.done)
 
         except KeyError:
@@ -436,10 +436,10 @@ class push(znc.Module):
         value = ' '.join(tokens[1:])
 
         try:
-            orig = self.config.get(key, network=network, channel=channel)
+            orig = C.get(key, network=network, channel=channel)
             new_value = ' '.join((orig, value))
 
-            self.config.set(key, new_value, network=network, channel=channel)
+            C.set(key, new_value, network=network, channel=channel)
             self.PutModule(T.done)
 
         except KeyError:
@@ -458,10 +458,10 @@ class push(znc.Module):
         value = ' '.join(tokens[1:])
 
         try:
-            orig = self.config.get(key, network=network, channel=channel)
+            orig = C.get(key, network=network, channel=channel)
             new_value = ' '.join((value, orig))
 
-            self.config.set(key, new_value, network=network, channel=channel)
+            C.set(key, new_value, network=network, channel=channel)
             self.PutModule(T.done)
 
         except KeyError:
@@ -480,7 +480,7 @@ class push(znc.Module):
 
         for key in keys:
             try:
-                self.config.unset(key, network=network, channel=channel)
+                C.unset(key, network=network, channel=channel)
             except KeyError:
                 self.PutModule(T.e_option_not_valid.format(key))
 
@@ -493,7 +493,7 @@ class push(znc.Module):
 
         for key in tokens:
             try:
-                self.config.reset(key)
+                C.reset(key)
             except KeyError:
                 self.PutModule(T.e_option_not_valid.format(key))
 
@@ -506,7 +506,7 @@ class push(znc.Module):
         network, channel, message = self.parse_network_channel_value(tokens)
 
         with Context(self, network=network, channel=channel):
-            PushService.send_subscribe(self.config)
+            PushService.send_subscribe()
 
         self.PutModule(T.done)
 
@@ -521,7 +521,7 @@ class push(znc.Module):
 
         with Context(self, title='Test Message', message=message, nick='*push',
                      channel=channel, network=network):
-            PushService.send_message(self.config)
+            PushService.send_message()
 
         self.PutModule(T.done)
 
@@ -537,7 +537,7 @@ class PushService(object):
     Keys are the config options themselves, and the values are strings that
     describe what the option should contain.  Eg, 'secret': 'API token'."""
 
-    def send(self, config):
+    def send(self):
         """Send a push notification for the given context.
         This must return an unprepared Request object, which the framework will
         handle and execute.  If the return type is None, then the framework
@@ -548,7 +548,7 @@ class PushService(object):
         # error
         return False
 
-    def subscribe(self, config):
+    def subscribe(self):
         """Subscribe the user to their currently-configured push service.
         For services that require subscribing before notifications can be
         received, this should return an unprepared Request object.  If this is
@@ -560,11 +560,11 @@ class PushService(object):
         return None
 
     @classmethod
-    def send_message(cls, config):
+    def send_message(cls):
         context = Context.current()
 
-        service = config.get('service')
-        request = cls.service(service).send(config)
+        service = C.get('service')
+        request = cls.service(service).send()
 
         if request is None:
             return
@@ -585,11 +585,11 @@ class PushService(object):
             context.module.PutDebug(line)
 
     @classmethod
-    def send_subscribe(cls, config):
+    def send_subscribe(cls):
         context = Context.current()
 
-        service = config.get('service')
-        request = cls.service(service).subscribe(config)
+        service = C.get('service')
+        request = cls.service(service).subscribe()
 
         if request is None:
             m = T.e_no_subscribe
@@ -644,20 +644,20 @@ class Pushover(PushService):
         'username': 'User key',
     }
 
-    def send(self, config):
+    def send(self):
         url = 'https://api.pushover.net/1/messages.json'
 
-        message_uri = config.get_expanded('message_uri')
-        message_uri_title = config.get_expanded('message_uri_title')
-        message_sound = config.get('message_sound')
-        message_priority = config.get('message_priority')
-        target = config.get('target')
+        message_uri = C.get_expanded('message_uri')
+        message_uri_title = C.get_expanded('message_uri_title')
+        message_sound = C.get('message_sound')
+        message_priority = C.get('message_priority')
+        target = C.get('target')
 
         params = {
-            'token': config.get('secret'),
-            'user': config.get('username'),
-            'message': config.get_expanded('message_content'),
-            'title': config.get_expanded('message_title'),
+            'token': C.get('secret'),
+            'user': C.get('username'),
+            'message': C.get_expanded('message_content'),
+            'title': C.get_expanded('message_title'),
         }
 
         if message_uri:
