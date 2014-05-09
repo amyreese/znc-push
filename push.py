@@ -505,8 +505,8 @@ class push(znc.Module):
 
         network, channel, message = self.parse_network_channel_value(tokens)
 
-        with Context(self, network=network, channel=channel):
-            PushService.send_subscribe()
+        with Context(self, network=network, channel=channel) as context:
+            PushService.send_subscribe(context)
 
         self.PutModule(T.done)
 
@@ -519,9 +519,9 @@ class push(znc.Module):
         network = network or '*push'
         channel = channel or '*push'
 
-        with Context(self, title='Test Message', message=message, nick='*push',
-                     channel=channel, network=network):
-            PushService.send_message()
+        with Context(self, title=T.test_message, message=message, nick='*push',
+                     channel=channel, network=network) as context:
+            PushService.send_message(context)
 
         self.PutModule(T.done)
 
@@ -537,7 +537,7 @@ class PushService(object):
     Keys are the config options themselves, and the values are strings that
     describe what the option should contain.  Eg, 'secret': 'API token'."""
 
-    def send(self):
+    def send(self, context):
         """Send a push notification for the given context.
         This must return an unprepared Request object, which the framework will
         handle and execute.  If the return type is None, then the framework
@@ -548,7 +548,7 @@ class PushService(object):
         # error
         return False
 
-    def subscribe(self):
+    def subscribe(self, context):
         """Subscribe the user to their currently-configured push service.
         For services that require subscribing before notifications can be
         received, this should return an unprepared Request object.  If this is
@@ -560,9 +560,7 @@ class PushService(object):
         return None
 
     @classmethod
-    def send_message(cls):
-        context = Context.current()
-
+    def send_message(cls, context):
         service = C.get('service')
         request = cls.service(service).send()
 
@@ -585,9 +583,7 @@ class PushService(object):
             context.module.PutDebug(line)
 
     @classmethod
-    def send_subscribe(cls):
-        context = Context.current()
-
+    def send_subscribe(cls, context):
         service = C.get('service')
         request = cls.service(service).subscribe()
 
@@ -644,7 +640,7 @@ class Pushover(PushService):
         'username': 'User key',
     }
 
-    def send(self):
+    def send(self, context):
         url = 'https://api.pushover.net/1/messages.json'
 
         message_uri = C.get_expanded('message_uri')
@@ -712,6 +708,8 @@ class Translation(object):
     done = 'done'
     help_website = 'View the detailed documentation at '\
                    'https://github.com/jreese/znc-push/blob/master/README.md'
+
+    test_message = 'Test message'
 
     e_requests_missing = 'Error: could not import python requests module'
     e_invalid_command = 'Error: invalid command, try `help`'
