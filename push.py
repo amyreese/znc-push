@@ -268,6 +268,22 @@ class PushConfig(object):
 
         return True
 
+    def reset(self, key):
+        if key not in self.defaults:
+            raise KeyError(T.e_option_not_valid.format(key))
+
+        self.user_overrides.pop(key, None)
+
+        for channel, overrides in self.channel_overrides.items():
+            overrides.pop(key, None)
+
+        for network, overrides in self.network_overrides.items():
+            overrides.pop(key, None)
+
+        self.save_config()
+
+        return True
+
 
 class push(znc.Module):
     description = 'Send highlights and messages to a push notification service'
@@ -454,6 +470,19 @@ class push(znc.Module):
         for key in keys:
             try:
                 self.config.unset(key, network=network, channel=channel)
+            except KeyError:
+                self.PutModule(T.e_option_not_valid.format(key))
+
+        self.PutModule(T.done)
+
+    def cmd_reset(self, tokens):
+        """Remove a configuration option from all user, channel, and network
+        overrides, returning to a completely default value.  Use the unset
+        command to only remove an individual override."""
+
+        for key in tokens:
+            try:
+                self.config.reset(key)
             except KeyError:
                 self.PutModule(T.e_option_not_valid.format(key))
 
