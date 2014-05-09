@@ -159,6 +159,9 @@ class PushConfig(object):
 
         return value
 
+    def is_global(self, key):
+        return key in self.globals
+
     def has_overrides(self, key):
         if key in self.globals:
             return False
@@ -280,6 +283,9 @@ class push(znc.Module):
             self.PutModule(message)
 
     def OnLoad(self, args, message):
+        """Entry point of the module.  Initialize config, translations, and
+        verify that required modules are installed."""
+
         global T
         T = Translation()
 
@@ -293,6 +299,8 @@ class push(znc.Module):
         return True
 
     def OnModCommand(self, message):
+        """Dispatches messages sent to *push to command functions."""
+
         tokens = message.split()
 
         if not tokens:
@@ -311,6 +319,10 @@ class push(znc.Module):
                                           r'\s*(#+[a-zA-Z0-9]+)?\s*(.*)')
 
     def parse_network_channel_value(self, tokens):
+        """Given a list of tokens sent to a command function, uses a regex
+        to parse out the optional network and channel predicates for commands
+        that require working with configuration values."""
+
         message = ' '.join(tokens)
         match = self.network_channel_value_re.match(message)
         self.PutDebug(match.groups())
@@ -322,16 +334,28 @@ class push(znc.Module):
             return None, None, message
 
     def cmd_help(self, tokens):
+        """Print some help text."""
+
         self.PutModule(T.help_website)
 
     def cmd_version(self, tokens):
+        """Print the current version of znc-push, as well as the version of
+        python that it's running on."""
+
         s = 'znc-push {0}, python {1}'
         self.PutModule(s.format(VERSION, platform.python_version()))
 
     def cmd_dump(self, tokens):
+        """Print a list of all configuration options, listing all overrides
+        for networks and channels as well as the global/user value."""
+
         self.config.dump()
 
     def cmd_get(self, tokens):
+        """Print the configured value for one or more options, following any
+        given network/channel predicates.  Keys with overrides will be printed
+        with an asterisk.  Global options will be printed with an @ symbol."""
+
         network, channel, keys = self.parse_network_channel_value(tokens)
 
         if not keys or keys == 'all':
@@ -344,13 +368,22 @@ class push(znc.Module):
         for key in sorted(keys):
             try:
                 value = self.config.get(key, network=network, channel=channel)
-                override = '*' if self.config.has_overrides(key) else ''
+                modifier = ''
 
-                self.PutModule(m.format(key, override, value))
+                if self.config.is_global(key):
+                    modifier += '@'
+
+                if self.config.has_overrides(key):
+                    modifier += '*'
+
+                self.PutModule(m.format(key, modifier, value))
             except KeyError:
                 self.PutModule(T.e_option_not_valid.format(key))
 
     def cmd_set(self, tokens):
+        """Modify a configuration option to the given value, following any
+        given network/channel predicates."""
+
         network, channel, tokens = self.parse_network_channel_value(tokens)
         tokens = tokens.split()
         key = tokens[0]
@@ -367,6 +400,9 @@ class push(znc.Module):
             self.PutModule(T.e_option_not_int)
 
     def cmd_append(self, tokens):
+        """Modify a configuration option to append the given value, following
+        any given network/channel predicates."""
+
         network, channel, tokens = self.parse_network_channel_value(tokens)
         tokens = tokens.split()
         key = tokens[0]
@@ -386,6 +422,9 @@ class push(znc.Module):
             self.PutModule(T.e_option_not_int)
 
     def cmd_prepend(self, tokens):
+        """Modify a configuration option to prepend the given value, following
+        any given network/channel predicates."""
+
         network, channel, tokens = self.parse_network_channel_value(tokens)
         tokens = tokens.split()
         key = tokens[0]
@@ -405,6 +444,10 @@ class push(znc.Module):
             self.PutModule(T.e_option_not_int)
 
     def cmd_unset(self, tokens):
+        """Remove a configuration option, following any given network/channel
+        predicates.  Only removes a single override, or global value.  Use
+        the reset command to remove all override values as well."""
+
         network, channel, keys = self.parse_network_channel_value(tokens)
         keys = keys.split()
 
@@ -417,6 +460,9 @@ class push(znc.Module):
         self.PutModule(T.done)
 
     def cmd_subscribe(self, tokens):
+        """Subscribe the user to their currently configured push service,
+        following any given network/channel predicates."""
+
         network, channel, message = self.parse_network_channel_value(tokens)
 
         with Context(self, network=network, channel=channel):
@@ -425,6 +471,9 @@ class push(znc.Module):
         self.PutModule(T.done)
 
     def cmd_send(self, tokens):
+        """Send a test message to the user's currently configured push service,
+        following any given network/channel predicates."""
+
         network, channel, message = self.parse_network_channel_value(tokens)
 
         network = network or '*push'
