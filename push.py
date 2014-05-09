@@ -290,9 +290,16 @@ class push(znc.Module):
     module_types = [znc.CModInfo.UserModule]
 
     config = None
+    debug = True
+
+    def UpdateGlobals(self):
+        global T
+        T = T.lang(self.config.get('lang'))
+
+        self.debug = self.config.get('debug') == 'on'
 
     def PutDebug(self, message):
-        if self.config.get('debug') == 'on':
+        if self.debug:
             if type(message) != str:
                 message = str(message)
 
@@ -306,7 +313,7 @@ class push(znc.Module):
         T = Translation()
 
         self.config = PushConfig(self)
-        T = T.lang(self.config.get('lang'))
+        self.UpdateGlobals()
 
         if requests is None:
             self.PutStatus(T.e_requests_missing)
@@ -330,6 +337,9 @@ class push(znc.Module):
             return
 
         method(tokens[1:])
+
+        if command in ('set', 'unset', 'reset'):
+            self.UpdateGlobals()
 
     network_channel_value_re = re.compile(r'\s*(?:/([a-zA-Z0-9]+))?'
                                           r'\s*(#+[a-zA-Z0-9]+)?\s*(.*)')
