@@ -112,7 +112,22 @@ class PushConfig(object):
             'debug': 'off',
         }
 
-        self.globals = {'lang', 'debug'}
+        self.globals = {
+            'lang',
+            'debug',
+        }
+
+        self.absolutes = {
+            'lang',
+            'service',
+            'away_only',
+            'client_count_less_than',
+            'idle',
+            'last_active',
+            'last_notification',
+            'replied',
+            'debug',
+        }
 
         # todo: deserialize values from znc registry
         self.user_overrides = {}
@@ -235,6 +250,9 @@ class PushConfig(object):
 
         if key == 'lang' and value not in Translation.all_languages():
             raise ValueError(T.e_invalid_lang.format(value))
+
+        if key == 'service' and value not in PushService.all_services():
+            raise ValueError(T.e_unknown_service.format(value))
 
         t = type(self.defaults[key])
 
@@ -368,10 +386,10 @@ class push(znc.Module):
         return znc.CONTINUE
 
     def OnChanAction(self, nick, channel, message):
-        with Context(self, title=T.channel_push, message=message,
+        full_message = '* {0} {1}'.format(nick, message)
+        with Context(self, title=T.channel_push, message=full_message,
                      nick=nick, channel=channel, network=None) as context:
             if self.conditions.push_channel(context):
-                full_message = '* {0} {1}'.format(nick, message)
                 PushService.send_message(context)
 
         return znc.CONTINUE
@@ -385,10 +403,10 @@ class push(znc.Module):
         return znc.CONTINUE
 
     def OnPrivAction(self, nick, message):
-        with Context(self, title=T.query_push, message=message,
+        full_message = '* {0} {1}'.format(nick, message)
+        with Context(self, title=T.query_push, message=full_message,
                      nick=nick, channel=None, network=None) as context:
             if self.conditions.push_query(context):
-                full_message = '* {0} {1}'.format(nick, message)
                 PushService.send_message(context)
 
         return znc.CONTINUE
@@ -397,24 +415,24 @@ class push(znc.Module):
         self.conditions.user_activity(target, 'message')
         return znc.CONTINUE
 
-    def OnUserAction(self, target, message) :
+    def OnUserAction(self, target, message):
         self.conditions.user_activity(target, 'action')
         return znc.CONTINUE
 
     def OnUserJoin(self, channel, key):
-        self.conditions.user_activity(target, 'join')
+        self.conditions.user_activity(channel, 'join')
         return znc.CONTINUE
 
     def OnUserPart(self, channel, message):
-        self.conditions.user_activity(target, 'part')
+        self.conditions.user_activity(channel, 'part')
         return znc.CONTINUE
 
     def OnUserTopic(self, channel, topic):
-        self.conditions.user_activity(target, 'topic')
+        self.conditions.user_activity(channel, 'topic')
         return znc.CONTINUE
 
     def OnUserTopicRequest(self, channel):
-        self.conditions.user_activity(target, 'topic')
+        self.conditions.user_activity(channel, 'topic')
         return znc.CONTINUE
 
     def OnModCommand(self, message):
@@ -436,6 +454,8 @@ class push(znc.Module):
 
         if command in ('set', 'unset', 'reset'):
             self.UpdateGlobals()
+
+        return znc.CONTINUE
 
     network_channel_value_re = re.compile(r'\s*(?:/([a-zA-Z0-9]+))?'
                                           r'\s*(#+[a-zA-Z0-9]+)?\s*(.*)')
@@ -656,8 +676,14 @@ class PushService(object):
 
     @classmethod
     def send_message(cls, context):
-        service = C.get('service')
-        request = cls.service(service).send()
+        service_name = C.get('service')
+        service = cls.service(service_name)
+
+        if service is None:
+            context.module.PutModule(T.e_unknown_service.format(service_name))
+            return
+
+        request = service.send(context)
 
         if request is None:
             return
@@ -679,8 +705,14 @@ class PushService(object):
 
     @classmethod
     def send_subscribe(cls, context):
-        service = C.get('service')
-        request = cls.service(service).subscribe()
+        service_name = C.get('service')
+        service = cls.service(service_name)
+
+        if service is None:
+            context.module.PutModule(T.e_unknown_service.format(service_name))
+            return
+
+        request = service.subscribe(context)
 
         if request is None:
             m = T.e_no_subscribe
@@ -812,6 +844,7 @@ class Translation(object):
     e_option_not_valid = 'Error: invalid option name "{0}"'
     e_option_not_int = 'Error: option "{0}" requires integer value'
 
+    e_unknown_service = 'Error: push service {0} not supported'
     e_send_status = 'Error: status {0} while sending message'
     e_bad_push_handler = 'Error: no request returned from handler'
     e_no_subscribe = 'No need to subscribe for {0}'
@@ -829,6 +862,7 @@ class Canadian(Translation):
     e_option_not_valid = 'Sorry, invalid option name "{0}"'
     e_option_not_int = 'Sorry, option "{0}" requires integer value'
 
+    e_unknown_service = 'Sorry, push service {0} not supported'
     e_send_status = 'Sorry, status {0} while sending message'
     e_bad_push_handler = 'Sorry, no request returned from handler'
     e_no_subscribe = 'Sorry, no need to subscribe for {0}'
