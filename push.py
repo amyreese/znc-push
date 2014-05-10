@@ -307,14 +307,14 @@ class PushConditions(object):
 
         pass
 
-    def push_channel(self, nick, channel, message):
+    def push_channel(self, context):
         """This method is called for every incoming channel message, and must
         decide whether a push notification should be sent. A truthy return
         value will trigger a push notification."""
 
         return False
 
-    def push_query(self, nick, message):
+    def push_query(self, context):
         """This method is called for every incoming query message, and must
         decide whether a push notification should be sent. A truthy return
         value will trigger a push notification."""
@@ -360,35 +360,35 @@ class push(znc.Module):
         return True
 
     def OnChanMsG(self, nick, channel, message):
-        if self.conditions.push_channel(nick, channel, message):
-            with Context(self, title=T.channel_push, message=message,
-                         nick=nick, channel=channel, network=None) as context:
+        with Context(self, title=T.channel_push, message=message,
+                     nick=nick, channel=channel, network=None) as context:
+            if self.conditions.push_channel(context):
                 PushService.send_message(context)
 
         return znc.CONTINUE
 
     def OnChanAction(self, nick, channel, message):
-        if self.conditions.push_channel(nick, channel, message):
-            full_message = '* {0} {1}'.format(nick, message)
-            with Context(self, title=T.channel_push, message=message,
-                         nick=nick, channel=channel, network=None) as context:
+        with Context(self, title=T.channel_push, message=message,
+                     nick=nick, channel=channel, network=None) as context:
+            if self.conditions.push_channel(context):
+                full_message = '* {0} {1}'.format(nick, message)
                 PushService.send_message(context)
 
         return znc.CONTINUE
 
     def OnPrivMsg(self, nick, message):
-        if self.conditions.push_query(nick, message):
-            with Context(self, title=T.query_push, message=message,
-                         nick=nick, channel=None, network=None) as context:
+        with Context(self, title=T.query_push, message=message,
+                     nick=nick, channel=None, network=None) as context:
+            if self.conditions.push_query(context):
                 PushService.send_message(context)
 
         return znc.CONTINUE
 
     def OnPrivAction(self, nick, message):
-        if self.conditions.push_query(nick, message):
-            full_message = '* {0} {1}'.format(nick, message)
-            with Context(self, title=T.query_push, message=message,
-                         nick=nick, channel=None, network=None) as context:
+        with Context(self, title=T.query_push, message=message,
+                     nick=nick, channel=None, network=None) as context:
+            if self.conditions.push_query(context):
+                full_message = '* {0} {1}'.format(nick, message)
                 PushService.send_message(context)
 
         return znc.CONTINUE
@@ -397,7 +397,7 @@ class push(znc.Module):
         self.conditions.user_activity(target, 'message')
         return znc.CONTINUE
 
-    def OnUserAction(self, target, message):
+    def OnUserAction(self, target, message) :
         self.conditions.user_activity(target, 'action')
         return znc.CONTINUE
 
