@@ -11,6 +11,7 @@
 import json
 import platform
 import re
+import time
 import znc
 
 from collections import defaultdict
@@ -39,6 +40,9 @@ class Context(object):
         self.nick = nick
         self.channel = channel
         self.network = network
+        self.timestamp = int(time.time())
+        self.timestring = time.strftime('%Y-%m-%d %H:%M:%S',
+                                        time.localtime(self.timestamp))
 
     def __enter__(self):
         Context.stack.append(self)
@@ -54,8 +58,11 @@ class Context(object):
             'title': self.title,
             'message': self.message,
             'nick': self.nick,
+            'context': self.channel,
             'channel': self.channel,
             'network': self.network,
+            'unixtime': self.timestamp,
+            'datetime': self.timestring,
         }
 
     @classmethod
@@ -287,11 +294,40 @@ class PushConfig(object):
         return True
 
 
+class PushConditions(object):
+    """Classifies message contexts and determines if push notifications should
+    be triggered for each individual message."""
+
+    def __init__(self, module):
+        self.module = module
+
+    def user_activity(self, target, action):
+        """This method is called when the znc user is active in any channel
+        or query context, including sending messages, joining, parting, etc."""
+
+        pass
+
+    def push_channel(self, nick, channel, message):
+        """This method is called for every incoming channel message, and must
+        decide whether a push notification should be sent. A truthy return
+        value will trigger a push notification."""
+
+        return False
+
+    def push_query(self, nick, message):
+        """This method is called for every incoming query message, and must
+        decide whether a push notification should be sent. A truthy return
+        value will trigger a push notification."""
+
+        return False
+
+
 class push(znc.Module):
     description = 'Send highlights and messages to a push notification service'
     module_types = [znc.CModInfo.UserModule]
 
     debug = True
+    conditions = None
 
     def UpdateGlobals(self):
         global T
@@ -315,12 +351,71 @@ class push(znc.Module):
         C = PushConfig(self)
 
         self.UpdateGlobals()
+        self.conditions = PushConditions(self)
 
         if requests is None:
             self.PutStatus(T.e_requests_missing)
             return False
 
         return True
+
+    def OnChanMsG(self, nick, channel, message):
+        if self.conditions.push_channel(nick, channel, message):
+            with Context(self, title=T.channel_push, message=message,
+                         nick=nick, channel=channel, network=None) as context:
+                PushService.send_message(context)
+
+        return znc.CONTINUE
+
+    def OnChanAction(self, nick, channel, message):
+        if self.conditions.push_channel(nick, channel, message):
+            full_message = '* {0} {1}'.format(nick, message)
+            with Context(self, title=T.channel_push, message=message,
+                         nick=nick, channel=channel, network=None) as context:
+                PushService.send_message(context)
+
+        return znc.CONTINUE
+
+    def OnPrivMsg(self, nick, message):
+        if self.conditions.push_query(nick, message):
+            with Context(self, title=T.query_push, message=message,
+                         nick=nick, channel=None, network=None) as context:
+                PushService.send_message(context)
+
+        return znc.CONTINUE
+
+    def OnPrivAction(self, nick, message):
+        if self.conditions.push_query(nick, message):
+            full_message = '* {0} {1}'.format(nick, message)
+            with Context(self, title=T.query_push, message=message,
+                         nick=nick, channel=None, network=None) as context:
+                PushService.send_message(context)
+
+        return znc.CONTINUE
+
+    def OnUserMsg(self, target, message):
+        self.conditions.user_activity(target, 'message')
+        return znc.CONTINUE
+
+    def OnUserAction(self, target, message):
+        self.conditions.user_activity(target, 'action')
+        return znc.CONTINUE
+
+    def OnUserJoin(self, channel, key):
+        self.conditions.user_activity(target, 'join')
+        return znc.CONTINUE
+
+    def OnUserPart(self, channel, message):
+        self.conditions.user_activity(target, 'part')
+        return znc.CONTINUE
+
+    def OnUserTopic(self, channel, topic):
+        self.conditions.user_activity(target, 'topic')
+        return znc.CONTINUE
+
+    def OnUserTopicRequest(self, channel):
+        self.conditions.user_activity(target, 'topic')
+        return znc.CONTINUE
 
     def OnModCommand(self, message):
         """Dispatches messages sent to *push to command functions."""
