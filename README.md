@@ -219,23 +219,23 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 ### Push Services
 
-*   `service = ""`
+*   `service` Default: ` `
 
     Short name for the push notification service that you want to use.  Must be set before
     ZNC Push can send any notifications.
 
     Possible values include:
 
-    *   "boxcar"
-    *   "nma"
-    *   "pushover"
-    *   "prowl"
-    *   "supertoasty"
-    *   "pushbullet"
-    *   "airgram"
-    *   "url"
+    *   `boxcar`
+    *   `nma`
+    *   `pushover`
+    *   `prowl`
+    *   `supertoasty`
+    *   `pushbullet`
+    *   `airgram`
+    *   `<url>`
 
-*   `username = ""`
+*   `username` Default: ` `
 
     User account that should receive push notifications.
 
@@ -244,7 +244,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as username.
 
-*   `secret = ""`
+*   `secret` Default: ` `
 
     Authentication token for push notifications.
 
@@ -253,7 +253,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
 
-*   `target = ""`
+*   `target` Default: ` `
 
     Device or target name for push notifications.
 
@@ -265,12 +265,12 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 ### Notifications
 
-*   `message_content = "{message}"`
+*   `message_content` Default: `{message}`
 
     Message content that will be sent for the push notification.  Keyword expansion is
     performed on this value.
 
-*   `message_length = 100`
+*   `message_length` Default: `100`
 
     Maximum length of the notification message to be sent.  The message will be nicely
     truncated and ellipsized at or before this length is reached.  A value of 0 (zero) will
@@ -280,32 +280,32 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     a GET request to, and has keyword expansion performed on portions of it, including the
     path and any query parameter values.
 
-*   `message_title = "{title}"`
+*   `message_title` Default: `{title}`
 
     Title that will be provided for the push notification.  Keyword expansion is performed
     on this value.
 
-*   `message_uri = ""`
+*   `message_uri` Default: ` `
 
     URI that will be sent with the push notification.  This could be a web address or a
     local scheme to access a mobile application.  Keyword expansion is performed on this
     value.
 
-*   `message_uri_post = "no"`
+*   `message_uri_post` Default: `no`
 
     When using the custom URL service, this option allows you to specify whether to use the
     POST method instead of GET.
 
-*   `message_uri_title` = ""`
+*   `message_uri_title` Default: ` `
 
     If you're using Pushover.net, you can specify a title for the `message_uri` option.
 
-*   `message_priority = ""`
+*   `message_priority` Default: ` `
 
     Priority level that will be used for the push notification.
     Currently supported only by Pushover.net and Notify My Android.
 
-*   `message_sound = ""`
+*   `message_sound` Default: ` `
 
     Notification sound to play with the push notification.
     Supported under Pushover, Faast, and Boxcar 2.  Must be chosen from the list of
@@ -315,19 +315,19 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 ### Conditions
 
-*   `away_only = "no"`
+*   `away_only` Default: `no`
 
-    If set to "yes", notifications will only be sent if the user has set their `/away` status.
+    If set to `yes`, notifications will only be sent if the user has set their `/away` status.
 
     This condition requires version 0.090 of ZNC to operate, and will be disabled when
     compiled against older versions.
 
-*   `client_count_less_than = 0`
+*   `client_count_less_than` Default: `0`
 
     Notifications will only be sent if the number of connected IRC clients is less than this
     value.  A value of 0 (zero) will disable this condition.
 
-*   `highlight = ""`
+*   `highlight` Default: ` `
 
     Space-separated list of highlight strings to match against channel messages using
     case-insensitive, wildcard matching.  Strings will be compared in order they appear in
@@ -336,7 +336,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Individual strings may be prefixed with:
 
-    *   `-` (hypen) to negate the match, which makes the string act as a filter rather than
+    *   `-` (hyphen) to negate the match, which makes the string act as a filter rather than
         a search
 
     *   `_` (underscore) to trigger a "whole-word" match, where it must be surrounded by
@@ -344,21 +344,21 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     *   `*` (asterisk) to match highlight strings that start with any of the above prefixes
 
-    As an example, a highlight value of "-pinto car" will trigger notification on the
+    As an example, a highlight value of `-pinto car` will trigger notification on the
     message "I like cars", but will prevent notifications for "My favorite car is the Pinto"
-    *and* "I like pinto beans".  Conversely, a highlight value of "car -pinto" will trigger
+    *and* "I like pinto beans".  Conversely, a highlight value of `car -pinto` will trigger
     notifications for the first two messages, and only prevent notification of the last one.
 
-    As another example, a value of "_car" will trigger notification for the message "my car
+    As another example, a value of `_car` will trigger notification for the message "my car
     is awesome", but will not match the message "I like cars".
 
-*   `idle = 0`
+*   `idle` Default: `0`
 
     Time in seconds since the last activity by the user on any channel or query window,
     including joins, parts, messages, and actions.  Notifications will only be sent if the
     elapsed time is greater than this value.  A value of 0 (zero) will disable this condition.
 
-*   `last_active = 180`
+*   `last_active` Default: `180`
 
     Time in seconds since the last message sent by the user on that channel or query window.
     Notifications will only be sent if the elapsed time is greater than this value.  A value
@@ -368,7 +368,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     window separately, so a recent PM to Joe will not affect a notification sent from
     channel #foo.
 
-*   `last_notification = 300`
+*   `last_notification` Default: `300`
 
     Time in seconds since the last notification sent from that channel or query window.
     Notifications will only be sent if the elapsed time is greater than this value.  A value
@@ -378,7 +378,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     query window separately, so a recent PM from Joe will not affect a notification sent
     from channel #foo.
 
-*   `nick_blacklist = ""`
+*   `nick_blacklist` Default: ` `
 
     Space-separated list of nicks.  Applies to both channel mentions and query windows.
     Notifications will only be sent for messages from nicks that are not present in this
@@ -389,48 +389,48 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     like "channelbot", "FooBot", or "Robot".  Care must be used to not accidentally
     blacklist legitimate nicks with wildcards.
 
-*   `replied = "yes"`
+*   `replied` Default: `yes`
 
-    If set to "yes", notifications will only be sent if you have replied to the channel or
+    If set to `yes`, notifications will only be sent if you have replied to the channel or
     query window more recently than the last time a notification was sent for that context.
 
 
 ### Advanced
 
-*   `channel_conditions = "all"`
+*   `channel_conditions` Default: `all`
 
     This option allows customization of the boolean logic used to determine how conditional
     values are used to filter notifications for channel messages.  It evaluates as a full
     boolean logic expression,  including the use of sub-expressions.  The default value of
-    "all" will bypass this evaluation and simply require all conditions to be true.
+    `all` will bypass this evaluation and simply require all conditions to be true.
 
     The expression consists of space-separated tokens in the following grammar:
 
-    *   expression = expression operator expression | "(" expression ")" | value
-    *   operator = "and" | "or"
-    *   value = "true" | "false" | condition
-    *   condition = <any condition option>
+    *   expression = `<expression> <operator> <expression>` | `( <expression> )` | `<value>`
+    *   operator = `and` | `or`
+    *   value = `true` | `false` | `<condition>`
+    *   condition = `<any condition option>`
 
-    As a simple example, to replicate the default "all" value, would be the value of
-    "away_only and client_count_less_than and highlight and idle and last_active and
-    last_notification and nick_blacklist and replied".
+    As a simple example, to replicate the default `all` value, would be the value of
+    `away_only and client_count_less_than and highlight and idle and last_active and
+    last_notification and nick_blacklist and replied`.
 
-    Alternately, setting a value of "true" would send a notification for *every* message,
-    while a value of "false" would *never* send a notification.
+    Alternately, setting a value of `true` would send a notification for *every* message,
+    while a value of `false` would *never* send a notification.
 
-    For a more complicated example, the value of "client_count_less_than and highlight and
-    (last_active or last_notification or replied) and nick_blacklist" would send a
+    For a more complicated example, the value of `client_count_less_than and highlight and
+    (last_active or last_notification or replied) and nick_blacklist` would send a
     notification if any of the three conditions in the sub-expression are met, while still
     requiring all of the conditions outside of the parentheses to also be met.
 
-*   `query_conditions = "all"`
+*   `query_conditions` Default: `all`
 
     This option is more or less identical to `channel_conditions`, except that it is used
     to filter notifications for private messages.
 
-*   `debug = "off"`
+*   `debug` Default: `off`
 
-    When set to "on", this option enables debug output for various features, and is useful
+    When set to `on`, this option enables debug output for various features, and is useful
     in troubleshooting problems like failed push notifications.  Debug output will show up
     in your `*push` window.
 
