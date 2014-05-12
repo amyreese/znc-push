@@ -319,25 +319,169 @@ class PushConditions(object):
     def __init__(self, module):
         self.module = module
 
+        self.idle_time = time.time()
+        self.last_active_time = defaultdict(int)
+        self.last_reply_time = defaultdict(int)
+        self.last_notification_time = defaultdict(int)
+
+    def status(self, target=None):
+        conditions = {
+            'away_only': self.away_only(),
+            'client_count_less_than': self.client_count_less_than(),
+            'idle': self.idle(),
+        }
+
+        if target:
+            conditions['last_active'] = self.last_active(target)
+            conditions['last_notification'] = self.last_notification(target)
+            conditions['replied'] = self.replied(target)
+
+        return conditions
+
     def user_activity(self, target, action):
         """This method is called when the znc user is active in any channel
         or query context, including sending messages, joining, parting, etc."""
 
-        pass
+        now = time.time()
+        self.idle_time = now
+        self.last_active_time[target] = now
+
+        if action in ('action', 'message'):
+            self.last_reply_time[target] = now
 
     def push_channel(self, context):
         """This method is called for every incoming channel message, and must
         decide whether a push notification should be sent. A truthy return
         value will trigger a push notification."""
 
-        return False
+        expression = C.get('channel_conditions').lower()
+
+        if expression != 'all':
+            # todo: eval this
+            return False
+
+        send = (True
+                and self.away_only()
+                and self.client_count_less_than()
+                and self.highlight(context.message)
+                and self.idle()
+                and self.last_active(context.channel)
+                and self.last_notification(context.channel)
+                and self.nick_blacklist(context.nick)
+                and self.replied(context.channel)
+                )
+
+        if send:
+            self.last_notification[context.channel] = time.time()
+
+        return send
 
     def push_query(self, context):
         """This method is called for every incoming query message, and must
         decide whether a push notification should be sent. A truthy return
         value will trigger a push notification."""
 
+        expression = C.get('query_conditions').lower()
+
+        if expression != 'all':
+            # todo: eval this
+            return False
+
+        send = (True
+                and self.away_only()
+                and self.client_count_less_than()
+                and self.idle()
+                and self.last_active(context.nick)
+                and self.last_notification(context.nick)
+                and self.nick_blacklist(context.nick)
+                and self.replied(context.nick)
+                )
+
+        if send:
+            self.last_notification[context.channel] = time.time()
+
+        return send
+
+    def away_only(self):
+        value = C.get('away_only')
+        return value != 'yes' or self.module.GetNetwork().IsIRCAway()
+
+    def client_count_less_than(self):
+        # todo: fix GetClients() returning a SwigPyObject that we can't use
+        return True
+
+        value = C.get('client_count_less_than')
+        network = self.module.GetNetwork()
+        clients = network.GetClients()
+
+        return value == 0 or len(clients) < value
+
+    def idle(self):
+        value = C.get('idle')
+        now = time.time()
+        return value == 0 or (now - self.idle_time) >= value
+
+    def highlight(self, message):
+        values = C.get('highlight').lower().split() + ['%nick%']
+        message = ' {0} '.format(message.lower())
+
+        for value in values:
+            prefix = value[0]
+            push = True
+
+            if prefix == '-':
+                value = value[1:]
+                push = False
+
+            elif prefix == '_':
+                value = ' {0} '.format(value[1:])
+
+            value = self.module.GetNetwork().ExpandString(value).lower()
+
+            if value in message:
+                return push
+
         return False
+
+    def last_active(self, target):
+        value = C.get('last_active')
+        now = time.time()
+        return value == 0 or (now - self.last_active_time[target]) >= value
+
+    def last_notification(self, target):
+        value = C.get('last_notification')
+        now = time.time()
+        return value == 0 or (now - self.last_notification_time[target]) >= value
+
+    def nick_blacklist(self, nick):
+        values = C.get('nick_blacklist').lower().split()
+        nick = nick.lower()
+
+        for value in values:
+            value = self.module.GetNetwork().ExpandString(value).lower()
+            match = True
+
+            if value.startswith('*'):
+                match = match and nick.endswith(value[1:])
+
+            if value.endswith('*'):
+                match = match and nick.startswith(value[:-1])
+
+            if not match:
+                match = value == nick
+
+            if match:
+                return False
+
+        return True
+
+    def replied(self, target):
+        value = C.get('replied')
+        last_notification = self.last_notification_time[target]
+        last_reply = self.last_reply_time[target]
+        return (value != 'yes'
+                or last_notification == 0
+                or last_notification < last_reply)
 
 
 class push(znc.Module):
@@ -613,6 +757,15 @@ class push(znc.Module):
                 self.PutModule(T.e_option_not_valid.format(key))
 
         self.PutModule(T.done)
+
+    def cmd_status(self, tokens):
+        network, channel, tokens = self.parse_network_channel_value(tokens)
+
+        cv = '{0}: {1}'
+
+        conditions = self.conditions.status(target=channel)
+        for key in sorted(conditions.keys()):
+            self.PutModule(cv.format(key, conditions[key]))
 
     def cmd_subscribe(self, tokens):
         """Subscribe the user to their currently configured push service,
