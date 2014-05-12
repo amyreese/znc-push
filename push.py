@@ -522,34 +522,48 @@ class push(znc.Module):
         return True
 
     def OnChanMsG(self, nick, channel, message):
+        network = self.GetNetwork().GetName()
+        channel = channel.GetName()
+        nick = nick.GetNick()
+
         with Context(self, title=T.channel_push, message=message,
-                     nick=nick, channel=channel, network=None) as context:
+                     nick=nick, channel=channel, network=network) as context:
             if self.conditions.push_channel(context):
                 PushService.send_message(context)
 
         return znc.CONTINUE
 
     def OnChanAction(self, nick, channel, message):
+        network = self.GetNetwork().GetName()
+        channel = channel.GetName()
+        nick = nick.GetNick()
+
         full_message = '* {0} {1}'.format(nick, message)
         with Context(self, title=T.channel_push, message=full_message,
-                     nick=nick, channel=channel, network=None) as context:
+                     nick=nick, channel=channel, network=network) as context:
             if self.conditions.push_channel(context):
                 PushService.send_message(context)
 
         return znc.CONTINUE
 
     def OnPrivMsg(self, nick, message):
+        network = self.GetNetwork().GetName()
+        nick = nick.GetNick()
+
         with Context(self, title=T.query_push, message=message,
-                     nick=nick, channel=None, network=None) as context:
+                     nick=nick, channel=None, network=network) as context:
             if self.conditions.push_query(context):
                 PushService.send_message(context)
 
         return znc.CONTINUE
 
     def OnPrivAction(self, nick, message):
+        network = self.GetNetwork().GetName()
+        nick = nick.GetNick()
+
         full_message = '* {0} {1}'.format(nick, message)
         with Context(self, title=T.query_push, message=full_message,
-                     nick=nick, channel=None, network=None) as context:
+                     nick=nick, channel=None, network=network) as context:
             if self.conditions.push_query(context):
                 PushService.send_message(context)
 
