@@ -451,7 +451,8 @@ class PushConditions(object):
     def last_notification(self, target):
         value = C.get('last_notification')
         now = time.time()
-        return value == 0 or (now - self.last_notification_time[target]) >= value
+        return (value == 0
+                or (now - self.last_notification_time[target]) >= value)
 
     def nick_blacklist(self, nick):
         values = C.get('nick_blacklist').lower().split()
