@@ -324,6 +324,9 @@ class PushConditions(object):
         self.last_reply_time = defaultdict(int)
         self.last_notification_time = defaultdict(int)
 
+    def PutDebug(self, message):
+        self.module.PutDebug(message, verbose=True)
+
     def status(self, target=None):
         conditions = {
             'away_only': self.away_only(),
@@ -354,22 +357,31 @@ class PushConditions(object):
         decide whether a push notification should be sent. A truthy return
         value will trigger a push notification."""
 
+        self.PutDebug(T.d_eval_channel_message.format(
+                      context.channel, context.nick, context.message))
+
         expression = C.get('channel_conditions').lower()
 
         if expression != 'all':
             # todo: eval this
             return False
 
-        send = (True
-                and self.away_only()
-                and self.client_count_less_than()
-                and self.highlight(context.message)
-                and self.idle()
-                and self.last_active(context.channel)
-                and self.last_notification(context.channel)
-                and self.nick_blacklist(context.nick)
-                and self.replied(context.channel)
-                )
+        conditions = {
+            'away_only': self.away_only(),
+            'client_count_less_than': self.client_count_less_than(),
+            'highlight': self.highlight(context.message),
+            'idle': self.idle(),
+            'last_active': self.last_active(context.channel),
+            'last_notification': self.last_notification(context.channel),
+            'nick_blacklist': self.nick_blacklist(context.nick),
+            'replied': self.replied(context.channel),
+        }
+
+        for key, value in conditions.items():
+            self.PutDebug(T.d_eval_term.format(key, value))
+
+        send = all(conditions.values())
+        self.PutDebug(T.d_eval_result.format(T.yes if send else T.no))
 
         if send:
             self.last_notification_time[context.channel] = time.time()
@@ -381,21 +393,31 @@ class PushConditions(object):
         decide whether a push notification should be sent. A truthy return
         value will trigger a push notification."""
 
+        self.PutDebug(T.d_eval_query_message.format(
+                      context.nick, context.message))
+
         expression = C.get('query_conditions').lower()
 
         if expression != 'all':
             # todo: eval this
             return False
 
-        send = (True
-                and self.away_only()
-                and self.client_count_less_than()
-                and self.idle()
-                and self.last_active(context.nick)
-                and self.last_notification(context.nick)
-                and self.nick_blacklist(context.nick)
-                and self.replied(context.nick)
-                )
+        conditions = {
+            'away_only': self.away_only(),
+            'client_count_less_than': self.client_count_less_than(),
+            'highlight': self.highlight(context.message),
+            'idle': self.idle(),
+            'last_active': self.last_active(context.channel),
+            'last_notification': self.last_notification(context.channel),
+            'nick_blacklist': self.nick_blacklist(context.nick),
+            'replied': self.replied(context.channel),
+        }
+
+        for key, value in conditions.items():
+            self.PutDebug(T.d_eval_term.format(key, value))
+
+        send = all(conditions.values())
+        self.PutDebug(T.d_eval_result.format(T.yes if send else T.no))
 
         if send:
             self.last_notification_time[context.channel] = time.time()
@@ -490,20 +512,28 @@ class push(znc.Module):
     module_types = [znc.CModInfo.UserModule]
 
     debug = True
+    verbose = True
     conditions = None
 
     def UpdateGlobals(self):
         global T
         T = T.lang(C.get('lang'))
 
-        self.debug = C.get('debug') == 'on'
+        debug = C.get('debug')
+        self.debug = debug in ('on', 'verbose')
+        self.verbose = debug == 'verbose'
 
-    def PutDebug(self, message):
-        if self.debug:
-            if type(message) != str:
-                message = str(message)
+    def PutDebug(self, message, verbose=True):
+        if not self.debug or (verbose and not self.verbose):
+            return
 
-            self.PutModule(message)
+        if type(message) != str:
+            message = str(message)
+
+        self.PutModule(message)
+
+    def PutVerbose(self, message):
+        return self.PutDebug(message, verbose=True)
 
     def OnLoad(self, args, message):
         """Entry point of the module.  Initialize config, translations, and
@@ -1010,6 +1040,8 @@ class Translation(object):
 
     _lang = 'en_us'
 
+    yes = 'yes'
+    no = 'no'
     done = 'done'
     help_website = 'View the detailed documentation at '\
                    'https://github.com/jreese/znc-push/blob/master/README.md'
@@ -1017,6 +1049,11 @@ class Translation(object):
     test_message = 'Test message'
     channel_push = 'Highlight'
     query_push = 'Private Message'
+
+    d_eval_channel_message = 'Evaluating channel message {0} <{1}> {2}'
+    d_eval_query_message = 'Evaluating query message <{0}> {1}'
+    d_eval_term = '  {0}: {1}'
+    d_eval_result = 'Send push notification? {0}'
 
     e_requests_missing = 'Error: could not import python requests module'
     e_invalid_command = 'Error: invalid command, try `help`'
