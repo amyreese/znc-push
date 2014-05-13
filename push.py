@@ -382,7 +382,7 @@ class PushConditions(object):
 
             try:
                 self.PutDebug(T.d_eval_expression.format(expression))
-                send = eval(expression, {'__builtins__': {},}, conditions)
+                send = eval(expression, {'__builtins__': {}}, conditions)
 
             except SyntaxError as e:
                 self.module.PutModule(T.e_eval_syntax.format(e))
@@ -430,7 +430,7 @@ class PushConditions(object):
 
             try:
                 self.PutDebug(T.d_eval_expression.format(expression))
-                send = eval(expression, {'__builtins__': {},}, conditions)
+                send = eval(expression, {'__builtins__': {}}, conditions)
 
             except SyntaxError as e:
                 self.module.PutModule(T.e_eval_syntax.format(e))
