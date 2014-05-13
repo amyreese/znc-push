@@ -360,12 +360,6 @@ class PushConditions(object):
         self.PutDebug(T.d_eval_channel_message.format(
                       context.channel, context.nick, context.message))
 
-        expression = C.get('channel_conditions').lower()
-
-        if expression != 'all':
-            # todo: eval this
-            return False
-
         conditions = {
             'away_only': self.away_only(),
             'client_count_less_than': self.client_count_less_than(),
@@ -380,7 +374,25 @@ class PushConditions(object):
         for key, value in conditions.items():
             self.PutDebug(T.d_eval_term.format(key, value))
 
-        send = all(conditions.values())
+        expression = C.get('channel_conditions').lower()
+
+        if expression != 'all':
+            send = False
+            conditions.update(true=True, false=False)
+
+            try:
+                self.PutDebug(T.d_eval_expression.format(expression))
+                send = eval(expression, {'__builtins__': {},}, conditions)
+
+            except SyntaxError as e:
+                self.module.PutModule(T.e_eval_syntax.format(e))
+
+            except Exception as e:
+                self.module.PutModule(T.e_eval_exception.format(e))
+
+        else:
+            send = all(conditions.values())
+
         self.PutDebug(T.d_eval_result.format(T.yes if send else T.no))
 
         if send:
@@ -396,27 +408,39 @@ class PushConditions(object):
         self.PutDebug(T.d_eval_query_message.format(
                       context.nick, context.message))
 
-        expression = C.get('query_conditions').lower()
-
-        if expression != 'all':
-            # todo: eval this
-            return False
-
         conditions = {
             'away_only': self.away_only(),
             'client_count_less_than': self.client_count_less_than(),
             'highlight': self.highlight(context.message),
             'idle': self.idle(),
-            'last_active': self.last_active(context.channel),
-            'last_notification': self.last_notification(context.channel),
+            'last_active': self.last_active(context.nick),
+            'last_notification': self.last_notification(context.nick),
             'nick_blacklist': self.nick_blacklist(context.nick),
-            'replied': self.replied(context.channel),
+            'replied': self.replied(context.nick),
         }
 
         for key, value in conditions.items():
             self.PutDebug(T.d_eval_term.format(key, value))
 
-        send = all(conditions.values())
+        expression = C.get('query_conditions').lower()
+
+        if expression != 'all':
+            send = False
+            conditions.update(true=True, false=False)
+
+            try:
+                self.PutDebug(T.d_eval_expression.format(expression))
+                send = eval(expression, {'__builtins__': {},}, conditions)
+
+            except SyntaxError as e:
+                self.module.PutModule(T.e_eval_syntax.format(e))
+
+            except Exception as e:
+                self.module.PutModule(T.e_eval_exception.format(e))
+
+        else:
+            send = all(conditions.values())
+
         self.PutDebug(T.d_eval_result.format(T.yes if send else T.no))
 
         if send:
@@ -1053,6 +1077,7 @@ class Translation(object):
     d_eval_channel_message = 'Evaluating channel message {0} <{1}> {2}'
     d_eval_query_message = 'Evaluating query message <{0}> {1}'
     d_eval_term = '  {0}: {1}'
+    d_eval_expression = 'Evaluating custom expression: {0}'
     d_eval_result = 'Send push notification? {0}'
 
     e_requests_missing = 'Error: could not import python requests module'
@@ -1066,6 +1091,9 @@ class Translation(object):
     e_bad_push_handler = 'Error: no request returned from handler'
     e_no_subscribe = 'No need to subscribe for {0}'
     e_send_subscribe = 'Error: status {0} while subscribing'
+
+    e_eval_exception = 'Error evalutaing custom expression: {0}'
+    e_eval_syntax = 'Syntax error in custom expression: {0}'
 
 
 class Canadian(Translation):
