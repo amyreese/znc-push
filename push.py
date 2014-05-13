@@ -372,7 +372,7 @@ class PushConditions(object):
                 )
 
         if send:
-            self.last_notification[context.channel] = time.time()
+            self.last_notification_time[context.channel] = time.time()
 
         return send
 
@@ -398,7 +398,7 @@ class PushConditions(object):
                 )
 
         if send:
-            self.last_notification[context.channel] = time.time()
+            self.last_notification_time[context.channel] = time.time()
 
         return send
 
@@ -524,8 +524,9 @@ class push(znc.Module):
 
     def OnChanMsg(self, nick, channel, message):
         network = self.GetNetwork().GetName()
-        channel = channel.GetName()
         nick = nick.GetNick()
+        channel = channel.GetName()
+        message = str(message)
 
         with Context(self, title=T.channel_push, message=message,
                      nick=nick, channel=channel, network=network) as context:
@@ -536,8 +537,9 @@ class push(znc.Module):
 
     def OnChanAction(self, nick, channel, message):
         network = self.GetNetwork().GetName()
-        channel = channel.GetName()
         nick = nick.GetNick()
+        channel = channel.GetName()
+        message = str(message)
 
         full_message = '* {0} {1}'.format(nick, message)
         with Context(self, title=T.channel_push, message=full_message,
@@ -550,6 +552,7 @@ class push(znc.Module):
     def OnPrivMsg(self, nick, message):
         network = self.GetNetwork().GetName()
         nick = nick.GetNick()
+        message = str(message)
 
         with Context(self, title=T.query_push, message=message,
                      nick=nick, channel=None, network=network) as context:
@@ -561,6 +564,7 @@ class push(znc.Module):
     def OnPrivAction(self, nick, message):
         network = self.GetNetwork().GetName()
         nick = nick.GetNick()
+        message = str(message)
 
         full_message = '* {0} {1}'.format(nick, message)
         with Context(self, title=T.query_push, message=full_message,
@@ -571,26 +575,32 @@ class push(znc.Module):
         return znc.CONTINUE
 
     def OnUserMsg(self, target, message):
+        target = str(target)
         self.conditions.user_activity(target, 'message')
         return znc.CONTINUE
 
     def OnUserAction(self, target, message):
+        target = str(target)
         self.conditions.user_activity(target, 'action')
         return znc.CONTINUE
 
     def OnUserJoin(self, channel, key):
+        channel = str(channel)
         self.conditions.user_activity(channel, 'join')
         return znc.CONTINUE
 
     def OnUserPart(self, channel, message):
+        channel = str(channel)
         self.conditions.user_activity(channel, 'part')
         return znc.CONTINUE
 
     def OnUserTopic(self, channel, topic):
+        channel = str(channel)
         self.conditions.user_activity(channel, 'topic')
         return znc.CONTINUE
 
     def OnUserTopicRequest(self, channel):
+        channel = str(channel)
         self.conditions.user_activity(channel, 'topic')
         return znc.CONTINUE
 
@@ -1005,6 +1015,8 @@ class Translation(object):
                    'https://github.com/jreese/znc-push/blob/master/README.md'
 
     test_message = 'Test message'
+    channel_push = 'Highlight'
+    query_push = 'Private Message'
 
     e_requests_missing = 'Error: could not import python requests module'
     e_invalid_command = 'Error: invalid command, try `help`'
