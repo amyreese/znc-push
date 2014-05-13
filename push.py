@@ -522,7 +522,7 @@ class push(znc.Module):
 
         return True
 
-    def OnChanMsG(self, nick, channel, message):
+    def OnChanMsg(self, nick, channel, message):
         network = self.GetNetwork().GetName()
         channel = channel.GetName()
         nick = nick.GetNick()
