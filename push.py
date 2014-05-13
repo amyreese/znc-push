@@ -602,8 +602,8 @@ class push(znc.Module):
         if not tokens:
             return
 
-        command = 'cmd_' + tokens[0].lower()
-        method = getattr(self, command, None)
+        command = tokens[0].lower()
+        method = getattr(self, 'cmd_' + command, None)
 
         if method is None:
             self.PutModule(T.e_invalid_command)
