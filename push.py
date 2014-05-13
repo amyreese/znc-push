@@ -22,7 +22,7 @@ try:
 except ImportError:
     requests = None
 
-VERSION = 'v2.0.0-dev'
+VERSION = 'v2.0.0-rc'
 USER_AGENT = 'ZNC Push/' + VERSION
 
 C = None
