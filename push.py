@@ -23,8 +23,10 @@ try:
 except ImportError:
     requests = None
 
+APP_NAME = 'ZNC Push'
 VERSION = 'v2.0.0-rc'
-USER_AGENT = 'ZNC Push/' + VERSION
+USER_AGENT = '{0}/{1}'.format(APP_NAME, VERSION)
+IMAGE_URL = 'https://raw2.github.com/jreese/znc-push/master/logo.png'
 
 USER_CODE_ENABLED = False
 
@@ -1057,6 +1059,137 @@ class PushService(object):
         return None
 
 
+class Airgram(PushService):
+    required = {
+        'target': 'email',
+    }
+
+    def send(self, context):
+        url = 'https://api.airgramapp.com/1/send_as_guest'
+
+        params = {
+            'email': C.get('target'),
+            'msg': C.get_expanded('message_content'),
+        }
+
+        return Request('POST', url, data=params)
+
+
+class Boxcar(PushService):
+    required = {
+        'username': 'username',
+    }
+
+    api_key = 'puSd2qp2gCDZO7nWkvb9'
+    api_secret = 'wLQQKSyGybIOkggbiKipefeYGLni9B3FPZabopHp'
+
+    def send(self, context):
+        url = 'https://boxcar.io/devices/providers/{0}/notifications'
+        url = url.format(self.api_key)
+
+        params = {
+            'email': C.get('username'),
+            'notification[from_screen_name]': context.channel or context.nick,
+            'notification[message]': C.get_expanded('message_content'),
+            'notification[source_url]': C.get_expanded('message_uri'),
+        }
+
+        return Request('POST', url, data=params)
+
+
+class Faast(PushService):
+    required = {
+        'secret': 'API key',
+    }
+
+    def send(self, context):
+        url = 'https://www.appnotifications.com/account/notifications.json'
+
+        params = {
+            'user_credentials': C.get('secret'),
+            'notification[title]': C.get_expanded('message_title'),
+            'notification[subtitle]': context.channel or context.nick,
+            'notification[message]': C.get_expanded('message_content'),
+            'notification[long_message]': C.get_expanded('message_content'),
+            'notification[icon_url]': IMAGE_URL,
+        }
+
+        sound = C.get('message_sound')
+        muri = C.get_expanded('message_uri')
+
+        if sound:
+            params['notification[sound]'] = sound
+
+        if muri:
+            params['notification[run_command]'] = muri
+
+        return Request('POST', url, data=params)
+
+
+class NMA(PushService):
+    required = {
+        'secret': 'secret',
+    }
+
+    def send(self, context):
+        url = 'https://www.notifymyandroid.com/publicapi/notify'
+
+        params = {
+            'apikey': C.get('secret'),
+            'application': APP_NAME,
+            'event': C.get_expanded('message_title'),
+            'description': C.get_expanded('message_content'),
+            'url': C.get_expanded('message_uri'),
+        }
+
+        priority = C.get('message_priority')
+
+        if priority:
+            params['priority'] = priority
+
+        return Request('POST', url, data=params)
+
+
+class Prowl(PushService):
+    required = {
+        'secret': 'secret',
+    }
+
+    def send(self, context):
+        url = 'https://api.prowlapp.com/publicapi/add'
+
+        params = {
+            'apikey': C.get('secret'),
+            'application': APP_NAME,
+            'event': C.get_expanded('message_title'),
+            'description': C.get_expanded('message_content'),
+            'url': C.get_expanded('message_uri'),
+        }
+
+        return Request('POST', url, data=params)
+
+
+class PushBullet(PushService):
+    required = {
+        'secret': 'API key',
+        'target': 'Device ID',
+    }
+
+    def send(self, context):
+        url = 'https://api.pushbullet.com/api/pushes'
+
+        auth = (C.get('secret'),)
+
+        params = {
+            'device_iden': C.get('target'),
+            'type': 'note',
+            'title': C.get_expanded('message_title'),
+            'body': C.get_expanded('message_content'),
+        }
+
+        return Request('POST', url, auth=auth, data=params)
+
+
 class Pushover(PushService):
     required = {
         'secret': 'API key/token',
@@ -1097,25 +1230,37 @@ class Pushover(PushService):
         return Request('POST', url, data=params)
 
 
-class PushBullet(PushService):
+class SuperToasty(PushService):
     required = {
-        'secret': 'API key',
-        'target': 'Device ID',
+        'secret': 'Device ID',
     }
 
     def send(self, context):
-        url = 'https://api.pushbullet.com/api/pushes'
-
-        auth = (C.get('secret'),)
+        url = 'http://api.supertoasty.com/notify/' + C.get('secret')
 
         params = {
-            'device_iden': C.get('target'),
-            'type': 'note',
             'title': C.get_expanded('message_title'),
-            'body': C.get_expanded('message_content'),
+            'text': C.get_expanded('message_content'),
+            'image': IMAGE_URL,
+            'sender': APP_NAME,
         }
 
-        return Request('POST', url, auth=auth, data=params)
+        return Request('GET', url, params=params)
+
+
+class URL(PushService):
+    required = {
+        'message_uri': 'message URI',
+    }
+
+    def send(self, context):
+        url = C.get_expanded('message_uri')
+
+        method = C.get('target').upper()
+        if method not in ('POST', 'GET'):
+            method = 'POST'
+
+        return Request('POST', url)
 
 
 class Translation(object):
