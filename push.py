@@ -967,25 +967,29 @@ class PushService(object):
             context.module.PutModule(T.e_unknown_service.format(service_name))
             return
 
-        request = service.send(context)
+        try:
+            request = service.send(context)
 
-        if request is None:
-            return
+            if request is None:
+                return
 
-        elif type(request) != Request:
-            context.module.PutModule(T.e_bad_push_handler)
-            return
+            elif type(request) != Request:
+                context.module.PutModule(T.e_bad_push_handler)
+                return
 
-        session = Session()
-        prepped = session.prepare_request(request)
-        response = session.send(prepped, verify=True)
+            session = Session()
+            prepped = session.prepare_request(request)
+            response = session.send(prepped, verify=True)
 
-        if response.status_code != 200:
-            m = T.e_send_status
-            context.module.PutModule(m.format(response.status_code))
+            if response.status_code != 200:
+                m = T.e_send_status
+                context.module.PutModule(m.format(response.status_code))
 
-        for line in response.text.split('\n'):
-            context.module.PutDebug(line)
+            for line in response.text.split('\n'):
+                context.module.PutDebug(line)
+
+        except Exception as e:
+            self.module.PutModule(str(e))
 
     @classmethod
     def send_subscribe(cls, context):
@@ -996,27 +1000,31 @@ class PushService(object):
             context.module.PutModule(T.e_unknown_service.format(service_name))
             return
 
-        request = service.subscribe(context)
+        try:
+            request = service.subscribe(context)
 
-        if request is None:
-            m = T.e_no_subscribe
-            context.module.PutModule(m.format(service))
-            return
+            if request is None:
+                m = T.e_no_subscribe
+                context.module.PutModule(m.format(service))
+                return
 
-        elif type(request) != Request:
-            context.module.PutModule(T.e_bad_push_handler)
-            return
+            elif type(request) != Request:
+                context.module.PutModule(T.e_bad_push_handler)
+                return
 
-        session = Session()
-        prepped = session.prepare_request(request)
-        response = session.send(prepped, verify=True)
+            session = Session()
+            prepped = session.prepare_request(request)
+            response = session.send(prepped, verify=True)
 
-        if response.status_code != 200:
-            m = T.e_send_subscribe
-            context.module.PutModule(m.format(response.status_code))
+            if response.status_code != 200:
+                m = T.e_send_subscribe
+                context.module.PutModule(m.format(response.status_code))
 
-        for line in response.text.split('\n'):
-            context.module.PutDebug(line)
+            for line in response.text.split('\n'):
+                context.module.PutDebug(line)
+
+        except Exception as e:
+            self.module.PutModule(str(e))
 
     _cache = None
 
