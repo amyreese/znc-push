@@ -15,6 +15,7 @@ import time
 import znc
 
 from collections import defaultdict
+from os import path
 
 try:
     import requests
@@ -24,6 +25,8 @@ except ImportError:
 
 VERSION = 'v2.0.0-rc'
 USER_AGENT = 'ZNC Push/' + VERSION
+
+USER_CODE_ENABLED = False
 
 C = None
 T = None
@@ -110,11 +113,13 @@ class PushConfig(object):
             'channel_conditions': 'all',
             'query_conditions': 'all',
             'debug': 'off',
+            'custom_code_path': '',
         }
 
         self.globals = {
             'lang',
             'debug',
+            'custom_code_path',
         }
 
         self.absolutes = {
@@ -127,6 +132,7 @@ class PushConfig(object):
             'last_notification',
             'replied',
             'debug',
+            'custom_code_path',
         }
 
         # todo: deserialize values from znc registry
@@ -539,6 +545,47 @@ class push(znc.Module):
     verbose = True
     conditions = None
 
+    def load_user_code(self, code_path):
+        if not USER_CODE_ENABLED:
+            return
+
+        znc_user_path = self.GetUser().GetUserPath()
+        normalized_path = path.normpath(path.join(znc_user_path, code_path))
+
+        if not normalized_path.startswith(znc_user_path + '/'):
+            self.PutModule(T.e_code_path)
+            return
+
+        if not path.isfile(normalized_path):
+            self.PutModule(T.e_user_code_not_found.format(normalized_path))
+
+        self.PutVerbose(T.d_loading_user_code.format(normalized_path))
+
+        try:
+            g = {
+                # '__builtins__': {},
+                'Request': Request,
+                'PushConditions': PushConditions,
+                'PushService': PushService,
+            }
+
+            for lang in Translation.all_languages().values():
+                g[lang.__class__.__name__] = lang
+
+            with open(normalized_path) as fh:
+                code = fh.read()
+
+            code = compile(code, normalized_path, 'exec')
+            exec(code, g, g)
+
+        except SyntaxError as e:
+            self.PutModule(T.e_user_code_syntax.format(e))
+            raise
+
+        except Exception as e:
+            self.PutModule(T.e_user_code_exception.format(e))
+            raise
+
     def UpdateGlobals(self):
         global T
         T = T.lang(C.get('lang'))
@@ -679,6 +726,10 @@ class push(znc.Module):
             self.UpdateGlobals()
 
         return znc.CONTINUE
+
+    def cmd_load(self, tokens):
+        code_path = ' '.join(tokens)
+        self.load_user_code(code_path)
 
     network_channel_value_re = re.compile(r'\s*(?:/([a-zA-Z0-9]+))?'
                                           r'\s*(#+[a-zA-Z0-9]+)?\s*(.*)')
@@ -1079,6 +1130,7 @@ class Translation(object):
     d_eval_term = '  {0}: {1}'
     d_eval_expression = 'Evaluating custom expression: {0}'
     d_eval_result = 'Send push notification? {0}'
+    d_loading_user_code = 'Loading user code from {0}'
 
     e_requests_missing = 'Error: could not import python requests module'
     e_invalid_command = 'Error: invalid command, try `help`'
@@ -1094,6 +1146,10 @@ class Translation(object):
 
     e_eval_exception = 'Error evalutaing custom expression: {0}'
     e_eval_syntax = 'Syntax error in custom expression: {0}'
+    e_code_path = 'Error: custom_code_path must be relative to znc user path'
+    e_user_code_not_found = 'Error: user code not found at {0}'
+    e_user_code_syntax = 'Syntax error in user code: {0}'
+    e_user_code_exception = 'Exception loading user code: {0}'
 
 
 class Canadian(Translation):
