@@ -570,13 +570,13 @@ class push(znc.Module):
             }
 
             for lang in Translation.all_languages().values():
-                g[lang.__class__.__name__] = lang
+                g[lang.__class__.__name__] = lang.__class__
 
             with open(normalized_path) as fh:
                 code = fh.read()
 
             code = compile(code, normalized_path, 'exec')
-            exec(code, g, g)
+            exec(code, g)
 
         except SyntaxError as e:
             self.PutModule(T.e_user_code_syntax.format(e))
@@ -588,7 +588,11 @@ class push(znc.Module):
 
     def UpdateGlobals(self):
         global T
-        T = T.lang(C.get('lang'))
+
+        Translation.flush_cache()
+        PushService.flush_cache()
+
+        T = Translation.lang(C.get('lang'))
 
         debug = C.get('debug')
         self.debug = debug in ('on', 'verbose')
@@ -809,11 +813,8 @@ class push(znc.Module):
             C.set(key, value, network=network, channel=channel)
             self.PutModule(T.done)
 
-        except KeyError:
-            self.PutModule(T.e_option_not_valid.format(key))
-
-        except ValueError:
-            self.PutModule(T.e_option_not_int)
+        except (KeyError, ValueError) as e:
+            self.PutModule(str(e))
 
     def cmd_append(self, tokens):
         """Modify a configuration option to append the given value, following
@@ -1020,6 +1021,10 @@ class PushService(object):
     _cache = None
 
     @classmethod
+    def flush_cache(cls):
+        cls._cache = None
+
+    @classmethod
     def all_services(cls):
         if cls._cache is None:
             cls._cache = {}
@@ -1086,6 +1091,10 @@ class Pushover(PushService):
 
 class Translation(object):
     _cache = None
+
+    @classmethod
+    def flush_cache(cls):
+        cls._cache = None
 
     @classmethod
     def all_languages(cls):
