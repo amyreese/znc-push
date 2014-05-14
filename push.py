@@ -1089,6 +1089,27 @@ class Pushover(PushService):
         return Request('POST', url, data=params)
 
 
+class PushBullet(PushService):
+    required = {
+        'secret': 'API key',
+        'target': 'Device ID',
+    }
+
+    def send(self, context):
+        url = 'https://api.pushbullet.com/api/pushes'
+
+        auth = (C.get('secret'),)
+
+        params = {
+            'device_iden': C.get('target'),
+            'type': 'note',
+            'title': C.get_expanded('message_title'),
+            'body': C.get_expanded('message_content'),
+        }
+
+        return Request('POST', url, auth=auth, data=params)
+
+
 class Translation(object):
     _cache = None
 
