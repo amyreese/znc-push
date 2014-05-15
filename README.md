@@ -228,9 +228,9 @@ Configuration
 ### Keyword Expansion
 
 Some configuration options allow for optional keyword expansion, which happens
-while preparing to send the push notification.  Expansion is performed each time
-a notification is sent.  Expansion is only performed on options that explicitly
-
+while preparing to send the push notification.  Expansion is performed each
+time a notification is sent.  Expansion is only performed on options that are
+explicitly marked as featuring expansion.
 
 The following keywords will be replaced with the appropriate value:
 
@@ -243,49 +243,44 @@ The following keywords will be replaced with the appropriate value:
 *   `{username}`: the configured username string
 *   `{secret}`: the configured secret string
 
-As an example, a value of "http://domain/{context}/{datetime}" would be expanded
-to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
-"http://domain/{nick}/{unixtime}" to "http://domain/somenick/1299685136".
+As an example, a value of `http://domain/{context}/{datetime}` would be
+expanded to something similar to `http://domain/#channel/2011-03-09 14:25:09`,
+or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 
 
 ### Push Services
 
 *   `service = ""`
 
-    Short name for the push notification service that you want to use.  Must be set before
-    ZNC Push can send any notifications.
+    Short name for the push notification service that you want to use.
+    Must be set before ZNC Push can send any notifications.
+
+    When setting this value, ZNC Push will notify you of all other options
+    that are required to be set by the chosen service.
 
     Possible values include:
 
-    *   "boxcar"
-    *   "nma"
-    *   "pushover"
-    *   "prowl"
-    *   "supertoasty"
-    *   "pushbullet"
     *   "airgram"
+    *   "boxcar"
+    *   "faast"
+    *   "nma"
+    *   "prowl"
+    *   "pushbullet"
+    *   "pushover"
+    *   "supertoasty"
     *   "url"
 
 *   `username = ""`
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar or Pushover.
-
 *   `secret = ""`
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
-
 *   `target = ""`
 
     Device or target name for push notifications.
-
-    When using Pushover, this option allows you to specify a single device name to send
-    notifications to; if blank or unset, notifications will be sent to all devices.
-
-    This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL.
 
 
 ### Notifications
@@ -457,7 +452,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 License
 -------
 
-This project is licensed under the MIT license.  See the `LICENSE` file for details.
+This project is licensed under the MIT license.
+See the `LICENSE` file for details.
 
 
 [issues]: http://github.com/jreese/znc-push/issues
