@@ -140,57 +140,86 @@ Commands
 
     Tells you the tagged build version currently running.
 
-*   `set <option> <value>`
+*   `set [/<network>] [<channel>] <option> <value>`
 
-    Allows you to modify configuration values.
+    Allows you to modify configuration values by replacing the current or
+    default value.
 
-*   `append <option> <value>`
+    By specifying a network or channel, this will create an "override" value
+    that takes precedence over the global value in any context that matches
+    that network or channel.
 
-    Allows you to add a string to end of a configuration value.  Automatically adds a
-    space to separate the appended value from the existing value.
+*   `append [/<network>] [<channel>] <option> <value>`
 
-*   `prepend <option> <value>`
+    Allows you to add a string to the end of a configuration value.
+    Automatically adds a space to separate the appended value from the
+    existing value.
 
-    Allows you to add a string to beginning of a configuration value.  Automatically adds
-    a space to separate the prepended value from the existing value.
+    By specifying a network or channel, this will only append the given string
+    to the "override" value for that network or channel.  If an override value
+    does not currently exist, then it will create an override containing just
+    the given string.
 
-*   `get [<option>]`
+*   `prepend [/<network>] [<channel>] <option> <value>`
 
-    Allows you to see current configuration values.
+    Allows you to add a string to the beginning of a configuration value.
+    Automatically adds a space to separate the prepended value from the
+    existing value.
 
-*   `unset <option>`
+    By specifying a network or channel, this will only prepend the given string
+    to the "override" value for that network or channel.  If an override value
+    does not currently exist, then it will create an override containing just
+    the given string.
+
+*   `unset [/<network>] [<channel>] <option>`
 
     Allows you to reset a configuration option back to the default value.
 
-*   `save <filename>`
+    By specifying a network or channel, this will remove any "override" value
+    matching the given network or channel, and will leave the global value
+    intact.  If you would like to remove the global value as well as all
+    override values, use the `reset` command instead.
 
-    Writes your options to a file with the given path and name.
+*   `reset <option>`
 
-*   `load <filename>`
+    This will remove *all* configured values and overrides for a given option,
+    returning the option to a completely default value.  To only remove an
+    individual override value, use the `unset` command instead.
 
-    Loads your options from a file with the given path and name.  Caution should be taken,
-    as this will lose any options that aren't already saved to the given file.
+*   `get [/<network>] [<channel>] [<option>]`
 
-*   `status [<context>]`
+    Allows you to see current configuration values.  Options that currently
+    have "override" values defined will have an asterisk (*) at the end of the
+    option name; options that don't allow overrides will instead have an at
+    symbol (@) at the end of the option name.
 
-    Check the status of current conditions.  Specifying the "context" of either a channel
-    or nick name will provide status values specific to that context.
+    By specifying a network or channel, this will display any "override" values
+    that match the given network or channel.  Global or default values will
+    only show if there are no overrides in effect for the given network or
+    channel.  To see both global and override values at once
 
-*   `subscribe`
+*   `dump`
 
-    Send a subscription request for the selected service to your configured account.  This
-    is required by certain services, such as Boxcar, before ZNC Push can send any messages
-    to your account.
+    Generates a listing of all configuration values, including all network
+    or channel override values.  This is the best way to see your entire
+    configuration at a glance.
 
-*   `send <message>`
+*   `send [/<network>] [<channel>] <message>`
 
-    Manually trigger a notification with the given message.  Useful for testing to validate
-    credentials, etc.
+    Manually trigger a push notification with the given message.  Useful for
+    testing to validate credentials or configuration.
 
-*   `eval <expression>`
+    By specifying a network or channel, this will use any configured "override"
+    values for the given network or channel, rather than global values.
 
-    Evaluate the given expression in an empty context.  Useful for testing to validate that
-    a given expression is properly formatted and does not contain invalid tokens.
+*   `subscribe [/<network>] [<channel>]`
+
+    Send a subscription request for the selected service.  This is required by
+    certain services, such as Boxcar, before ZNC Push can send any messages to
+    your account.
+
+    By specifying a network or channel, this will use any configured "override"
+    values for the given network or channel, rather than global values.
 
 
 Configuration
