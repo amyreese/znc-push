@@ -12,6 +12,7 @@ import json
 import platform
 import re
 import time
+import urllib
 import znc
 
 from collections import defaultdict
@@ -147,7 +148,7 @@ class PushConfig(object):
     def load_config(self):
         config_data = self.module.nv.get('config', None)
         if not config_data:
-            return
+            return self.load_legacy_config()
 
         data = json.loads(config_data)
 
@@ -170,6 +171,54 @@ class PushConfig(object):
                           })
 
         self.module.nv['config'] = data
+
+    def load_legacy_config(self):
+        self.module.PutModule(T.loading_legacy_config)
+
+        try:
+            # load "global" values from existing user-level module configs
+            for key in self.defaults:
+                if key in self.module.nv:
+                    self.user_overrides[key] = self.module.nv[key]
+
+            # look for network-level module configs for this user
+            user = self.module.GetUser()
+            znc_user_path = user.GetUserPath()
+
+            for network in user.GetNetworks():
+                name = network.GetName()
+                registry_path = path.join(znc_user_path,
+                                          'networks',
+                                          name,
+                                          'moddata/push/.registry')
+
+                if path.isfile(registry_path):
+                    self.module.PutModule(T.loading_legacy_network.format(name,
+                                          registry_path))
+
+                    with open(registry_path) as rh:
+                        data = rh.read()
+
+                    for line in data.splitlines():
+                        line = urllib.parse.unquote(line)
+                        key, value = line.split(' ', 1)
+
+                        if key in self.defaults:
+                            if key in self.globals:
+                                self.module.PutModule(T.legacy_global.format(
+                                                      key, value))
+                            else:
+                                self.network_overrides[name][key] = value
+
+                else:
+                    self.module.PutModule(T.no_legacy_network.format(name,
+                                          registry_path))
+
+            self.module.PutModule(T.loaded_legacy_config)
+            self.save_config()
+
+        except Exception as e:
+            self.module.PutModule(T.e_loading_legacy_config.format(e))
 
     def dump(self):
         p = self.module.PutModule
@@ -732,6 +781,9 @@ class push(znc.Module):
             self.UpdateGlobals()
 
         return znc.CONTINUE
+
+    def cmd_import(self, tokens):
+        C.load_legacy_config()
 
     def cmd_load(self, tokens):
         code_path = ' '.join(tokens)
@@ -1333,6 +1385,15 @@ class Translation(object):
     e_user_code_not_found = 'Error: user code not found at {0}'
     e_user_code_syntax = 'Syntax error in user code: {0}'
     e_user_code_exception = 'Exception loading user code: {0}'
+
+    loading_legacy_config = 'Importing existing configuration'
+    loaded_legacy_config = 'Config import completed'
+    loading_legacy_network = 'Importing existing network config '\
+                             'for {0} from {1}'
+    no_legacy_network = 'No existing config for network {0} at {1}'
+    legacy_global = 'Skipping global {0} value "{1}"'
+
+    e_loading_legacy_config = 'Error while importing existing config: {0}'
 
 
 class Canadian(Translation):
