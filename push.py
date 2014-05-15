@@ -1310,9 +1310,9 @@ class URL(PushService):
 
         method = C.get('target').upper()
         if method not in ('POST', 'GET'):
-            method = 'POST'
+            method = 'GET'
 
-        return Request('POST', url)
+        return Request(method, url)
 
 
 class Translation(object):
