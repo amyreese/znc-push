@@ -1,9 +1,11 @@
 ZNC Push
 ========
 
-ZNC Push is a module for [ZNC][] that will send notifications to multiple push notification
-services for any private message or channel highlight that matches a configurable set of
-conditions.  ZNC Push current supports the following services:
+ZNC Push is a module for [ZNC][] that will send notifications to multiple push
+notification services for any private message or channel highlight that matches
+a configurable set of conditions.
+
+ZNC Push current supports the following services:
 
 * [Boxcar][]
 * [Notify My Android][] (NMA)
@@ -13,113 +15,118 @@ conditions.  ZNC Push current supports the following services:
 * [PushBullet][]
 * [Airgram][]
 * [Faast][]
-* Custom URL GET requests
+* Custom URL GET and POST requests
 
-This project is still a Work In Progress, but should be functional enough and stable enough
-for everyday usage.  Users are more than welcome to submit feature requests or patches for
-discussion or inclusion.  Bug reports and feature requests can be submitted to
-[the repository issues list][issues], or sent via email.
+This project is still a work in progress, but should be functional enough and
+stable enough for everyday usage.  Users are more than welcome to submit
+feature requests or patches for discussion or inclusion.  Bug reports and
+feature requests can be submitted to [the repository issues list][issues], or
+sent via email.
 
-[![Stories in Ready](http://badge.waffle.io/jreese/znc-push.png)](http://waffle.io/jreese/znc-push)
+ZNC Push currently supports ZNC versions 1.0 and newer. To use ZNC Push with
+older versions of ZNC, the "legacy" branch is available, but unsupported and
+unmaintained.
 
-For full functionality, this module requires ZNC version 0.090 or newer, but should compile
-and run with a reduced feature set on versions as old as 0.078, the current version used by
-Ubuntu.  However, development and testing is done exclusively against the latest source
-distribution, so feedback on older releases of ZNC is needed to continue supporting them.
-If you want to use ZNC versions before 1.0 (0.206 or older), you will need to check out the
-"legacy" branch in order to compile it correctly.
-
-ZNC Push was created by [John Reese](http://johnmreese.com) and designed to fill a
-personal need.  It may not fit your use cases, but any and all feedback would be greatly
-appreciated.
+ZNC Push was created by [John Reese](http://johnmreese.com) and designed to
+fill a personal need.  It may not fit your use cases, but any and all feedback
+would be greatly appreciated.
 
 
 Dependencies
 ------------
 
-If you have installed ZNC from a Linux distribution's repository, you will most likely
-need to install the development package before building this module. On Ubuntu, this can
-be installed with:
+ZNC Push is now a Python module and, as such, requires ZNC to be compiled with
+support for [modpython][].  If you are building ZNC from source (which you
+should do), you need to configure ZNC with the `--enable-python` flag.
 
-    $ sudo aptitude install znc-dev
+ZNC Push also requires the Python [requests][] module, which can be installed
+on Ubuntu via:
 
-Optionally, if you want to use libcurl for http requests, you also need to install cURL
-development header files.
+    $ sudo apt-get install python3-requests
 
-On Ubuntu, development headers can be installed by installing `libcurl3-dev` or
-`libcurl4-openssl-dev` package:
+The [requests][] module can also be installed via pip, using something like:
 
-    $ sudo aptitude install libcurl4-openssl-dev
-
-
-Compiling
----------
-
-If you have `make` installed, you can compile the module with:
-
-    $ make
-
-Otherwise, run the full command:
-
-    $ znc-buildmod push.cpp
+    $ sudo pip3 install requests
 
 
-### Advanced
+Upgrade
+-------
 
-If you would like to compile ZNC Push using libcurl for http requests, you must use:
+IMPORTANT: The new ZNC Push module runs only as a user-level module, and can
+potentially cause confusion and problems if you don't first unload *push from
+every network in ZNC, and then remove the old module.  ZNC Push will find and
+import all of your existing network configurations automatically at first run.
 
-    $ make curl=yes
+From every user/network you have in ZNC, you should do the following:
 
-If libcurl is not in the default system library paths, you will need to populate `$CXXFLAGS`
-with the appropriate GCC flags so that it can find and link ZNC Push with libcurl.
+    /msg *status unloadmod
 
-Note: You are strongly encouraged to use libcurl transport. The reason for that is, that
-the default CSocket transport doesn't verify server's SSL certificate which leaves you
-vulnerable to MITM attacks.  However, use of libcurl will *block* the main ZNC thread at every
-push notification; for installations with many users, libcurl is *not* yet ideal, even with
-the above security concerns in mind.
+Then remove the old module from your znc path:
+
+    $ rm ~/.znc/modules/push.so
+
+After this, you can proceed to the next section.
 
 
-Installation
-------------
+Install
+-------
 
-Copy the compiled module into your ZNC profile:
+If you have `make` installed, you can pre-compile the module and install it in
+your `.znc` path with:
 
     $ make install
+
+Otherwise, you can simply copy `push.py` into your znc path like:
+
+    $ cp push.py ~/.znc/modules/
+
+
+Setup
+-----
 
 Now, load the module in ZNC:
 
     /msg *status loadmod push
 
-Note: the above command will only enable ZNC Push for a single network in ZNC.  If instead
-you would like to load ZNC Push as a "user level" module, so that you can share configuration
-options across multiple networks, you will need to either use the web admin page for the
-user to enable the "push" module, or you will need to use ZNC's "controlpanel" module:
+This will load ZNC Push as a user-level module, which means it will be active
+for every network your user account has.
 
-    /msg *status loadmod controlpanel
-    /msg *controlpanel loadmod push
+Then select the push service you want to use, and set your username and secret
+as needed. The secret is usually not your password, and can generally be
+obtained by logging into the service's website and looking in your profile
+or settings.
 
-Then select the push service you want to use, and set your username and secret as needed.
-The secret is not your password, and can be obtained by logging into the service's website
-and looking in your profile or settings:
+As an example, to set up [Pushover][], send the following commands to *push:
 
     /msg *push set service pushover
-    /msg *push set username foo
-	/msg *push set secret ...
+    /msg *push set username [your user key]
+	/msg *push set secret [your api key]
 
-If you're using Boxcar, you need to use the following command to send a subscription request
-to your account, before ZNC Push can start working:
+For some services, such as [Boxcar][], you may need to "subscribe" before push
+notifications can be sent to your device.  Once you've done the above steps to
+configure the service, you can use the following command to subscribe:
 
     /msg *push subscribe
 
-At this point, it should start sending notifications every time you get a private message
-or someone says your name in a channel.  If this is everything you wanted, congratulations,
-you're done!
-
-For further, detailed instructions specific to each push notification service, the following
-documentation is available:
+For further, detailed instructions specific to each push notification service,
+the following documentation is available:
 
 *   [Pushover](doc/pushover.md)
+
+IMPORTANT: By default, ZNC Push is very conservative, and will only send
+notifications when its reasonably confident that you aren't paying attention
+to IRC, or to that specific channel.  The intention of this behavior is to
+prevent bombarding your phone with push notifications if someone starts
+sending you a lot of private messages, or is continuously mentioning you in a
+channel.
+
+However, if you would prefer to receive more push notifications, please look
+at the [Conditions](#conditions) section of the [Configuration](#configuration)
+guide for what options control when and how you receive push notifications.
+ZNC Push is highly configurable, and should be able to support almost any
+method of filtering notifications that you can imagine.  If you need more
+assistance with configuration, please feel free to ask for help in `#znc` on
+Freenode or by email.
 
 
 Commands
@@ -249,7 +256,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
 
-    This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL. 
+    This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL.
 
 
 ### Notifications
@@ -424,6 +431,7 @@ License
 This project is licensed under the MIT license.  See the `LICENSE` file for details.
 
 
+[issues]: http://github.com/jreese/znc-push/issues
 
 [Boxcar]: http://boxcar.io
 [Notify My Android]: http://www.notifymyandroid.com
@@ -434,8 +442,10 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Airgram]: http://airgramapp.com/
 [Faast]: http://faast.io/
 
-[issues]: http://github.com/jreese/znc-push/issues
-[ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 [ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601 Date Format"
+
+[ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
+[modpython]: http://wiki.znc.in/Modpython
+[requests]: http://docs.python-requests.org
 
 <!-- vim:set ft= expandtab tabstop=4 shiftwidth=4: -->
