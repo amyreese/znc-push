@@ -700,11 +700,21 @@ class push(znc.Module):
         verify that required modules are installed."""
 
         global T, C
-        T = Translation()
-        C = PushConfig(self)
 
-        self.UpdateGlobals()
-        self.conditions = PushConditions(self)
+        try:
+            T = Translation()
+        except Exception as e:
+            message.s = T.e_onload_translation.format(e)
+            return False
+
+        try:
+            C = PushConfig(self)
+
+            self.UpdateGlobals()
+            self.conditions = PushConditions(self)
+        except Exception as e:
+            message.s = T.e_onload_config.format(e)
+            return False
 
         if requests is None:
             message.s = T.e_requests_missing
@@ -1403,6 +1413,8 @@ class Translation(object):
     d_eval_result = 'Send push notification? {0}'
     d_loading_user_code = 'Loading user code from {0}'
 
+    e_onload_translation = 'Error: initializing translations failed: {0}'
+    e_onload_config = 'Error: initializing configuration failed: {0}'
     e_requests_missing = 'Error: could not import python requests module'
     e_invalid_command = 'Error: invalid command, try `help`'
     e_invalid_lang = 'Sorry, {0} is not supported. Translation help is welcome'
