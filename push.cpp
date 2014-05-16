@@ -303,25 +303,25 @@ class CPushMod : public CModule
 				params["notification[message]"] = message_content;
 				params["notification[source_url]"] = message_uri;
 			}
-                       else if (service == "boxcar2")
-                        {
-                                if (options["secret"] == "")
-                                {
-                                        PutModule("Error: secret not set to apikey");
-                                        return;
-                                }
+			else if (service == "boxcar2")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret not set to apikey");
+					return;
+				}
 
-                                service_host = "new.boxcar.io";
-                                service_url = "/api/notifications";
+				service_host = "new.boxcar.io";
+				service_url = "/api/notifications";
 
-                                params["user_credentials"] = options["secret"];
-                                params["notification[title]"] = message_title;
-                                params["notification[long_message]"] = message_content;
-                                if ( options["message_sound"] != "" )
-                                {
-                                        params["notification[sound]"] = options["message_sound"];
-                                }
-                        }
+				params["user_credentials"] = options["secret"];
+				params["notification[title]"] = message_title;
+				params["notification[long_message]"] = message_content;
+				if ( options["message_sound"] != "" )
+				{
+					params["notification[sound]"] = options["message_sound"];
+				}
+			}
 			else if (service == "nma")
 			{
 				if (options["secret"] == "")
