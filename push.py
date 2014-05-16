@@ -177,8 +177,21 @@ class PushConfig(object):
 
         try:
             # load "global" values from existing user-level module configs
+            self.module.PutModule(T.loading_legacy_user)
             for key in self.defaults:
                 if key in self.module.nv:
+                    value = self.module.nv[key]
+
+                    t = type(self.defaults[key])
+                    if t == int:
+                        try:
+                            value = int(value)
+                        except Exception as e:
+                            m = T.e_legacy_value_type.format(key,
+                                                             value)
+                            self.module.PutModule(m)
+                            continue
+
                     self.user_overrides[key] = self.module.nv[key]
 
             # look for network-level module configs for this user
@@ -213,11 +226,13 @@ class PushConfig(object):
                             if t == int:
                                 try:
                                     value = int(value)
-                                    self.network_overrides[name][key] = value
                                 except Exception as e:
                                     m = T.e_legacy_value_type.format(key,
                                                                      value)
                                     self.module.PutModule(m)
+                                    continue
+
+                            self.network_overrides[name][key] = value
 
                 else:
                     self.module.PutModule(T.no_legacy_network.format(name,
@@ -1399,6 +1414,7 @@ class Translation(object):
 
     loading_legacy_config = 'Importing existing configuration'
     loaded_legacy_config = 'Config import completed'
+    loading_legacy_user = 'Importing existing user config'
     loading_legacy_network = 'Importing existing network config '\
                              'for {0} from {1}'
     no_legacy_network = 'No existing config for network {0} at {1}'
