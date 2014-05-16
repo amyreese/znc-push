@@ -672,7 +672,7 @@ class push(znc.Module):
         self.UpdateGlobals()
         self.conditions = PushConditions(self)
 
-        if requests is None or True:
+        if requests is None:
             message.s = T.e_requests_missing
             return False
 
