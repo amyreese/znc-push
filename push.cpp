@@ -267,19 +267,23 @@ class CPushMod : public CModule
 			// Service-specific profiles
 			if (service == "pushbullet")
 			{
-				if (options["target"] == "" || options["secret"] == "")
+				if (options["secret"] == "")
 				{
-					PutModule("Error: target (device id) or secret (api key) not set");
+					PutModule("Error: secret (api key) not set");
 					return;
 				}
 
 				service_host = "api.pushbullet.com";
-				service_url = "/api/pushes";
+				service_url = "/v2/pushes";
 
 				// BASIC auth, base64-encoded APIKey:
 				service_auth = options["secret"] + CString(":");
 
-				params["device_iden"] = options["target"];
+				if (options["target"] != "")
+				{
+					params["device_iden"] = options["target"];
+				}
+
 				params["type"] = "note";
 				params["title"] = message_title;
 				params["body"] = message_content;
