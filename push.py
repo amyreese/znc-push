@@ -64,7 +64,7 @@ class Context(object):
             'title': self.title,
             'message': self.message,
             'nick': self.nick,
-            'context': self.channel,
+            'context': self.channel or self.nick,
             'channel': self.channel,
             'network': self.network,
             'unixtime': self.timestamp,

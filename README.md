@@ -411,40 +411,50 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 
 *   `channel_conditions` Default: `all`
 
-    This option allows customization of the boolean logic used to determine how conditional
-    values are used to filter notifications for channel messages.  It evaluates as a full
-    boolean logic expression,  including the use of sub-expressions.  The default value of
-    `all` will bypass this evaluation and simply require all conditions to be true.
+    This option allows customization of the boolean logic used to determine
+    how conditional values are used to filter notifications for channel
+    messages.  It evaluates as a full boolean logic expression, including the
+    use of sub-expressions.  The default value of `all` will bypass this
+    evaluation and simply require all conditions to be true.
 
     The expression consists of space-separated tokens in the following grammar:
 
-    *   expression = `<expression> <operator> <expression>` | `( <expression> )` | `<value>`
-    *   operator = `and` | `or`
-    *   value = `true` | `false` | `<condition>`
-    *   condition = `<any condition option>`
+    *   expression = `<expression> <operator> <expression>` |
+        `( <expression> )` | `<value>`
+    *   operator = `and` | `or` | `is` | `==` | `!=`
+    *   value = `true` | `false` | `none` | `<condition>` | `<context>` |
+        `"<string>"` | `'<string>'`
+    *   condition = `away_only` | `client_count_less_than` | `highlight` |
+        `idle` | `last_active` | `last_notification` | `nick_blacklist` |
+        `replied`
+    *   context = `network` | `channel` | `nick` | `title` | `message`
 
-    As a simple example, to replicate the default `all` value, would be the value of
-    `away_only and client_count_less_than and highlight and idle and last_active and
-    last_notification and nick_blacklist and replied`.
+    As a simple example, to replicate the default `all` value, would be the
+    value of `away_only and client_count_less_than and highlight and idle and
+    last_active and last_notification and nick_blacklist and replied`.
 
-    Alternately, setting a value of `true` would send a notification for *every* message,
-    while a value of `false` would *never* send a notification.
+    Alternately, setting a value of `true` would send a notification for
+    *every* message, while a value of `false` would *never* send a
+    notification.
 
-    For a more complicated example, the value of `client_count_less_than and highlight and
-    (last_active or last_notification or replied) and nick_blacklist` would send a
-    notification if any of the three conditions in the sub-expression are met, while still
-    requiring all of the conditions outside of the parentheses to also be met.
+    For a more complicated example, the value of `client_count_less_than and
+    highlight and (last_active or last_notification or replied) and
+    nick_blacklist` would send a notification if any of the three conditions
+    in the sub-expression are met, while still requiring all of the conditions
+    outside of the parentheses to also be met.
 
 *   `query_conditions` Default: `all`
 
-    This option is more or less identical to `channel_conditions`, except that it is used
-    to filter notifications for private messages.
+    This option is more or less identical to `channel_conditions`, except that
+    it is used to filter notifications for private messages.
 
 *   `debug` Default: `off`
 
-    When set to `on`, this option enables debug output for various features, and is useful
-    in troubleshooting problems like failed push notifications.  Debug output will show up
-    in your `*push` window.
+    When set to `on`, this option enables debug output for various features,
+    and is useful in troubleshooting problems like failed push notifications.
+    When set to `verbose`, even more debug output will be generated for every
+    single incoming message, including details of why and when notifications
+    get sent.  All debug output will show up in your `*push` query window.
 
 
 License
