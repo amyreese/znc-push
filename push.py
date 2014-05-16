@@ -138,6 +138,14 @@ class PushConfig(object):
             'custom_code_path',
         }
 
+        self.numbers = {
+            'message_length',
+            'client_count_less_than',
+            'idle',
+            'last_active',
+            'last_notification',
+        }
+
         # todo: deserialize values from znc registry
         self.user_overrides = {}
         self.network_overrides = defaultdict(dict)
@@ -153,14 +161,20 @@ class PushConfig(object):
         data = json.loads(config_data)
 
         for key, value in data['user'].items():
+            if key in self.numbers:
+                value = int(value)
             self.user_overrides[key] = value
 
         for network, overrides in data['network'].items():
             for key, value in overrides.items():
+                if key in self.numbers:
+                    value = int(value)
                 self.network_overrides[network][key] = value
 
         for channel, overrides in data['channel'].items():
             for key, value in overrides.items():
+                if key in self.numbers:
+                    value = int(value)
                 self.channel_overrides[channel][key] = value
 
     def save_config(self):
@@ -182,8 +196,7 @@ class PushConfig(object):
                 if key in self.module.nv:
                     value = self.module.nv[key]
 
-                    t = type(self.defaults[key])
-                    if t == int:
+                    if key in self.numbers:
                         try:
                             value = int(value)
                         except Exception as e:
@@ -222,8 +235,7 @@ class PushConfig(object):
                                                       key, value))
                                 continue
 
-                            t = type(self.defaults[key])
-                            if t == int:
+                            if key in self.numbers:
                                 try:
                                     value = int(value)
                                 except Exception as e:
@@ -335,9 +347,7 @@ class PushConfig(object):
         if key == 'service' and value not in PushService.all_services():
             raise ValueError(T.e_unknown_service.format(value))
 
-        t = type(self.defaults[key])
-
-        if t == int:
+        if key in self.numbers:
             try:
                 value = int(value)
             except ValueError:
