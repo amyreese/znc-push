@@ -207,8 +207,17 @@ class PushConfig(object):
                             if key in self.globals:
                                 self.module.PutModule(T.legacy_global.format(
                                                       key, value))
-                            else:
-                                self.network_overrides[name][key] = value
+                                continue
+
+                            t = type(self.defaults[key])
+                            if t == int:
+                                try:
+                                    value = int(value)
+                                    self.network_overrides[name][key] = value
+                                except Exception as e:
+                                    m = T.e_legacy_value_type.format(key,
+                                                                     value)
+                                    self.module.PutModule(m)
 
                 else:
                     self.module.PutModule(T.no_legacy_network.format(name,
@@ -1396,6 +1405,7 @@ class Translation(object):
     legacy_global = 'Skipping global {0} value "{1}"'
 
     e_loading_legacy_config = 'Error while importing existing config: {0}'
+    e_legacy_value_type = 'Import value for {0} should be int, but found "{1}"'
 
 
 class Canadian(Translation):
