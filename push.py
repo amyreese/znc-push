@@ -1274,7 +1274,7 @@ class PushBullet(PushService):
         url = 'https://api.pushbullet.com/v2/pushes'
 
         device_iden = C.get('target')
-        auth = (C.get('secret'),'')
+        auth = (C.get('secret'), '')
 
         params = {
             'type': 'note',
