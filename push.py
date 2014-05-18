@@ -470,7 +470,12 @@ class PushConditions(object):
 
         if expression != 'all':
             send = False
-            conditions.update(true=True, false=False)
+            conditions.update(true=True, false=False, none=None,
+                              network=context.network,
+                              channel=context.channel,
+                              nick=context.nick,
+                              title=context.title,
+                              message=context.message)
 
             try:
                 self.PutDebug(T.d_eval_expression.format(expression))
@@ -518,7 +523,12 @@ class PushConditions(object):
 
         if expression != 'all':
             send = False
-            conditions.update(true=True, false=False)
+            conditions.update(true=True, false=False, none=None,
+                              network=context.network,
+                              channel=context.channel,
+                              nick=context.nick,
+                              title=context.title,
+                              message=context.message)
 
             try:
                 self.PutDebug(T.d_eval_expression.format(expression))
