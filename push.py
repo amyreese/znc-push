@@ -596,8 +596,6 @@ class PushConditions(object):
         values = C.get('nick_blacklist').lower().split()
         nick = nick.lower()
 
-        self.PutDebug('checking against blacklisted nicks {0}'.format(values))
-
         for value in values:
             value = self.module.GetNetwork().ExpandString(value).lower()
             if fnmatch(nick, value):
