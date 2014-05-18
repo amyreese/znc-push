@@ -16,6 +16,7 @@ import urllib
 import znc
 
 from collections import defaultdict
+from fnmatch import fnmatch
 from os import path
 
 try:
@@ -595,20 +596,11 @@ class PushConditions(object):
         values = C.get('nick_blacklist').lower().split()
         nick = nick.lower()
 
+        self.PutDebug('checking against blacklisted nicks {0}'.format(values))
+
         for value in values:
             value = self.module.GetNetwork().ExpandString(value).lower()
-            match = True
-
-            if value.startswith('*'):
-                match = match and nick.endswith(value[1:])
-
-            if value.endswith('*'):
-                match = match and nick.startswith(value[:-1])
-
-            if not match:
-                match = value == nick
-
-            if match:
+            if fnmatch(nick, value):
                 return False
 
         return True
