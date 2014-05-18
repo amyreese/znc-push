@@ -1087,7 +1087,7 @@ class PushService(object):
                 context.module.PutDebug(line)
 
         except Exception as e:
-            cls.module.PutModule(str(e))
+            context.module.PutModule(str(e))
 
     @classmethod
     def send_subscribe(cls, context):
@@ -1122,7 +1122,7 @@ class PushService(object):
                 context.module.PutDebug(line)
 
         except Exception as e:
-            cls.module.PutModule(str(e))
+            context.module.PutModule(str(e))
 
     _cache = None
 
