@@ -285,7 +285,7 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 
 ### Notifications
 
-*   `message_content` Default: `{message}`
+*   `message_content` Default: `{channel} [{nick}] {message}`
 
     Message content that will be sent for the push notification.
     Keyword expansion is performed on this value.

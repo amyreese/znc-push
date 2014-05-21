@@ -95,7 +95,7 @@ class PushConfig(object):
             'target': '',
 
             # notification details
-            'message_content': '{message}',
+            'message_content': '{channel} [{nick}] {message}',
             'message_length': 100,
             'message_title': '{title}',
             'message_uri': '',
