@@ -541,6 +541,8 @@ class PushConditions(object):
                 self.module.PutModule(T.e_eval_exception.format(e))
 
         else:
+            # don't require highlights in default query conditions
+            conditions['highlight'] = True
             send = all(conditions.values())
 
         self.PutDebug(T.d_eval_result.format(T.yes if send else T.no))
