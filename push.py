@@ -64,10 +64,10 @@ class Context(object):
         return {
             'title': self.title,
             'message': self.message,
-            'nick': self.nick,
-            'context': self.channel or self.nick,
-            'channel': self.channel,
-            'network': self.network,
+            'nick': self.nick or '',
+            'context': self.channel or self.nick or '',
+            'channel': self.channel or '',
+            'network': self.network or '',
             'unixtime': self.timestamp,
             'datetime': self.timestring,
         }
@@ -1014,7 +1014,7 @@ class push(znc.Module):
         network, channel, message = self.parse_network_channel_value(tokens)
 
         network = network or '*push'
-        channel = channel or '*push'
+        channel = channel or ''
 
         with Context(self, title=T.test_message, message=message, nick='*push',
                      channel=channel, network=network) as context:
