@@ -1079,7 +1079,7 @@ class PushService(object):
 
             session = Session()
             prepped = session.prepare_request(request)
-            response = session.send(prepped, verify=True)
+            response = session.send(prepped, timeout=1, verify=True)
 
             if response.status_code != 200:
                 m = T.e_send_status
@@ -1114,7 +1114,7 @@ class PushService(object):
 
             session = Session()
             prepped = session.prepare_request(request)
-            response = session.send(prepped, verify=True)
+            response = session.send(prepped, timeout=1, verify=True)
 
             if response.status_code != 200:
                 m = T.e_send_subscribe
