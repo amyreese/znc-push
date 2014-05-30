@@ -249,6 +249,7 @@ class CPushMod : public CModule
 			replace["{title}"] = title;
 			replace["{username}"] = options["username"];
 			replace["{secret}"] = options["secret"];
+			replace["{network}"] = GetNetwork()->GetName();
 
 			CString message_uri = expand(options["message_uri"], replace);
 			CString message_title = expand(options["message_title"], replace);
