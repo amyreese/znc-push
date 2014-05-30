@@ -205,6 +205,7 @@ The following keywords will be replaced with the appropriate value:
 
 *   `{context}`: the channel or query window context
 *   `{nick}`: the nick that sent the message
+*   `{network}`: the network the message is coming from
 *   `{datetime}`: [ISO 8601][] date string, in server-local time
 *   `{unixtime}`: unix-style integer timestamp
 *   `{title}`: the default title for the notification
