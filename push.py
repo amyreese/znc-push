@@ -1195,6 +1195,17 @@ class Boxcar(PushService):
         return Request('POST', url, data=params)
 
 
+class Email(PushService):
+    required = {
+        'target': 'Email address',
+        'secret': 'SMTP Server connection, in form of '
+                  'smtp[s]://[user[:password]@]example.com[:port]',
+    }
+
+    def send(self, context):
+        return None
+
+
 class Faast(PushService):
     required = {
         'secret': 'API key',
