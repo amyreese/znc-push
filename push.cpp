@@ -545,6 +545,31 @@ class CPushMod : public CModule
 				params["email"] = options["target"];
 				params["msg"] = message_content;
 			}
+			else if (service =="airgram-service")
+			{
+				if (options["target"] == "")
+				{
+					PutModule("Error: target (email) not set");
+					return;
+				}
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (service secret) not set");
+					return;
+				}
+				if (options["username"] == "")
+				{
+					PutModule("Error: username (service key) not set");
+					return;
+				}
+				service_host = "api.airgramapp.com";
+				service_url = "/1/send";
+				service_auth = options["username"] + CString(":") + options["secret"];
+
+				params["email"] = options["target"];
+				params["msg"] = message_content;
+
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -1191,6 +1216,10 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Airgram requires setting the 'target' with the email address of the recipient");
 						}
+						else if (value == "airgram-service")
+						{
+							PutModule("Note: Airgram as a service requires setting the 'target' with the email address of the recipient, the 'username' with the service key, and the 'secret' as the service secret.");
+						}
 						else if (value == "faast")
 						{
 							PutModule("Note: Faast requires setting the secret to your apikey");
@@ -1502,6 +1531,28 @@ class CPushMod : public CModule
 					service_url = "/devices/providers/" + boxcar_api_key + "/notifications/subscribe";
 
 					params["email"] = options["username"];
+				}
+				else if (service == "airgram-service")
+				{
+					if (options["target"] == "")
+					{
+						PutModule("Error: target (email) not set");
+						return;
+					}
+					if (options["secret"] == "")
+					{
+						PutModule("Error: secret (service secret) not set");
+						return;
+					}
+					if (options["username"] == "")
+					{
+						PutModule("Error: username (service key) not set");
+						return;
+					}
+					use_post = false;
+					service_host = "api.airgramapp.com";
+					service_url = "/1/subscribe";
+					params["email"] = options["target"];
 				}
 				else
 				{
