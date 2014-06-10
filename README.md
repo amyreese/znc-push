@@ -112,7 +112,7 @@ and looking in your profile or settings:
     /msg *push set username foo
     /msg *push set secret ...
 
-If you're using Boxcar, you need to use the following command to send a subscription request
+If you're using Boxcar or Airgram as a service, you need to use the following command to send a subscription request
 to your account, before ZNC Push can start working:
 
     /msg *push subscribe
@@ -234,13 +234,14 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `supertoasty`
     *   `pushbullet`
     *   `airgram`
+    *   `airgram-service`
     *   `<url>`
 
 *   `username` Default: ` `
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar or Pushover.
+    This option must be set when using Boxcar, Pushover. For airgram as a service, this should be the service key.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as username.
@@ -249,7 +250,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
+    This option must be set when using Notify My Android, Airgram as a service, Pushover, Prowl, Supertoasty or PushBullet.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -260,6 +261,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
+    
+    When using Airgram in either modesu, this should be the email address of the end user.
 
     This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL. 
 
