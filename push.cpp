@@ -967,7 +967,7 @@ class CPushMod : public CModule
 				msg += ": [" + nick.GetNick();
 				msg += "] " + message;
 
-				send_message(msg, title, channel.GetName());
+				send_message(msg, title, channel.GetName(), nick);
 			}
 
 			return CONTINUE;
@@ -989,7 +989,7 @@ class CPushMod : public CModule
 				msg += ": " + nick.GetNick();
 				msg += " " + message;
 
-				send_message(msg, title, channel.GetName());
+				send_message(msg, title, channel.GetName(), nick);
 			}
 
 			return CONTINUE;
@@ -1009,7 +1009,7 @@ class CPushMod : public CModule
 				CString msg = "From " + nick.GetNick();
 				msg += ": " + message;
 
-				send_message(msg, title, nick.GetNick());
+				send_message(msg, title, nick.GetNick(), nick);
 			}
 
 			return CONTINUE;
@@ -1029,7 +1029,7 @@ class CPushMod : public CModule
 				CString msg = "* " + nick.GetNick();
 				msg += " " + message;
 
-				send_message(msg, title, nick.GetNick());
+				send_message(msg, title, nick.GetNick(), nick);
 			}
 
 			return CONTINUE;
