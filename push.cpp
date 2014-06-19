@@ -140,7 +140,7 @@ class CPushMod : public CModule
 			// Notification conditions
 			defaults["away_only"] = "no";
 			defaults["client_count_less_than"] = "0";
-			defaults["highlight"] = "";
+			defaults["highlight"] = "%nick%";
 			defaults["idle"] = "0";
 			defaults["last_active"] = "180";
 			defaults["last_notification"] = "300";
@@ -739,7 +739,6 @@ class CPushMod : public CModule
 
 			VCString values;
 			options["highlight"].Split(" ", values, false);
-			values.push_back("%nick%");
 
 			for (VCString::iterator i = values.begin(); i != values.end(); i++)
 			{
