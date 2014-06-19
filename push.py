@@ -1324,19 +1324,19 @@ class Pushover(PushService):
         }
 
         if message_uri:
-            params['message_uri'] = message_uri
+            params['url'] = message_uri
 
         if message_uri_title:
-            params['message_uri_title'] = message_uri_title
+            params['url_title'] = message_uri_title
 
         if message_sound:
-            params['message_sound'] = message_sound
+            params['sound'] = message_sound
 
         if message_priority:
-            params['message_priority'] = message_priority
+            params['priority'] = message_priority
 
         if target:
-            params['target'] = target
+            params['device'] = target
 
         return Request('POST', url, data=params)
 
