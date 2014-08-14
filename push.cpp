@@ -227,7 +227,31 @@ class CPushMod : public CModule
 			MCString params;
 
 			// Service-specific profiles
-			if (service == "notifo")
+                        if (service == "pushbullet")
+                        {
+                                if (options["secret"] == "")
+                                {
+                                        PutModule("Error: secret (api key) not set");
+                                        return;
+                                }
+
+                                service_host = "api.pushbullet.com";
+                                service_url = "/v2/pushes";
+
+                                // BASIC auth, base64-encoded APIKey:
+                                CString service_auth_tmp = options["secret"] + CString(":");
+				service_auth = service_auth_tmp.Base64Encode_n();
+
+                                if (options["target"] != "")
+                                {
+                                        params["device_iden"] = options["target"];
+                                }
+
+                                params["type"] = "note";
+                                params["title"] = title;
+                                params["body"] = short_message;
+                        }
+			else if (service == "notifo")
 			{
 				if (options["username"] == "" || options["secret"] == "")
 				{
@@ -357,6 +381,8 @@ class CPushMod : public CModule
 
 			// Create the socket connection, write to it, and add it to the queue
 			CPushSocket *sock = new CPushSocket(this);
+			sock->SetAFRequire(CSSockAddr::RAF_INET); // force ipv4 for networks using ipv6 to work around problems in CSocket
+								  // https://github.com/jreese/znc-push/commit/bf7b41413b55cf6535841640f34b74e23e0e6d6b
 			sock->Connect(service_host, use_port, use_ssl);
 			sock->Request(use_post, service_host, service_url, params, service_auth);
 			AddSocket(sock);
@@ -934,7 +960,11 @@ class CPushMod : public CModule
 					{
 						value.MakeLower();
 
-						if (value == "notifo")
+						if (value == "pushbullet")
+						{
+							PutModule("Note: Pushbullet requires setting both 'target' (to device id) and 'secret' (to api key) options");
+						}
+						else if (value == "notifo")
 						{
 							PutModule("Note: Notifo requires setting both 'username' and 'secret' options");
 						}
@@ -1365,6 +1395,7 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 	if (auth != "")
 	{
 		request += "Authorization: Basic " + auth + crlf;
+		parent->PutDebug("Authorization: Basic " + auth);
 	}
 
 	request += crlf;
@@ -1373,6 +1404,8 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 	{
 		request += query;
 	}
+
+	parent->PutDebug("Request: " + request);
 
 	Write(request);
 	parent->PutDebug("Request sending");
