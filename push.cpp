@@ -540,7 +540,16 @@ class CPushMod : public CModule
 				}
 
 				service_host = "api.airgramapp.com";
-				service_url = "/1/send_as_guest";
+
+				if (options["username"] != "" && options["secret"] != "")
+				{
+					service_url = "/1/send";
+					service_auth = options["username"] + CString(":") + options["secret"];
+				}
+				else
+				{
+					service_url = "/1/send_as_guest";
+				}
 
 				params["email"] = options["target"];
 				params["msg"] = message_content;
@@ -1502,6 +1511,19 @@ class CPushMod : public CModule
 					service_url = "/devices/providers/" + boxcar_api_key + "/notifications/subscribe";
 
 					params["email"] = options["username"];
+				}
+				else if (service == "airgram")
+				{
+					if (options["username"] == "" || options["secret"] == "" || options["target"] == "")
+					{
+						PutModule("Error: target, username, and secret must be set");
+						return;
+					}
+
+					service_host = "api.airgramapp.com";
+					service_url = "/1/subscribe";
+					service_auth = options["username"] + CString(":") + options["secret"];
+					params["email"] = options["target"];
 				}
 				else
 				{
