@@ -112,7 +112,7 @@ and looking in your profile or settings:
     /msg *push set username foo
     /msg *push set secret ...
 
-If you're using Boxcar, you need to use the following command to send a subscription request
+If you're using Boxcar or Airgram, you need to use the following command to send a subscription request
 to your account, before ZNC Push can start working:
 
     /msg *push subscribe
@@ -249,7 +249,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
+    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty, or PushBullet.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
