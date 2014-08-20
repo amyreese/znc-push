@@ -112,7 +112,7 @@ and looking in your profile or settings:
     /msg *push set username foo
     /msg *push set secret ...
 
-If you're using Boxcar, you need to use the following command to send a subscription request
+If you're using Boxcar or Airgram, you need to use the following command to send a subscription request
 to your account, before ZNC Push can start working:
 
     /msg *push subscribe
