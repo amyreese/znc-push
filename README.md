@@ -396,6 +396,25 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     query window more recently than the last time a notification was sent for that context.
 
 
+### Proxy
+
+*   `proxy` Default: none
+
+    This option allows using a proxy service when libcurl support is enabled. The default
+    is no proxy. You must specify both the hostname/IP address and the port, as follows:
+
+    * myproxy.example.com:8080
+    * 203.0.113.5:8421
+    * [fc00:de4:ba::321a:4]:9000
+
+*   `proxy_ssl_verify` Default: `yes`
+
+    This option allows you to disable SSL verification when using a proxy service. This 
+    should only be done when you know the proxy service does not transparently pass SSL 
+    connections through and you trust the proxy service. Set this to `no` to disable 
+    SSL validation in libcurl.
+
+
 ### Advanced
 
 *   `channel_conditions` Default: `all`
