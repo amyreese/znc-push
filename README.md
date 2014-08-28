@@ -310,7 +310,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Notification sound to play with the push notification.
     Supported under Pushover, Faast, and Boxcar 2.  Must be chosen from the list of
-    [Pushover sounds](https://pushover.net/api#sounds), [Faast sounds](http://developer.faast.io/) 
+    [Pushover sounds](https://pushover.net/api#sounds), [Faast sounds](http://developer.faast.io/)
     or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
 
 
@@ -409,9 +409,9 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 *   `proxy_ssl_verify` Default: `yes`
 
-    This option allows you to disable SSL verification when using a proxy service. This 
-    should only be done when you know the proxy service does not transparently pass SSL 
-    connections through and you trust the proxy service. Set this to `no` to disable 
+    This option allows you to disable SSL verification when using a proxy service. This
+    should only be done when you know the proxy service does not transparently pass SSL
+    connections through and you trust the proxy service. Set this to `no` to disable
     SSL validation in libcurl.
 
 
