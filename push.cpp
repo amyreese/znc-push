@@ -288,8 +288,14 @@ class CPushMod : public CModule
 				{
 					params["device_iden"] = options["target"];
 				}
-
-				params["type"] = "note";
+				
+				if (message_uri == "")
+				{
+					params["type"] = "note";
+				} else {
+					params["type"] = "link";
+					params["url"] = message_uri;
+				}					
 				params["title"] = message_title;
 				params["body"] = message_content;
 			}
