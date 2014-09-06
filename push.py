@@ -1163,14 +1163,19 @@ class Airgram(PushService):
     }
 
     def send(self, context):
-        url = 'https://api.airgramapp.com/1/send_as_guest'
-
         params = {
             'email': C.get('target'),
             'msg': C.get_expanded('message_content'),
         }
+        auth = None
 
-        return Request('POST', url, data=params)
+        if C.get('username') and C.get('secret'):
+            url = 'https://api.airgramapp.com/1/send'
+            auth = (C.get('username'), C.get('secret'))
+        else:
+            url = 'https://api.airgramapp.com/1/send_as_guest'
+
+        return Request('POST', url, data=params, auth=auth)
 
 
 class Boxcar(PushService):
