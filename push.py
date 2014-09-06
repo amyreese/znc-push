@@ -113,6 +113,10 @@ class PushConfig(object):
             'nick_blacklist': '',
             'replied': 'yes',
 
+            # proxy
+            'proxy': '',
+            'proxy_ssl_verify': 'yes',
+
             # advanced
             'channel_conditions': 'all',
             'query_conditions': 'all',
@@ -1077,9 +1081,19 @@ class PushService(object):
                 context.module.PutModule(T.e_bad_push_handler)
                 return
 
+            proxies = None
+            verify = True
+            if C.get('proxy'):
+                proxies = {
+                    'http': C.get('proxy'),
+                    'https': C.get('proxy'),
+                }
+                if C.get('proxy_ssl_verify') and C.get('proxy_ssl_verify') == 'no':
+                    verify = False
+
             session = Session()
             prepped = session.prepare_request(request)
-            response = session.send(prepped, timeout=1, verify=True)
+            response = session.send(prepped, timeout=1, verify=verify, proxies=proxies)
 
             if response.status_code != 200:
                 m = T.e_send_status
@@ -1112,9 +1126,19 @@ class PushService(object):
                 context.module.PutModule(T.e_bad_push_handler)
                 return
 
+            proxies = None
+            verify = True
+            if C.get('proxy'):
+                proxies = {
+                    'http': C.get('proxy'),
+                    'https': C.get('proxy'),
+                }
+                if C.get('proxy_ssl_verify') and C.get('proxy_ssl_verify') == 'no':
+                    verify = False
+
             session = Session()
             prepped = session.prepare_request(request)
-            response = session.send(prepped, timeout=1, verify=True)
+            response = session.send(prepped, timeout=1, verify=verify, proxies=proxies)
 
             if response.status_code != 200:
                 m = T.e_send_subscribe
@@ -1163,14 +1187,19 @@ class Airgram(PushService):
     }
 
     def send(self, context):
-        url = 'https://api.airgramapp.com/1/send_as_guest'
-
         params = {
             'email': C.get('target'),
             'msg': C.get_expanded('message_content'),
         }
+        auth = None
 
-        return Request('POST', url, data=params)
+        if C.get('username') and C.get('secret'):
+            url = 'https://api.airgramapp.com/1/send'
+            auth = (C.get('username'), C.get('secret'))
+        else:
+            url = 'https://api.airgramapp.com/1/send_as_guest'
+
+        return Request('POST', url, data=params, auth=auth)
 
 
 class Boxcar(PushService):
