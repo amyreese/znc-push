@@ -316,13 +316,11 @@ class CPushMod : public CModule
 					return;
 				}
 
-				CString pushover_api_token = "h6RToHDU7gNnB3IMyUb94SuwKtBzOD";
-
 				service_host = "api.pushover.net";
 				service_url = "/1/messages.json";
 
-				params["token"] = pushover_api_token;
-				params["user"] = options["secret"];
+				params["user"] = options["username"];
+				params["token"] = options["secret"];
 				params["title"] = title;
 				params["message"] = short_message;
 
