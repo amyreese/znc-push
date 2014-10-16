@@ -114,7 +114,7 @@ If you're using Boxcar or Airgram, you need to use the following command to send
 to your account, before ZNC Push can start working:
 
     /msg *push subscribe
-
+    
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
@@ -259,6 +259,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
+    
+    When using Nexmo, this option allows you to specify the SMS destination number. The number must be in international format. 
 
     When using Nexmo, this option allows you to specify the SMS destination number. The number must be in international format.
 
@@ -286,6 +288,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Title that will be provided for the push notification.  Keyword expansion is performed
     on this value.
+    
+    When using Nexmo, this value is where the SMS is "from". In most cases, you must use a valid number in international format.
 
     When using Nexmo, this value is where the SMS is "from". In most cases, you must use a valid number in international format.
 
@@ -456,6 +460,14 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     When set to `on`, this option enables debug output for various features, and is useful
     in troubleshooting problems like failed push notifications.  Debug output will show up
     in your `*push` window.
+
+Additionally, you can configure any option from the webadmin interface. The argument list 
+consists of space-separated key-value pairs in the format of `<option>=<value>`. For example:
+
+    service=pushover username=foo secret=...
+    
+These arguments will be loaded each time the push module starts. Any options configured this way will
+override values saved by the user. 
 
 
 License
