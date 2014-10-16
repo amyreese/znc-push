@@ -467,6 +467,33 @@ class CPushMod : public CModule
 					params["notification[run_command]"] = options["message_uri"];
 				}
 			}
+			else if (service == "nexmo")
+			{
+			  if (options["username"] == "")
+			  {
+			    PutModule("Error: username (user key) not set");
+			    return;
+			  }
+			  if (options["secret"] == "")
+			  {
+			    PutModule("Error: secret (application token/key) not set");
+			    return;
+			  }
+			  
+			  service_host = "rest.nexmo.com";
+			  service_url = "/sms/json";
+			  
+			  params["api_secret"] = options["secret"];
+			  params["api_key"] = options["username"];
+			  params["from"] = message_title;
+			  params["text"] = message_content;
+			   
+			  if (options["target"] != "")
+			  {
+			    params["to"] = options["target"];
+			  }
+			  		 
+			}
 			else if (service == "url")
 			{
 				if (options["message_uri"] == "")
