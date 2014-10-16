@@ -1243,6 +1243,10 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Faast requires setting the secret to your apikey");
 						}
+						else if (value == "nexmo")
+						{
+							PutModule("Note: Nexmo requires setting the 'username' (to api key), 'secret' (to api secret), 'message_title' (to sender number in international format), and 'target' (to destination number in international format) options");
+						}
 						else
 						{
 							PutModule("Error: unknown service name");
