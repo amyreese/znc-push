@@ -2,7 +2,7 @@ ZNC Push
 ========
 
 ZNC Push is a module for [ZNC][] that will send notifications to multiple push notification
-services for any private message or channel highlight that matches a configurable set of
+services, or SMS for any private message or channel highlight that matches a configurable set of
 conditions.  ZNC Push current supports the following services:
 
 * [Boxcar][]
@@ -14,6 +14,7 @@ conditions.  ZNC Push current supports the following services:
 * [PushBullet][]
 * [Airgram][]
 * [Faast][]
+* [Nexmo][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
@@ -96,8 +97,7 @@ options across multiple networks, load it like this:
 
     /msg *status loadmod --type=user push
 
-Or you can use either the web admin page for the user to enable the "push" module, or you can
-use ZNC's "controlpanel" module:
+If you prefer to use ZNC's "controlpanel" module, you may do so like this:
 
     /msg *status loadmod controlpanel
     /msg *controlpanel loadmod push
@@ -114,7 +114,7 @@ If you're using Boxcar or Airgram, you need to use the following command to send
 to your account, before ZNC Push can start working:
 
     /msg *push subscribe
-
+    
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
@@ -232,13 +232,14 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `supertoasty`
     *   `pushbullet`
     *   `airgram`
+    *   `nexmo`
     *   `<url>`
 
 *   `username` Default: ` `
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar or Pushover. For Airgram authenticated services, this is the service key.
+    This option must be set when using Boxcar, or Pushover. For Airgram authenticated services and Nexmo, this is the service/api key.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as username.
@@ -247,7 +248,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty, Airgram authenticated services, or PushBullet.
+    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty, Airgram authenticated services, PushBullet, or Nexmo.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -258,6 +259,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
+    
+    When using Nexmo, this option allows you to specify the SMS destination number. The number must be in international format. 
 
     This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL. When using Airgram, this is the email address of the end user.
 
@@ -283,6 +286,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Title that will be provided for the push notification.  Keyword expansion is performed
     on this value.
+    
+    When using Nexmo, this value is where the SMS is "from". In most cases, you must use a valid number in international format.
 
 *   `message_uri` Default: ` `
 
@@ -452,6 +457,14 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     in troubleshooting problems like failed push notifications.  Debug output will show up
     in your `*push` window.
 
+Additionally, you can configure any option from the webadmin interface. The argument list 
+consists of space-separated key-value pairs in the format of `<option>=<value>`. For example:
+
+    service=pushover username=foo secret=...
+    
+These arguments will be loaded each time the push module starts. Any options configured this way will
+override values saved by the user. 
+
 
 License
 -------
@@ -469,6 +482,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [PushBullet]: https://www.pushbullet.com/
 [Airgram]: http://airgramapp.com/
 [Faast]: http://faast.io/
+[Nexmo]: https://www.nexmo.com
 
 [issues]: http://github.com/jreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
