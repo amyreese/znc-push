@@ -471,12 +471,17 @@ class CPushMod : public CModule
 			{
 			  if (options["username"] == "")
 			  {
-			    PutModule("Error: username (user key) not set");
+			    PutModule("Error: username (api key) not set");
 			    return;
 			  }
 			  if (options["secret"] == "")
 			  {
-			    PutModule("Error: secret (application token/key) not set");
+			    PutModule("Error: secret (api secret) not set");
+			    return;
+			  }
+			  if (options["target"] == "")
+			  {
+			    PutModule("Error: destination mobile number (in international format) not set");
 			    return;
 			  }
 			  
@@ -486,13 +491,9 @@ class CPushMod : public CModule
 			  params["api_secret"] = options["secret"];
 			  params["api_key"] = options["username"];
 			  params["from"] = message_title;
+			  params["to"] = options["target"];
 			  params["text"] = message_content;
-			   
-			  if (options["target"] != "")
-			  {
-			    params["to"] = options["target"];
-			  }
-			  		 
+			  
 			}
 			else if (service == "url")
 			{
