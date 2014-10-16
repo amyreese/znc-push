@@ -18,8 +18,8 @@
 #include <znc/Modules.h>
 #include <znc/FileUtils.h>
 #include <znc/Client.h>
+#include <znc/ZNCString.h>
 #include "time.h"
-#include <string.h>
 
 #ifdef USE_CURL
 #include <curl/curl.h>
@@ -984,6 +984,7 @@ class CPushMod : public CModule
 		 */
 		bool OnLoad(const CString& args, CString& message)
 		{
+			// Load user config and defaults
 			for (MCString::iterator i = defaults.begin(); i != defaults.end(); i++)
 			{
 				CString value = GetNV(i->first);
@@ -996,6 +997,29 @@ class CPushMod : public CModule
 					options[i->first] = defaults[i->first];
 				}
 			}
+			
+			// Load parameters passed in as arguments (overrides user values)
+    			VCString tokens;
+    			CString::size_type token_count = args.Split(" ", tokens, false);
+    
+    			for (VCString::const_iterator i = tokens.begin(); i != tokens.end(); i++)
+			{
+      				VCString optionValuePair;
+      				CString::size_type optionValuePair_count = i->Split("=", optionValuePair, false);
+       
+      				if (optionValuePair_count == 2)
+      				{
+        				CString option = optionValuePair[0].AsLower();
+        				CString value = optionValuePair[1].AsLower();
+        				MCString::iterator pos = options.find(option);
+        				if (pos != options.end())
+        				{
+            					options[option] = value;
+            					PutDebug("Loaded " + option + "=" + value);
+        				}
+      				}
+    			}  
+
 
 			return true;
 		}
@@ -1804,6 +1828,8 @@ void CPushSocket::Disconnected()
 template<> void TModInfo<CPushMod>(CModInfo& Info) {
 	Info.AddType(CModInfo::UserModule);
 	Info.SetWikiPage("push");
+  	Info.SetHasArgs(true);
+  	Info.SetArgsHelpText("See config options at https://github.com/jreese/znc-push/blob/master/README.md");
 }
 
 NETWORKMODULEDEFS(CPushMod, "Send highlights and personal messages to a push notification service")
