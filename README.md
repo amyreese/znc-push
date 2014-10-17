@@ -1,6 +1,12 @@
 ZNC Push
 ========
 
+[FAQ][] | [Example Configuration][examples]
+
+
+Overview
+--------
+
 ZNC Push is a module for [ZNC][] that will send notifications to multiple push
 notification services for any private message or channel highlight that matches
 a configurable set of conditions.
@@ -464,7 +470,9 @@ This project is licensed under the MIT license.
 See the `LICENSE` file for details.
 
 
-[issues]: http://github.com/jreese/znc-push/issues
+[faq]: https://github.com/jreese/blob/master/doc/faq.md
+[examples]: https://github.com/jreese/blob/master/doc/examples.md
+[issues]: https://github.com/jreese/znc-push/issues
 
 [Boxcar]: http://boxcar.io
 [Notify My Android]: http://www.notifymyandroid.com
