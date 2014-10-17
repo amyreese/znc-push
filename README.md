@@ -470,8 +470,8 @@ This project is licensed under the MIT license.
 See the `LICENSE` file for details.
 
 
-[faq]: https://github.com/jreese/blob/master/doc/faq.md
-[examples]: https://github.com/jreese/blob/master/doc/examples.md
+[faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
+[examples]: https://github.com/jreese/znc-push/blob/master/doc/examples.md
 [issues]: https://github.com/jreese/znc-push/issues
 
 [Boxcar]: http://boxcar.io
