@@ -1,6 +1,12 @@
 ZNC Push
 ========
 
+[FAQ][] | [Example Configuration][examples]
+
+
+Overview
+--------
+
 ZNC Push is a module for [ZNC][] that will send notifications to multiple push notification
 services, or SMS for any private message or channel highlight that matches a configurable set of
 conditions.  ZNC Push current supports the following services:
@@ -476,7 +482,9 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Faast]: http://faast.io/
 [Nexmo]: https://www.nexmo.com
 
-[issues]: http://github.com/jreese/znc-push/issues
+[faq]: https://github.com/jreese/blob/master/doc/faq.md
+[examples]: https://github.com/jreese/blob/master/doc/examples.md
+[issues]: https://github.com/jreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 [ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601 Date Format"
 
