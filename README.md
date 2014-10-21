@@ -466,8 +466,10 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 License
 -------
 
-This project is licensed under the MIT license.
-See the `LICENSE` file for details.
+This project is copyright John Reese, and licensed under the MIT license.
+I am providing code in this repository to you under an open source license.
+Because this is my personal repository, the license you receive to my code is
+from my and not from my employer.  See the `LICENSE` file for details.
 
 
 [faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
