@@ -16,4 +16,4 @@ install: push.pyc
 	cp push.pyc $(HOME)/.znc/modules/push.pyc
 
 clean:
-	-rm -rf push.pyc __pycache__
+	-rm -rf push.so push.pyc __pycache__
