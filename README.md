@@ -239,7 +239,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `pushbullet`
     *   `airgram`
     *   `nexmo`
-    *   `<url>`
+    *   `url`
 
 *   `username` Default: ` `
 
