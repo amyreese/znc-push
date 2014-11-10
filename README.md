@@ -284,9 +284,25 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 
     Authentication token for push notifications.
 
+    This option must be set when using Notify My Android, Pushover, Prowl,
+    Supertoasty, Airgram authenticated services, or PushBullet.
+
+    When using the custom URL service, if this option is set it will enable
+    HTTP basic authentication and be used as password.
+
 *   `target` Default: ` `
 
     Device or target name for push notifications.
+
+    When using Pushover, this option allows you to specify a single device name
+    to send notifications to; if blank or unset, notifications will be sent to
+    all devices.
+
+    This option must be set when using PushBullet and Airgram. This module
+    supports both `device_id` (older, numeric id) and the `device_iden` (newer,
+    alphanumeric id) used by PushBullet. You can find your `device_iden` by
+    navigating to a device page and noting the last part of the URL. When using
+    Airgram, this is the email address of the end user.
 
 
 ### Notifications
@@ -411,6 +427,24 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
     If set to `yes`, notifications will only be sent if you have replied to
     the channel or query window more recently than the last time a notification
     was sent for that context.
+
+
+### Proxy
+
+*    `proxy` Default: `none`
+
+     This option allows using a proxy service. The default is no proxy. You
+     must specify both the hostname/IP address and the port, as follows:
+
+     * myproxy.example.com:8080
+     * 203.0.113.5:8421
+     * [fc00:de4:ba::321a:4]:9000
+
+*    proxy_ssl_verify Default: yes
+
+     This option allows you to disable SSL verification when using a proxy
+     service. This should only be done when you know the proxy service does not
+     transparently pass SSL connections through and you trust the proxy service.
 
 
 ### Advanced
