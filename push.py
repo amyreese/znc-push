@@ -1088,12 +1088,13 @@ class PushService(object):
                     'http': C.get('proxy'),
                     'https': C.get('proxy'),
                 }
-                if C.get('proxy_ssl_verify') and C.get('proxy_ssl_verify') == 'no':
+                if C.get('proxy_ssl_verify') == 'no':
                     verify = False
 
             session = Session()
             prepped = session.prepare_request(request)
-            response = session.send(prepped, timeout=1, verify=verify, proxies=proxies)
+            response = session.send(prepped, timeout=1,
+                                    verify=verify, proxies=proxies)
 
             if response.status_code != 200:
                 m = T.e_send_status
@@ -1133,12 +1134,13 @@ class PushService(object):
                     'http': C.get('proxy'),
                     'https': C.get('proxy'),
                 }
-                if C.get('proxy_ssl_verify') and C.get('proxy_ssl_verify') == 'no':
+                if C.get('proxy_ssl_verify') == 'no':
                     verify = False
 
             session = Session()
             prepped = session.prepare_request(request)
-            response = session.send(prepped, timeout=1, verify=verify, proxies=proxies)
+            response = session.send(prepped, timeout=1,
+                                    verify=verify, proxies=proxies)
 
             if response.status_code != 200:
                 m = T.e_send_subscribe
