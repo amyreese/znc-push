@@ -86,7 +86,7 @@ class PushConfig(object):
 
         self.defaults = {
             # global options
-            'lang': 'en_ca',
+            'lang': 'en_us',
 
             # push service
             'service': '',
