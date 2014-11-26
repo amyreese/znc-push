@@ -294,15 +294,13 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 
     Device or target name for push notifications.
 
-    When using Pushover, this option allows you to specify a single device name
-    to send notifications to; if blank or unset, notifications will be sent to
-    all devices.
+    When using Pushover or PushBullet, this option allows you to specify a
+    single device to send notifications to; if blank or unset, notifications
+    will be sent to all devices.  For Pushover, this is the device name; for
+    PushBullet, this is the device_iden.
 
-    This option must be set when using PushBullet and Airgram. This module
-    supports both `device_id` (older, numeric id) and the `device_iden` (newer,
-    alphanumeric id) used by PushBullet. You can find your `device_iden` by
-    navigating to a device page and noting the last part of the URL. When using
-    Airgram, this is the email address of the end user.
+    When using Airgram, this is the email address of the end user.
+    Device or target name for push notifications.
 
 
 ### Notifications
