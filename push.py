@@ -630,6 +630,7 @@ class PushConditions(object):
 
 class push(znc.Module):
     description = 'Send highlights and messages to a push notification service'
+    wiki_page = 'Push'
     module_types = [znc.CModInfo.UserModule]
 
     debug = True
