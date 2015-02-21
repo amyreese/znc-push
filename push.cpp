@@ -254,6 +254,7 @@ class CPushMod : public CModule
 			replace["{username}"] = options["username"];
 			replace["{secret}"] = options["secret"];
 			replace["{network}"] = GetNetwork()->GetName();
+			replace["{target}"] = options["target"];
 
 			CString message_uri = expand(options["message_uri"], replace);
 			CString message_title = expand(options["message_title"], replace);
@@ -591,6 +592,31 @@ class CPushMod : public CModule
 
 				params["email"] = options["target"];
 				params["msg"] = message_content;
+			}
+			else if (service == "slack")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (from webhook, e.g. T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX) not set");
+					return;
+				}
+				if (options["target"] == "")
+				{
+					PutModule("Error: target (channel or username) not set");
+					return;
+				}
+
+				service_host = "hooks.slack.com";
+				service_url = "/services/" + options["secret"];
+
+				if (options["username"] != "")
+				{
+					params["username"] = options["username"];
+				}
+
+				params["payload"] = expand("{\"channel\": \"{target}\", \"pretext\": \"{title}\", \"text\": \"{message}\"}", replace);
+
+				PutDebug("payload: " + params["payload"]);
 			}
 			else
 			{
@@ -1247,6 +1273,10 @@ class CPushMod : public CModule
 						else if (value == "nexmo")
 						{
 							PutModule("Note: Nexmo requires setting the 'username' (to api key), 'secret' (to api secret), 'message_title' (to sender number in international format), and 'target' (to destination number in international format) options");
+						}
+						else if (value == "slack")
+						{
+							PutModule("Note: Slack requires setting 'secret' (from webhook) and 'target' (channel or username), optional 'username' (bot name)");
 						}
 						else
 						{
