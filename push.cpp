@@ -614,7 +614,7 @@ class CPushMod : public CModule
 					params["username"] = options["username"];
 				}
 
-				params["payload"] = expand("{\"channel\": \"{target}\", \"pretext\": \"{title}\", \"text\": \"{message}\"}", replace);
+				params["payload"] = expand("{\"channel\": \"{target}\", \"text\": \"*{title}*: {message}\"}", replace);
 
 				PutDebug("payload: " + params["payload"]);
 			}
