@@ -165,6 +165,7 @@ Configuration
     *   "pushover"
     *   "prowl"
     *   "supertoasty"
+    *   "pushbullet"
 
 *   `username = ""`
 
@@ -176,7 +177,7 @@ Configuration
 
     Authentication token for push notifications.
 
-    This option must be set when using Notifo, Notify My Android, Pushover, Prowl or Supertoasty.
+    This option must be set when using Notifo, Notify My Android, Pushover, Prowl, Supertoasty or Pushbullet (access token).
 
 *   `target = ""`
 
@@ -185,6 +186,11 @@ Configuration
     When using Pushover, this option allows you to specify a single device name to send
     notifications to; if blank or unset, notifications will be sent to all devices.
 
+    This option must be set when using PushBullet.  This module
+    supports both `device_id` (older, numeric id) and the
+    `device_iden` (newer, alphanumeric id) used by PushBullet.  You
+    can find your `device_iden` by navigating to a device page and
+    noting the last part of the URL.
 
 ### Conditions
 
