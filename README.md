@@ -11,6 +11,7 @@ conditions.  ZNC Push current supports the following services:
 * [Pushover][]
 * [Prowl][]
 * [Supertoasty][]
+* [Pushbullet][]
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
@@ -344,6 +345,7 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [Pushover]: http://pushover.net
 [Prowl]: http://www.prowlapp.com
 [Supertoasty]: http://www.supertoasty.com
+[Pushbullet]: http://www.pushbullet.com
 
 [issues]: http://github.com/jreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
