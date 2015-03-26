@@ -146,6 +146,7 @@ class CPushMod : public CModule
 			defaults["last_notification"] = "300";
 			defaults["nick_blacklist"] = "";
 			defaults["replied"] = "yes";
+			defaults["context"] = "*";
 
 			// Proxy, for libcurl
 			defaults["proxy"] = "";
@@ -755,6 +756,7 @@ class CPushMod : public CModule
 				expr("last_notification", last_notification(context))
 				expr("nick_blacklist", nick_blacklist(nick))
 				expr("replied", replied(context))
+				expr("context", context_filter(context))
 
 				else
 				{
@@ -852,6 +854,47 @@ class CPushMod : public CModule
 
 			return false;
 		}
+        
+		/**
+		 * Determine if the given context matches any context rules.
+		 *
+		 * @param context The context of a message
+		 * @return True if context matches the filter
+		 */
+		bool context_filter(const CString& context)
+		{
+			if (context == "all" || context == "*")
+				return true;
+
+			VCString values;
+			options["context"].Split(" ", values, false);
+
+			for (VCString::iterator i = values.begin(); i != values.end(); i++)
+			{
+				CString value = i->AsLower();
+				char prefix = value[0];
+				bool push = true;
+
+				if (prefix == '-')
+				{
+					push = false;
+					value.LeftChomp(1);
+				}
+
+				if (value != "*")
+				{
+					value = "*" + value.AsLower() + "*";
+				}
+
+				if (context.WildCmp(value))
+				{
+					return push;
+				}
+			}
+
+			return false;
+		}
+        
 
 		/**
 		 * Check if the idle condition is met.
@@ -971,6 +1014,7 @@ class CPushMod : public CModule
 				&& last_notification(context)
 				&& nick_blacklist(nick)
 				&& replied(context)
+				&& context_filter(context)
 				&& true;
 		}
 

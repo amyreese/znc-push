@@ -407,6 +407,27 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     If set to `yes`, notifications will only be sent if you have replied to the channel or
     query window more recently than the last time a notification was sent for that context.
 
+*   `context` Default: `*`
+
+    Similar to `highlight`, this is a space-separated list of strings to match against message
+    contexts using case-insensitive, wildcard matching.  Strings will be compared in order
+    they appear in the configuration value, and the first string to match will end the search,
+    meaning that earlier strings take priority over later values.
+
+    Individual strings may be prefixed with a `-` (hyphen) to negate the match, which makes
+    the string act as a filter rather than a search.
+    
+    The wildcard `*` (the default) may be used to match any context.
+
+    Examples:
+    
+    * `#important` - Only messages from the #important channel that match all the other
+    conditions will be pushed
+    * `-#notimportant *` - Messages from #nonimportant will be ignored; everything else (`*`)
+    will be matched
+    * Set `channel_conditions` to `(highlight or context)` and `context` to `#iwantitall` -
+    Now you'll get notifications for every message in #iwantitall and messages that match your
+    highlight rules everywhere else.
 
 ### Proxy
 
@@ -457,7 +478,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     
     Specifying `all` is equivalent to:
     
-    * `away_only and client_count_less_than and highlight and idle and last_active and last_notification and nick_blacklist and replied`
+    * `away_only and client_count_less_than and highlight and idle and last_active and last_notification and nick_blacklist and replied and context`
 
 *   `query_conditions` Default: `all`
 
