@@ -454,12 +454,20 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     (last_active or last_notification or replied) and nick_blacklist` would send a
     notification if any of the three conditions in the sub-expression are met, while still
     requiring all of the conditions outside of the parentheses to also be met.
+    
+    Specifying `all` is equivalent to:
+    
+    * `away_only and client_count_less_than and highlight and idle and last_active and last_notification and nick_blacklist and replied`
 
 *   `query_conditions` Default: `all`
 
     This option is more or less identical to `channel_conditions`, except that it is used
     to filter notifications for private messages.
-
+    
+    Specifying `all` is equivalent to:
+    
+    * `away_only and client_count_less_than and idle and last_active and last_notification and nick_blacklist and replied`
+    
 *   `debug` Default: `off`
 
     When set to `on`, this option enables debug output for various features, and is useful
