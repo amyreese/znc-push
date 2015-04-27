@@ -203,6 +203,7 @@ Configuration
 Some configuration options allow for optional keyword expansion, which happens
 while preparing to send the push notification.  Expansion is performed each time
 a notification is sent.  Expansion is only performed on options that explicitly
+ state that keyword expansion can be performed.
 
 
 The following keywords will be replaced with the appropriate value:
