@@ -1406,6 +1406,23 @@ class URL(PushService):
         return Request(method, url)
 
 
+class Yo(PushService):
+    required = {
+        'username': 'Username that will receive the yo',
+        'secret': 'API token'
+    }
+
+    def send(self, context):
+        url = 'http://api.justyo.co/yo/'
+
+        params = {
+            'api_token': C.get('secret'),
+            'username': C.get('username'),
+        }
+
+        return Request('POST', url, data=params)
+
+
 class Translation(object):
     _cache = None
 
