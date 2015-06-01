@@ -569,13 +569,9 @@ class PushConditions(object):
         return value != 'yes' or self.module.GetNetwork().IsIRCAway()
 
     def client_count_less_than(self):
-        # todo: fix GetClients() returning a SwigPyObject that we can't use
-        return True
-
         value = C.get('client_count_less_than')
         network = self.module.GetNetwork()
         clients = network.GetClients()
-
         return value == 0 or len(clients) < value
 
     def idle(self):
