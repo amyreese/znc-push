@@ -13,6 +13,7 @@ push.so: push.cpp
 	sed -i -e "s|PUSHVERSION \".*\"|PUSHVERSION \"dev\"|" push.cpp
 
 install: push.so
+	mkdir -p $(HOME)/.znc/modules/
 	cp push.so $(HOME)/.znc/modules/push.so
 
 clean:

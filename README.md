@@ -1,8 +1,14 @@
 ZNC Push
 ========
 
+[FAQ][] | [Example Configuration][examples]
+
+
+Overview
+--------
+
 ZNC Push is a module for [ZNC][] that will send notifications to multiple push notification
-services for any private message or channel highlight that matches a configurable set of
+services, or SMS for any private message or channel highlight that matches a configurable set of
 conditions.  ZNC Push current supports the following services:
 
 * [Boxcar][]
@@ -14,14 +20,13 @@ conditions.  ZNC Push current supports the following services:
 * [PushBullet][]
 * [Airgram][]
 * [Faast][]
+* [Nexmo][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
 discussion or inclusion.  Bug reports and feature requests can be submitted to
 [the repository issues list][issues], or sent via email.
-
-[![Stories in Ready](http://badge.waffle.io/jreese/znc-push.png)](http://waffle.io/jreese/znc-push)
 
 For full functionality, this module requires ZNC version 0.090 or newer, but should compile
 and run with a reduced feature set on versions as old as 0.078, the current version used by
@@ -98,8 +103,7 @@ options across multiple networks, load it like this:
 
     /msg *status loadmod --type=user push
 
-Or you can use either the web admin page for the user to enable the "push" module, or you can
-use ZNC's "controlpanel" module:
+If you prefer to use ZNC's "controlpanel" module, you may do so like this:
 
     /msg *status loadmod controlpanel
     /msg *controlpanel loadmod push
@@ -112,7 +116,7 @@ and looking in your profile or settings:
     /msg *push set username foo
     /msg *push set secret ...
 
-If you're using Boxcar, you need to use the following command to send a subscription request
+If you're using Boxcar or Airgram, you need to use the following command to send a subscription request
 to your account, before ZNC Push can start working:
 
     /msg *push subscribe
@@ -199,6 +203,7 @@ Configuration
 Some configuration options allow for optional keyword expansion, which happens
 while preparing to send the push notification.  Expansion is performed each time
 a notification is sent.  Expansion is only performed on options that explicitly
+ state that keyword expansion can be performed.
 
 
 The following keywords will be replaced with the appropriate value:
@@ -234,13 +239,14 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `supertoasty`
     *   `pushbullet`
     *   `airgram`
-    *   `<url>`
+    *   `nexmo`
+    *   `url`
 
 *   `username` Default: ` `
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar or Pushover.
+    This option must be set when using Boxcar, or Pushover. For Airgram authenticated services and Nexmo, this is the service/api key.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as username.
@@ -249,7 +255,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty or PushBullet.
+    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty, Airgram authenticated services, PushBullet, or Nexmo.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -258,10 +264,15 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Device or target name for push notifications.
 
-    When using Pushover, this option allows you to specify a single device name to send
-    notifications to; if blank or unset, notifications will be sent to all devices.
+    When using Pushover or PushBullet, this option allows you to specify a
+    single device to send notifications to; if blank or unset, notifications
+    will be sent to all devices.  For Pushover, this is the device name; for
+    PushBullet, this is the device_iden.
 
-    This option must be set when using PushBullet and Airgram. This module supports both `device_id` (older, numeric id) and the `device_iden` (newer, alphanumeric id) used by PushBullet. You can find your `device_iden` by navigating to a device page and noting the last part of the URL. 
+    When using Nexmo, this option allows you to specify the SMS destination
+    number. The number must be in international format.
+
+    When using Airgram, this is the email address of the end user.
 
 
 ### Notifications
@@ -285,6 +296,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Title that will be provided for the push notification.  Keyword expansion is performed
     on this value.
+
+    When using Nexmo, this value is where the SMS is "from". In most cases, you must use a valid number in international format.
 
 *   `message_uri` Default: ` `
 
@@ -310,7 +323,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Notification sound to play with the push notification.
     Supported under Pushover, Faast, and Boxcar 2.  Must be chosen from the list of
-    [Pushover sounds](https://pushover.net/api#sounds), [Faast sounds](http://developer.faast.io/) 
+    [Pushover sounds](https://pushover.net/api#sounds), [Faast sounds](http://developer.faast.io/)
     or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
 
 
@@ -395,6 +408,46 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     If set to `yes`, notifications will only be sent if you have replied to the channel or
     query window more recently than the last time a notification was sent for that context.
 
+*   `context` Default: `*`
+
+    Similar to `highlight`, this is a space-separated list of strings to match against message
+    contexts using case-insensitive, wildcard matching.  Strings will be compared in order
+    they appear in the configuration value, and the first string to match will end the search,
+    meaning that earlier strings take priority over later values.
+
+    Individual strings may be prefixed with a `-` (hyphen) to negate the match, which makes
+    the string act as a filter rather than a search.
+    
+    The wildcard `*` (the default) may be used to match any context.
+
+    Examples:
+    
+    * `#important` - Only messages from the #important channel that match all the other
+    conditions will be pushed
+    * `-#notimportant *` - Messages from #nonimportant will be ignored; everything else (`*`)
+    will be matched
+    * Set `channel_conditions` to `(highlight or context)` and `context` to `#iwantitall` -
+    Now you'll get notifications for every message in #iwantitall and messages that match your
+    highlight rules everywhere else.
+
+### Proxy
+
+*   `proxy` Default: none
+
+    This option allows using a proxy service when libcurl support is enabled. The default
+    is no proxy. You must specify both the hostname/IP address and the port, as follows:
+
+    * myproxy.example.com:8080
+    * 203.0.113.5:8421
+    * [fc00:de4:ba::321a:4]:9000
+
+*   `proxy_ssl_verify` Default: `yes`
+
+    This option allows you to disable SSL verification when using a proxy service. This
+    should only be done when you know the proxy service does not transparently pass SSL
+    connections through and you trust the proxy service. Set this to `no` to disable
+    SSL validation in libcurl.
+
 
 ### Advanced
 
@@ -423,12 +476,20 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     (last_active or last_notification or replied) and nick_blacklist` would send a
     notification if any of the three conditions in the sub-expression are met, while still
     requiring all of the conditions outside of the parentheses to also be met.
+    
+    Specifying `all` is equivalent to:
+    
+    * `away_only and client_count_less_than and highlight and idle and last_active and last_notification and nick_blacklist and replied and context`
 
 *   `query_conditions` Default: `all`
 
     This option is more or less identical to `channel_conditions`, except that it is used
     to filter notifications for private messages.
-
+    
+    Specifying `all` is equivalent to:
+    
+    * `away_only and client_count_less_than and idle and last_active and last_notification and nick_blacklist and replied`
+    
 *   `debug` Default: `off`
 
     When set to `on`, this option enables debug output for various features, and is useful
@@ -439,7 +500,10 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 License
 -------
 
-This project is licensed under the MIT license.  See the `LICENSE` file for details.
+This project is copyright John Reese, and licensed under the MIT license.
+I am providing code in this repository to you under an open source license.
+Because this is my personal repository, the license you receive to my code is
+from me and not from my employer.  See the `LICENSE` file for details.
 
 
 
@@ -452,8 +516,11 @@ This project is licensed under the MIT license.  See the `LICENSE` file for deta
 [PushBullet]: https://www.pushbullet.com/
 [Airgram]: http://airgramapp.com/
 [Faast]: http://faast.io/
+[Nexmo]: https://www.nexmo.com
 
-[issues]: http://github.com/jreese/znc-push/issues
+[faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
+[examples]: https://github.com/jreese/znc-push/blob/master/doc/examples.md
+[issues]: https://github.com/jreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 [ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601 Date Format"
 
