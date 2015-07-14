@@ -21,6 +21,7 @@ conditions.  ZNC Push current supports the following services:
 * [Airgram][]
 * [Faast][]
 * [Nexmo][]
+* [Pushalot][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
