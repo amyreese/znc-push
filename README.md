@@ -518,6 +518,7 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Airgram]: http://airgramapp.com/
 [Faast]: http://faast.io/
 [Nexmo]: https://www.nexmo.com
+[Pushalot]: https://pushalot.com/
 
 [faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
 [examples]: https://github.com/jreese/znc-push/blob/master/doc/examples.md
