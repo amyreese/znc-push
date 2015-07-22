@@ -406,6 +406,33 @@ class CPushMod : public CModule
 					params["priority"] = options["message_priority"];
 				}
 			}
+
+			else if (service == "pushalot")
+			  {
+			    if (options["secret"] == "")
+			      {
+				PutModule("Error: secret (authorization token) not set");
+				return;
+			      }
+
+			    service_host = "pushalot.com";
+			    service_url = "/api/sendmessage";
+
+			    params["AuthorizationToken"] = options["secret"];
+			    params["Title"] = message_title;
+			    params["Body"] = message_content;
+
+			    if (message_uri != "")
+			      {
+				params["Link"] = message_uri;
+			      }
+
+			    if ( options["message_uri_title"] != "" )
+			      {
+				params["LinkTitle"] = options["message_uri_title"];
+			      }
+			  }
+			
 			else if (service == "prowl")
 			{
 				if (options["secret"] == "")
@@ -1294,6 +1321,11 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Pushover requires setting both the 'username' (to user key) and the 'secret' (to application api key) option");
 						}
+						else if (value == "pushalot")
+						  {
+						    PutModule("Note: Pushalot requires setting the 'secret' (to user key) (to authorization token) option");
+						  }
+						
 						else if (value == "prowl")
 						{
 							PutModule("Note: Prowl requires setting the 'secret' option");
