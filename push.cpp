@@ -145,6 +145,7 @@ class CPushMod : public CModule
 			defaults["last_active"] = "180";
 			defaults["last_notification"] = "300";
 			defaults["nick_blacklist"] = "";
+			defaults["network_blacklist"] = "";
 			defaults["replied"] = "yes";
 			defaults["context"] = "*";
 
@@ -782,6 +783,7 @@ class CPushMod : public CModule
 				expr("last_active", last_active(context))
 				expr("last_notification", last_notification(context))
 				expr("nick_blacklist", nick_blacklist(nick))
+				expr("network_blacklist", network_blacklist())
 				expr("replied", replied(context))
 				expr("context", context_filter(context))
 
@@ -1000,6 +1002,30 @@ class CPushMod : public CModule
 
 			return true;
 		}
+		
+		/**
+		 * Check if the network_blacklist condition is met.
+		 *
+		 * @param network Network that the message was received on
+		 * @return True if network is not in the blacklist
+		 */
+		bool network_blacklist()
+		{
+			VCString blacklist;
+			options["network_blacklist"].Split(" ", blacklist, false);
+
+			CString name = (*m_pNetwork).GetName().AsLower();
+
+			for (VCString::iterator i = blacklist.begin(); i != blacklist.end(); i++)
+			{
+				if (name.WildCmp((*i).AsLower()))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 
 		/**
 		 * Check if the replied condition is met.
@@ -1040,6 +1066,7 @@ class CPushMod : public CModule
 				&& last_active(context)
 				&& last_notification(context)
 				&& nick_blacklist(nick)
+				&& network_blacklist()
 				&& replied(context)
 				&& context_filter(context)
 				&& true;
@@ -1067,6 +1094,7 @@ class CPushMod : public CModule
 				&& last_active(context)
 				&& last_notification(context)
 				&& nick_blacklist(nick)
+				&& network_blacklist()
 				&& replied(context)
 				&& true;
 		}
@@ -1596,6 +1624,11 @@ class CPushMod : public CModule
 				table.AddRow();
 				table.SetCell("Condition", "idle");
 				table.SetCell("Status", CString(ago) + " seconds");
+				
+				table.AddRow();
+				table.SetCell("Condition", "network_blacklist");
+				// network_blacklist() is True if the network is not in a blacklist
+				table.SetCell("Status", network_blacklist() ? "no" : "yes");
 
 				if (token_count > 1)
 				{

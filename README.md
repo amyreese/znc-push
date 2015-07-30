@@ -404,6 +404,12 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     like "channelbot", "FooBot", or "Robot".  Care must be used to not accidentally
     blacklist legitimate nicks with wildcards.
 
+*   `network_blacklist` Default: ` `
+
+    Space-separated list of network names.
+    Notifications will only be sent for messages from networks that are not present in this
+    list, using a case-insensitive comparison.
+
 *   `replied` Default: `yes`
 
     If set to `yes`, notifications will only be sent if you have replied to the channel or
