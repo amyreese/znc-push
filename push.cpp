@@ -647,6 +647,31 @@ class CPushMod : public CModule
 
 				PutDebug("payload: " + params["payload"]);
 			}
+            else if (service == "pushjet")
+            {
+                if (options["secret"] == "")
+                {
+                    PutModule("Error: secret (service key) not set");
+                    return;
+                }
+                
+                service_host = "api.pushjet.io";
+                service_url = "/message";
+                
+                params["secret"] = options["secret"];
+                params["title"] = message_title;
+                params["message"] = message_content;
+                
+                if (message_uri != "")
+                {
+                    params["link"] = message_uri;
+                }
+                
+                if (options["message_priority"] != "")
+                {
+                    params["level"] = options["message_priority"];
+                }
+            }
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -1382,6 +1407,10 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Slack requires setting 'secret' (from webhook) and 'target' (channel or username), optional 'username' (bot name)");
 						}
+                        else if (value == "pushjet")
+                        {
+                            PutModule("Note: Pushjet requires setting 'secret' (service key) option");
+                        }
 						else
 						{
 							PutModule("Error: unknown service name");
