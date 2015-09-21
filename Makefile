@@ -8,9 +8,9 @@ else
 endif
 
 push.so: push.cpp
-	sed -i -e "s|PUSHVERSION \".*\"|PUSHVERSION \"$(version)\"|" push.cpp
+	sed -i "" -e "s|PUSHVERSION \".*\"|PUSHVERSION \"$(version)\"|" push.cpp
 	CXXFLAGS="$(CXXFLAGS) $(flags)" LIBS="$(LIBS) $(flags)" znc-buildmod push.cpp
-	sed -i -e "s|PUSHVERSION \".*\"|PUSHVERSION \"dev\"|" push.cpp
+	sed -i "" -e "s|PUSHVERSION \".*\"|PUSHVERSION \"dev\"|" push.cpp
 
 install: push.so
 	mkdir -p $(HOME)/.znc/modules/
