@@ -4,7 +4,7 @@
 # Allows the user to enter a Push user and API token, and sends
 # channel highlights and personal messages to Push.
 #
-# Copyright (c) 2014 John Reese
+# Copyright (c) 2015 John Reese
 # Licensed under the MIT license
 #
 
