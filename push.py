@@ -349,8 +349,10 @@ class PushConfig(object):
         if key == 'lang' and value not in Translation.all_languages():
             raise ValueError(T.e_invalid_lang.format(value))
 
-        if key == 'service' and value not in PushService.all_services():
-            raise ValueError(T.e_unknown_service.format(value))
+        if key == 'service':
+            value = value.lower()
+            if value not in PushService.all_services():
+                raise ValueError(T.e_unknown_service.format(value))
 
         if key in self.numbers:
             try:
