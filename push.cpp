@@ -75,7 +75,9 @@ class CPushSocket : public CSocket
 // forward declaration
 CURLcode make_curl_request(const CString& service_host, const CString& service_url,
 						   const CString& service_auth, MCString& params, int port,
-						   bool use_ssl, bool use_post, bool debug);
+						   bool use_ssl, bool use_post,
+						   const CString& proxy, bool proxy_ssl_verify,
+						   bool debug);
 #endif // USE_CURL
 
 /**
@@ -663,9 +665,7 @@ class CPushMod : public CModule
 
 #ifdef USE_CURL
             PutDebug("using libcurl");
-      params["proxy"] = options["proxy"];
-			params["proxy_ssl_verify"] = options["proxy_ssl_verify"];
-      make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["debug"] == "on");
+      make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
 #else
             PutDebug("NOT using libcurl");
 			// Create the socket connection, write to it, and add it to the queue
@@ -1714,11 +1714,8 @@ class CPushMod : public CModule
 					return;
 				}
 
-				params["proxy"] = options["proxy"];
-				params["proxy_ssl_verify"] = options["proxy_ssl_verify"];
-
 #ifdef USE_CURL
-				make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["debug"] == "on");
+				make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
 #else
 				// Create the socket connection, write to it, and add it to the queue
 				CPushSocket *sock = new CPushSocket(this);
@@ -1805,7 +1802,9 @@ CString build_query_string(MCString& params)
  */
 CURLcode make_curl_request(const CString& service_host, const CString& service_url,
 						   const CString& service_auth, MCString& params, int port,
-						   bool use_ssl, bool use_post, bool debug)
+						   bool use_ssl, bool use_post,
+						   const CString& proxy, bool proxy_ssl_verify,
+						   bool debug)
 {
 	CURL *curl;
 	CURLcode result;
@@ -1843,10 +1842,10 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, query.length());
 	}
 
-	if (params["proxy"] != "") {
-		curl_easy_setopt(curl, CURLOPT_PROXY, params["proxy"].c_str());
+	if (proxy != "") {
+		curl_easy_setopt(curl, CURLOPT_PROXY, proxy.c_str());
 
-		if (params["proxy_ssl_verify"] == "no") {
+		if (!proxy_ssl_verify) {
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		}
 	}
