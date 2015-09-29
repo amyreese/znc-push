@@ -9,7 +9,9 @@
  */
 
 #define REQUIRESSL
+#ifndef PUSHVERSION
 #define PUSHVERSION "dev"
+#endif
 
 #include <znc/znc.h>
 #include <znc/Chan.h>
