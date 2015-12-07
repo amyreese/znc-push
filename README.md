@@ -51,6 +51,12 @@ be installed with:
 
     $ sudo aptitude install znc-dev
 
+In order for this plugin to properly work, you will need to ensure you have the `ca-certificates`
+package on Ubuntu based systems. This is required for push to properly verify the certificate
+of the service it's sending your message to.
+
+    $ sudo aptitude install ca-certificates
+
 Optionally, if you want to use libcurl for http requests, you also need to install cURL
 development header files.
 
