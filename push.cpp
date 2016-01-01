@@ -58,7 +58,7 @@ class CPushSocket : public CSocket
 		}
 
 		// Implemented after CPushMod
-		void Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth="");
+		void Request(bool post, const CString& host, const CString& url, MCString& parameters, MCString& headers, const CString& auth="");
 		virtual void ReadLine(const CString& data);
 		virtual void Disconnected();
 
@@ -76,8 +76,8 @@ class CPushSocket : public CSocket
 #else
 // forward declaration
 CURLcode make_curl_request(const CString& service_host, const CString& service_url,
-						   const CString& service_auth, MCString& params, int port,
-						   bool use_ssl, bool use_post,
+						   const CString& service_auth, MCString& params, MCString& headers,
+						   int port, bool use_ssl, bool use_post,
 						   const CString& proxy, bool proxy_ssl_verify,
 						   bool debug);
 #endif // USE_CURL
@@ -275,6 +275,7 @@ class CPushMod : public CModule
 			CString service_url;
 			CString service_auth;
 			MCString params;
+			MCString headers;
 
 			// Service-specific profiles
 			if (service == "pushbullet")
@@ -676,6 +677,25 @@ class CPushMod : public CModule
 					params["level"] = options["message_priority"];
 				}
 			}
+			else if (service == "notify")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (from the app) not set");
+					return;
+				}
+
+				service_host = "api.parse.com";
+				service_url = "/1/functions/notify";
+
+				params["key"] = options["secret"];
+				params["text"] = message_title + " " + message_content;
+
+				headers["X-Parse-Application-Id"] = "HQrMLZDevpTv2J1raSC6KATvlpNqqePPecUE0EgG";
+				headers["X-Parse-REST-API-Key"] = "ivgV8ZoA0kyOOLWKms3M0wxYUxyUw4tfGgbj6DFd";
+
+				use_post = true;
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -692,13 +712,13 @@ class CPushMod : public CModule
 
 #ifdef USE_CURL
 			PutDebug("using libcurl");
-			make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
+			make_curl_request(service_host, service_url, service_auth, params, headers, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
 #else
 			PutDebug("NOT using libcurl");
 			// Create the socket connection, write to it, and add it to the queue
 			CPushSocket *sock = new CPushSocket(this);
 			sock->Connect(service_host, use_port, use_ssl);
-			sock->Request(use_post, service_host, service_url, params, service_auth);
+			sock->Request(use_post, service_host, service_url, params, headers, service_auth);
 			AddSocket(sock);
 #endif
 		}
@@ -1413,6 +1433,10 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Pushjet requires setting 'secret' (service key) option");
 						}
+						else if (value == "notify")
+						{
+							PutModule("Note: Notify requires setting the 'secret' (from the app)");
+						}
 						else
 						{
 							PutModule("Error: unknown service name");
@@ -1710,6 +1734,7 @@ class CPushMod : public CModule
 				CString service_url;
 				CString service_auth;
 				MCString params;
+				MCString headers;
 
 				if (service == "boxcar")
 				{
@@ -1746,12 +1771,12 @@ class CPushMod : public CModule
 				}
 
 #ifdef USE_CURL
-				make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
+				make_curl_request(service_host, service_url, service_auth, params, headers, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on", headers);
 #else
 				// Create the socket connection, write to it, and add it to the queue
 				CPushSocket *sock = new CPushSocket(this);
 				sock->Connect(service_host, use_port, use_ssl);
-				sock->Request(use_post, service_host, service_url, params, service_auth);
+				sock->Request(use_post, service_host, service_url, params, headers, service_auth);
 				AddSocket(sock);
 #endif
 
@@ -1827,13 +1852,14 @@ CString build_query_string(MCString& params)
  * @param service_url Host path
  * @param service_auth Basic auth string
  * @param params Request parameters
+ * @param headers Request headers
  * @param port Port number
  * @param use_ssl Use SSL
  * @param use_post Use POST method
  */
 CURLcode make_curl_request(const CString& service_host, const CString& service_url,
-						   const CString& service_auth, MCString& params, int port,
-						   bool use_ssl, bool use_post,
+						   const CString& service_auth, MCString& params, MCString& headers,
+						   int port, bool use_ssl, bool use_post,
 						   const CString& proxy, bool proxy_ssl_verify,
 						   bool debug)
 {
@@ -1846,6 +1872,8 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 
 	CString url = CString(use_ssl ? "https" : "http") + "://" + service_host + service_url;
 	CString query = build_query_string(params);
+
+	struct curl_slist *hlist = NULL;
 
 	if (debug)
 	{
@@ -1881,6 +1909,12 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 		}
 	}
 
+	for (MCString::iterator header = headers.begin(); header != headers.end(); header++)
+	{
+		hlist = curl_slist_append(hlist, header->first + ": " + header->second);
+	}
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hlist);
+
 	result = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 
@@ -1896,9 +1930,10 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
  * @param host Host domain
  * @param url Resource path
  * @param parameters Query parameters
+ * @param headers Request headers
  * @param auth Basic authentication string
  */
-void CPushSocket::Request(bool post, const CString& host, const CString& url, MCString& parameters, const CString& auth)
+void CPushSocket::Request(bool post, const CString& host, const CString& url, MCString& parameters, MCString& headers, const CString& auth)
 {
 	parent->PutDebug("Building notification to " + host + url + "...");
 
@@ -1928,6 +1963,11 @@ void CPushSocket::Request(bool post, const CString& host, const CString& url, MC
 		CString auth_b64 = auth.Base64Encode_n();
 		request += "Authorization: Basic " + auth_b64 + crlf;
 		parent->PutDebug("Authorization: Basic " + auth_b64);
+	}
+
+	for (MCString::iterator header = headers.begin(); header != headers.end(); header++)
+	{
+		request += header->first + ": " + header->second + crlf;
 	}
 
 	request += crlf;

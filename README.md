@@ -23,6 +23,7 @@ conditions.  ZNC Push current supports the following services:
 * [Nexmo][]
 * [Pushalot][]
 * [Pushjet][]
+* [Notify][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
@@ -249,6 +250,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `airgram`
     *   `nexmo`
     *   `pushjet`
+    *   `notify`
     *   `url`
 
 *   `username` Default: ` `
@@ -264,7 +266,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty, Airgram authenticated services, PushBullet, Nexmo or Pushjet.
+    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty, Airgram authenticated services, PushBullet, Nexmo, Pushjet or Notify.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -534,6 +536,7 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Nexmo]: https://www.nexmo.com
 [Pushalot]: https://pushalot.com/
 [Pushjet]: http://pushjet.io
+[Notify]: https://github.com/mashlol/notify
 
 [faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
 [examples]: https://github.com/jreese/znc-push/blob/master/doc/examples.md
