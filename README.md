@@ -39,6 +39,22 @@ fill a personal need.  It may not fit your use cases, but any and all feedback
 would be greatly appreciated.
 
 
+Known Problems
+--------------
+
+The Python version of ZNC Push is still in "alpha" -- it has many features the
+C++ version doesn't have, but it also has multiple known problems:
+
+- When running multiple users in ZNC, the Python module cannot distinguish
+  between users, and sends some notifications using the wrong configuration. #139
+- The Python module will "randomly" throw an uncaught exception and crash,
+  requiring the user to `/msg *status updatemod push` to restart the module
+  before it starts sending notifications again.  #116
+
+In the mean time, the C++ version will remain the master branch, and the
+recommended version to run in production.
+
+
 Dependencies
 ------------
 
