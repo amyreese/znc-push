@@ -22,6 +22,7 @@ ZNC Push current supports the following services:
 * [Airgram][]
 * [Faast][]
 * [Yo][]
+* [Notify][]
 * Custom URL GET and POST requests
 
 This project is still a work in progress, but should be functional enough and
@@ -286,6 +287,7 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
     *   "airgram"
     *   "boxcar"
     *   "faast"
+    *   "notify"
     *   "nma"
     *   "prowl"
     *   "pushbullet"
@@ -303,7 +305,7 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
     Authentication token for push notifications.
 
     This option must be set when using Notify My Android, Pushover, Prowl,
-    Supertoasty, Airgram authenticated services, PushBullet or Yo.
+    Supertoasty, Airgram authenticated services, PushBullet, Yo or Notify.
 
     When using the custom URL service, if this option is set it will enable
     HTTP basic authentication and be used as password.
@@ -535,6 +537,7 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Airgram]: http://airgramapp.com/
 [Faast]: http://faast.io/
 [Yo]: https://www.justyo.co/
+[Notify]: https://github.com/mashlol/notify
 
 [ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601 Date Format"
 

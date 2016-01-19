@@ -1292,6 +1292,25 @@ class NMA(PushService):
 
         return Request('POST', url, data=params)
 
+class Notify(PushService):
+    required = {
+        'secret': 'secret',
+    }
+
+    def send(self, context):
+        url = 'https://api.parse.com/1/functions/notify'
+
+        params = {
+            'key': C.get('secret'),
+            'text': C.get_expanded('message_title') + ' ' + C.get_expanded('message_content'),
+        }
+
+        headers = {
+            'X-Parse-Application-Id': 'HQrMLZDevpTv2J1raSC6KATvlpNqqePPecUE0EgG',
+            'X-PArse-REST-API-Key': 'ivgV8ZoA0kyOOLWKms3M0wxYUxyUw4tfGgbj6DFd',
+        }
+
+        return Request('POST', url, data=params, headers=headers)
 
 class Prowl(PushService):
     required = {
