@@ -880,6 +880,9 @@ class CPushMod : public CModule
 				char prefix = value[0];
 				bool push = true;
 
+				bool matched = false;
+				bool negated = false;
+
 				if (prefix == '-')
 				{
 					push = false;
@@ -904,11 +907,18 @@ class CPushMod : public CModule
 
 				if (msg.WildCmp(value))
 				{
-					return push;
+					if (push)
+					{
+						matched = true;
+					}
+					else
+					{
+						negated = true;
+					}
 				}
 			}
 
-			return false;
+			return (matched && !negated);
 		}
 
 		/**
