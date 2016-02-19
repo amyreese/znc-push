@@ -293,7 +293,7 @@ class CPushMod : public CModule
 
 				if (options["target"] != "")
 				{
-					params["device_iden"] = options["target"];
+					params["target_device_iden"] = options["target"];
 				}
 
 				if (message_uri == "")
