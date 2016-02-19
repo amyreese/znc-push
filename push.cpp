@@ -878,11 +878,14 @@ class CPushMod : public CModule
 			{
 				CString value = i->AsLower();
 				char prefix = value[0];
-				bool push = true;
+				bool negate_match = false;
+
+				bool matched = false;
+				bool negated = false;
 
 				if (prefix == '-')
 				{
-					push = false;
+					negate_match = true;
 					value.LeftChomp(1);
 				}
 				else if (prefix == '_')
@@ -904,11 +907,18 @@ class CPushMod : public CModule
 
 				if (msg.WildCmp(value))
 				{
-					return push;
+					if (negate_match)
+					{
+						negated = true;
+					}
+					else
+					{
+						matched = true;
+					}
 				}
 			}
 
-			return false;
+			return (matched && !negated);
 		}
 
 		/**
