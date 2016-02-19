@@ -874,14 +874,14 @@ class CPushMod : public CModule
 			options["highlight"].Split(" ", values, false);
 			values.push_back("%nick%");
 
+			bool matched = false;
+			bool negated = false;
+
 			for (VCString::iterator i = values.begin(); i != values.end(); i++)
 			{
 				CString value = i->AsLower();
 				char prefix = value[0];
 				bool negate_match = false;
-
-				bool matched = false;
-				bool negated = false;
 
 				if (prefix == '-')
 				{
