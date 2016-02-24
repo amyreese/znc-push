@@ -3,7 +3,7 @@ version := $(shell git describe --dirty)
 push.pyc: push.py
 	cp push.py push.copy.py
 
-	sed -i "" -e "s|VERSION = '.*'|VERSION = '$(version)'|" push.copy.py
+	sed -i -e "s|VERSION = '.*'|VERSION = '$(version)'|" push.copy.py
 	python3 -m compileall push.copy.py
 	cp __pycache__/push.*.pyc push.pyc
 
