@@ -676,6 +676,32 @@ class CPushMod : public CModule
 					params["level"] = options["message_priority"];
 				}
 			}
+			else if (service == "command")
+			{
+				if (options["command"] == "")
+				{
+					PutModule("Error: command not set - message_content will be passed as first arg");
+					return;
+				}
+
+				char * the_command = const_cast<char*>(options["command"].c_str());
+				char * the_message = const_cast<char*>(message_content.c_str());
+				char * const argv[] = { the_command, the_message, NULL };
+
+				pid_t pid;
+				if ((pid = fork()) == -1)
+				{
+					perror("fork");
+				}
+
+				if (pid == 0)
+				{
+					PutDebug("Running command: " + options["command"] + " \"" + message_content + "\"");
+					execvp(argv[0], &argv[0]);
+				}
+
+				return;
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -1422,6 +1448,10 @@ class CPushMod : public CModule
 						else if (value == "pushjet")
 						{
 							PutModule("Note: Pushjet requires setting 'secret' (service key) option");
+						}
+						else if (value == "command")
+						{
+							PutModule("Note: Command requires setting 'command' to be run.");
 						}
 						else
 						{

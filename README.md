@@ -24,6 +24,7 @@ conditions.  ZNC Push current supports the following services:
 * [Pushalot][]
 * [Pushjet][]
 * Custom URL GET requests
+* Arbitrary system commands
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
@@ -250,6 +251,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `nexmo`
     *   `pushjet`
     *   `url`
+    *   `command`
 
 *   `username` Default: ` `
 
@@ -282,6 +284,12 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     number. The number must be in international format.
 
     When using Airgram, this is the email address of the end user.
+
+*   `command` Default: ` `
+    
+    The command to run for the `command` service.
+
+    This can either be a system command found in the path (such as `echo`), or a path to an executable (e.g. to [send an email](https://gist.github.com/jdb8/f03bd8ef2b474c6d111a)). When using the `command` service, the given executable will be supplied the `message_content` as its first argument, and called in a forked process.
 
 
 ### Notifications
