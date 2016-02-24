@@ -5,9 +5,11 @@ compiler:
 before_install:
     - "sudo add-apt-repository ppa:teward/znc -y"
     - "sudo apt-get -qq update"
-    - "sudo apt-get install -y znc znc-dev"
+    - "sudo apt-get install -y znc znc-dev libcurl4-openssl-dev"
 script:
     - "make install"
+    - "make clean"
+    - "make curl=yes install"
 matrix:
     allow_failures:
-        - compiler: "clang"
+        - compiler: gcc
