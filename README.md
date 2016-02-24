@@ -1,7 +1,7 @@
 ZNC Push
 ========
 
-[FAQ][] | [Example Configuration][examples]
+[FAQ][] | [Example Configuration][examples] | [![Build Status](https://travis-ci.org/jreese/znc-push.svg?branch=master)](https://travis-ci.org/jreese/znc-push)
 
 
 Overview
