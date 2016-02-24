@@ -24,7 +24,7 @@ conditions.  ZNC Push current supports the following services:
 * [Pushalot][]
 * [Pushjet][]
 * Custom URL GET requests
-* Arbitrary system commands
+* Arbitrary system commands (optional)
 
 This project is still a Work In Progress, but should be functional enough and stable enough
 for everyday usage.  Users are more than welcome to submit feature requests or patches for
@@ -80,6 +80,18 @@ Otherwise, run the full command:
 
 
 ### Advanced
+
+#### To enable 'command' notification type
+
+This feature is not compiled by default. If you would like to compile ZNC Push with the arbitrary `command` feature, you must specify the following flag:
+
+    $ make command=yes
+
+Otherwise `command` will not be compiled-in. This feature is disabled by default for security. Because in a multi-user setup, letting any of your znc users run arbitrary cmds is something with a great potential to be harmful to your znc server machine and/or other connected systems.
+
+Only consider enabling this feature if you are the sole user of your znc server.
+
+#### To enable url sending via libcurl
 
 If you would like to compile ZNC Push using libcurl for http requests, you must use:
 
@@ -287,7 +299,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 *   `command` Default: ` `
     
-    The command to run for the `command` service.
+    The command to run for the `command` service. Requires compilation with the flag `make command=yes`.
 
     This can either be a system command found in the path (such as `echo`), or a path to an executable (e.g. to [send an email](https://gist.github.com/jdb8/f03bd8ef2b474c6d111a)). When using the `command` service, the given executable will be supplied the `message_content` as its first argument, and called in a forked process.
 

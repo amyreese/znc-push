@@ -676,6 +676,7 @@ class CPushMod : public CModule
 					params["level"] = options["message_priority"];
 				}
 			}
+#ifdef USE_COMMAND
 			else if (service == "command")
 			{
 				if (options["command"] == "")
@@ -702,6 +703,7 @@ class CPushMod : public CModule
 
 				return;
 			}
+#endif // USE_COMMAND
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -1449,10 +1451,12 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Pushjet requires setting 'secret' (service key) option");
 						}
+#ifdef USE_COMMAND
 						else if (value == "command")
 						{
 							PutModule("Note: Command requires setting 'command' to be run.");
 						}
+#endif // USE_COMMAND
 						else
 						{
 							PutModule("Error: unknown service name");

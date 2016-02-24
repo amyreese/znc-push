@@ -1,10 +1,15 @@
 version = $(shell git describe --dirty || echo dev)
 curl=no
+command=no
+
+flags=
 
 ifneq ($(curl),no)
-	flags=-DUSE_CURL -lcurl
-else
-	flags=
+	flags+=-DUSE_CURL -lcurl
+endif
+
+ifneq ($(command),no)
+	flags+=-DUSE_COMMAND
 endif
 
 all: push.so
