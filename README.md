@@ -297,10 +297,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     truncated and ellipsized at or before this length is reached.  A value of 0 (zero) will
     disable this option.
 
-    When using the custom URL service, this options allows you to specify the URL to send
-    a GET request to, and has keyword expansion performed on portions of it, including the
-    path and any query parameter values.
-
 *   `message_title` Default: `{title}`
 
     Title that will be provided for the push notification.  Keyword expansion is performed
@@ -313,6 +309,10 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     URI that will be sent with the push notification.  This could be a web address or a
     local scheme to access a mobile application.  Keyword expansion is performed on this
     value.
+
+    When using the custom URL service, this options allows you to specify the URL to send
+    a GET request to, and has keyword expansion performed on portions of it, including the
+    path and any query parameter values.
 
 *   `message_uri_post` Default: `no`
 
