@@ -1856,6 +1856,10 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 
 	CString url = CString(use_ssl ? "https" : "http") + "://" + service_host + service_url;
 	CString query = build_query_string(params);
+	if (!query.empty())
+	{
+		url = url + "?" + query;
+	}
 
 	if (debug)
 	{
