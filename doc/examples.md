@@ -72,7 +72,7 @@ That's easy!
 ### Configuration
 
     channel_conditions: highlight and nick_blacklist
-    query_condition: nick_blacklist
+    query_conditions: nick_blacklist
 
     nick_blacklist: nickserv
 
