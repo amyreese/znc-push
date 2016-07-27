@@ -676,6 +676,20 @@ class CPushMod : public CModule
 					params["level"] = options["message_priority"];
 				}
 			}
+			else if (service == "telegram")
+			{
+				if ((options["secret"] == "") || (options["target"] ==""))
+				{
+					PutModule("Error: secret (API key) or target (chat_id) not set");
+					return;
+				}
+
+				service_host = "api.telegram.org";
+				service_url = "/bot" + options["secret"] + "/sendMessage";
+
+				params["chat_id"] = options["target"];
+				params["text"] = message_content;
+			}
 			else
 			{
 				PutModule("Error: service type not selected");
@@ -1422,6 +1436,10 @@ class CPushMod : public CModule
 						else if (value == "pushjet")
 						{
 							PutModule("Note: Pushjet requires setting 'secret' (service key) option");
+						}
+						else if (value == "telegram")
+						{
+							PutModule("Note: Telegram requires setting both the 'secret' (api key) and 'target' (chat_id)");
 						}
 						else
 						{
