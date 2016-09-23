@@ -605,26 +605,7 @@ class CPushMod : public CModule
 			}
 			else if (service == "airgram")
 			{
-				if (options["target"] == "")
-				{
-					PutModule("Error: target (email) not set");
-					return;
-				}
-
-				service_host = "api.airgramapp.com";
-
-				if (options["username"] != "" && options["secret"] != "")
-				{
-					service_url = "/1/send";
-					service_auth = options["username"] + CString(":") + options["secret"];
-				}
-				else
-				{
-					service_url = "/1/send_as_guest";
-				}
-
-				params["email"] = options["target"];
-				params["msg"] = message_content;
+				PutModule("Error: Airgram service shut down. Please configure another notification provider.");
 			}
 			else if (service == "slack")
 			{
@@ -1417,10 +1398,6 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: URL requires setting the 'message_uri' option with the full URL");
 						}
-						else if (value == "airgram")
-						{
-							PutModule("Note: Airgram requires setting the 'target' with the email address of the recipient");
-						}
 						else if (value == "faast")
 						{
 							PutModule("Note: Faast requires setting the secret to your apikey");
@@ -1756,16 +1733,7 @@ class CPushMod : public CModule
 				}
 				else if (service == "airgram")
 				{
-					if (options["username"] == "" || options["secret"] == "" || options["target"] == "")
-					{
-						PutModule("Error: target, username, and secret must be set");
-						return;
-					}
-
-					service_host = "api.airgramapp.com";
-					service_url = "/1/subscribe";
-					service_auth = options["username"] + CString(":") + options["secret"];
-					params["email"] = options["target"];
+					PutModule("Error: Airgram service shut down. Please configure a different notification provider.");
 				}
 				else
 				{
