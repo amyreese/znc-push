@@ -1186,27 +1186,6 @@ class PushService(object):
         return None
 
 
-class Airgram(PushService):
-    required = {
-        'target': 'email',
-    }
-
-    def send(self, context):
-        params = {
-            'email': C.get('target'),
-            'msg': C.get_expanded('message_content'),
-        }
-        auth = None
-
-        if C.get('username') and C.get('secret'):
-            url = 'https://api.airgramapp.com/1/send'
-            auth = (C.get('username'), C.get('secret'))
-        else:
-            url = 'https://api.airgramapp.com/1/send_as_guest'
-
-        return Request('POST', url, data=params, auth=auth)
-
-
 class Boxcar(PushService):
     required = {
         'username': 'username',

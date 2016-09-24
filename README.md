@@ -19,7 +19,6 @@ ZNC Push current supports the following services:
 * [Prowl][]
 * [Supertoasty][]
 * [PushBullet][]
-* [Airgram][]
 * [Faast][]
 * [Yo][]
 * [Notify][]
@@ -284,7 +283,6 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 
     Possible values include:
 
-    *   "airgram"
     *   "boxcar"
     *   "faast"
     *   "notify"
@@ -305,7 +303,7 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
     Authentication token for push notifications.
 
     This option must be set when using Notify My Android, Pushover, Prowl,
-    Supertoasty, Airgram authenticated services, PushBullet, Yo or Notify.
+    Supertoasty, PushBullet, Yo or Notify.
 
     When using the custom URL service, if this option is set it will enable
     HTTP basic authentication and be used as password.
@@ -318,9 +316,6 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
     single device to send notifications to; if blank or unset, notifications
     will be sent to all devices.  For Pushover, this is the device name; for
     PushBullet, this is the device_iden.
-
-    When using Airgram, this is the email address of the end user.
-    Device or target name for push notifications.
 
 
 ### Notifications
@@ -534,7 +529,6 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Prowl]: http://www.prowlapp.com
 [Supertoasty]: http://www.supertoasty.com
 [PushBullet]: https://www.pushbullet.com/
-[Airgram]: http://airgramapp.com/
 [Faast]: http://faast.io/
 [Yo]: https://www.justyo.co/
 [Notify]: https://github.com/mashlol/notify
