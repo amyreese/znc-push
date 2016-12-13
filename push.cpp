@@ -869,9 +869,6 @@ class CPushMod : public CModule
 			options["highlight"].Split(" ", values, false);
 			values.push_back("%nick%");
 
-			bool matched = false;
-			bool negated = false;
-
 			for (VCString::iterator i = values.begin(); i != values.end(); i++)
 			{
 				CString value = i->AsLower();
@@ -902,18 +899,11 @@ class CPushMod : public CModule
 
 				if (msg.WildCmp(value))
 				{
-					if (negate_match)
-					{
-						negated = true;
-					}
-					else
-					{
-						matched = true;
-					}
+					return !negate_match;
 				}
 			}
 
-			return (matched && !negated);
+			return false;
 		}
 
 		/**
