@@ -922,8 +922,10 @@ class CPushMod : public CModule
 		 * @param context The context of a message
 		 * @return True if context matches the filter
 		 */
-		bool context_filter(const CString& context)
+		bool context_filter(const CString& raw_context)
 		{
+			CString context = raw_context.AsLower();
+
 			if (context == "all" || context == "*")
 				return true;
 
