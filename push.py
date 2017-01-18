@@ -1422,6 +1422,36 @@ class Yo(PushService):
 
         return Request('POST', url, data=params)
 
+class Pushbullet(PushService):
+    required = {
+        'secret': 'API key/token'
+    }
+
+    def send(self, context):
+        url = 'https://api.pushbullet.com/v2/pushes'
+
+        message_uri = C.get_expanded('message_uri')
+        target = C.get('target')
+
+        headers = {
+            'Access-Token': C.get('secret')
+        }
+
+        params = {
+            'body': C.get_expanded('message_content'),
+            'title': C.get_expanded('message_title'),
+            'type': 'note'
+        }
+
+        if message_uri:
+            params['type'] = 'link'
+            params['url'] = message_uri
+
+        if target:
+            params['device_iden'] = target
+
+        return Request('POST', url, data=params, headers=headers)
+
 
 class Translation(object):
     _cache = None
