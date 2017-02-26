@@ -1383,6 +1383,10 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Pushover requires setting both the 'username' (to user key) and the 'secret' (to application api key) option");
 						}
+						else if (value == "pushsafer")
+						{
+							PutModule("Note: Pushsafer requires setting the 'private or alias key' option");
+						}
 						else if (value == "pushalot")
 						  {
 							PutModule("Note: Pushalot requires setting the 'secret' (to user key) (to authorization token) option");
