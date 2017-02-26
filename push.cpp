@@ -411,6 +411,42 @@ class CPushMod : public CModule
 					params["priority"] = options["message_priority"];
 				}
 			}
+			else if (service == "pushsafer")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: privatekey (private or alias key) not set");
+					return;
+				}
+
+				service_host = "pushsafer.com";
+				service_url = "/api";
+
+				params["k"] = options["secret"];
+				params["t"] = message_title;
+				params["m"] = message_content;
+
+				if (message_uri != "")
+				{
+					params["u"] = message_uri;
+				}
+
+				if ( options["message_uri_title"] != "" )
+				{
+					params["ut"] = options["message_uri_title"];
+				}
+
+				if (options["target"] != "")
+				{
+					params["d"] = options["target"];
+				}
+
+				if ( options["message_sound"] != "" )
+				{
+					params["s"] = options["message_sound"];
+				}
+
+			}
 
 			else if (service == "pushalot")
 			  {
