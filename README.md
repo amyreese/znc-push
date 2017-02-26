@@ -15,6 +15,7 @@ conditions.  ZNC Push current supports the following services:
 * [Boxcar 2][]
 * [Notify My Android][] (NMA)
 * [Pushover][]
+* [Pushsafer][]
 * [Prowl][]
 * [Supertoasty][]
 * [PushBullet][]
@@ -244,6 +245,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `boxcar`
     *   `nma`
     *   `pushover`
+	*   `pushsafer`
     *   `prowl`
     *   `supertoasty`
     *   `pushbullet`
@@ -266,7 +268,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Prowl, Supertoasty, PushBullet, Nexmo, Pushjet, or Telegram.
+    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, Supertoasty, PushBullet, Nexmo, Pushjet, or Telegram.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -284,6 +286,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     number. The number must be in international format.
 
     When using Telegram, this is the id of the chat that receives the message.
+	
+	When using Pushsafer, this is the id or group id of your devices.
 
 
 ### Notifications
@@ -323,7 +327,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
 *   `message_uri_title` Default: ` `
 
-    If you're using Pushover.net, you can specify a title for the `message_uri` option.
+    If you're using Pushover.net or Pushsafer.com, you can specify a title for the `message_uri` option.
 
 *   `message_priority` Default: ` `
 
@@ -333,9 +337,9 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_sound` Default: ` `
 
     Notification sound to play with the push notification.
-    Supported under Pushover, Faast, and Boxcar 2.  Must be chosen from the list of
-    [Pushover sounds](https://pushover.net/api#sounds), [Faast sounds](http://developer.faast.io/)
-    or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
+    Supported under Pushover, Pushsafer, Faast, and Boxcar 2.  Must be chosen from the list of
+    [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/pushapi),
+	[Faast sounds](http://developer.faast.io/) or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
 
 
 ### Conditions
@@ -528,6 +532,7 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Boxcar 2]: http://boxcar.io
 [Notify My Android]: http://www.notifymyandroid.com
 [Pushover]: http://pushover.net
+[Pushsafer]: http://www.pushsafer.com
 [Prowl]: http://www.prowlapp.com
 [Supertoasty]: http://www.supertoasty.com
 [PushBullet]: https://www.pushbullet.com/
