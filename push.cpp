@@ -431,7 +431,7 @@ class CPushMod : public CModule
 					params["u"] = message_uri;
 				}
 
-				if ( options["message_uri_title"] != "" )
+				if (options["message_uri_title"] != "" )
 				{
 					params["ut"] = options["message_uri_title"];
 				}
@@ -441,20 +441,19 @@ class CPushMod : public CModule
 					params["d"] = options["target"];
 				}
 
-				if ( options["message_sound"] != "" )
+				if (options["message_sound"] != "" )
 				{
 					params["s"] = options["message_sound"];
 				}
 
 			}
-
 			else if (service == "pushalot")
-			  {
+			{
 				if (options["secret"] == "")
-				  {
-				PutModule("Error: secret (authorization token) not set");
-				return;
-				  }
+				{
+					PutModule("Error: secret (authorization token) not set");
+					return;
+				}
 
 				service_host = "pushalot.com";
 				service_url = "/api/sendmessage";
@@ -464,16 +463,15 @@ class CPushMod : public CModule
 				params["Body"] = message_content;
 
 				if (message_uri != "")
-				  {
-				params["Link"] = message_uri;
-				  }
+				{
+					params["Link"] = message_uri;
+				}
 
-				if ( options["message_uri_title"] != "" )
-				  {
-				params["LinkTitle"] = options["message_uri_title"];
-				  }
-			  }
-
+				if (options["message_uri_title"] != "" )
+				{
+					params["LinkTitle"] = options["message_uri_title"];
+				}
+			}
 			else if (service == "prowl")
 			{
 				if (options["secret"] == "")
@@ -539,31 +537,30 @@ class CPushMod : public CModule
 			}
 			else if (service == "nexmo")
 			{
-			  if (options["username"] == "")
-			  {
-				PutModule("Error: username (api key) not set");
-				return;
-			  }
-			  if (options["secret"] == "")
-			  {
-				PutModule("Error: secret (api secret) not set");
-				return;
-			  }
-			  if (options["target"] == "")
-			  {
-				PutModule("Error: destination mobile number (in international format) not set");
-				return;
-			  }
+				if (options["username"] == "")
+				{
+					PutModule("Error: username (api key) not set");
+					return;
+				}
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (api secret) not set");
+					return;
+				}
+				if (options["target"] == "")
+				{
+					PutModule("Error: destination mobile number (in international format) not set");
+					return;
+				}
 
-			  service_host = "rest.nexmo.com";
-			  service_url = "/sms/json";
+				service_host = "rest.nexmo.com";
+				service_url = "/sms/json";
 
-			  params["api_secret"] = options["secret"];
-			  params["api_key"] = options["username"];
-			  params["from"] = message_title;
-			  params["to"] = options["target"];
-			  params["text"] = message_content;
-
+				params["api_secret"] = options["secret"];
+				params["api_key"] = options["username"];
+				params["from"] = message_title;
+				params["to"] = options["target"];
+				params["text"] = message_content;
 			}
 			else if (service == "url")
 			{
@@ -1424,10 +1421,9 @@ class CPushMod : public CModule
 							PutModule("Note: Pushsafer requires setting the 'private or alias key' option");
 						}
 						else if (value == "pushalot")
-						  {
+						{
 							PutModule("Note: Pushalot requires setting the 'secret' (to user key) (to authorization token) option");
-						  }
-
+						}
 						else if (value == "prowl")
 						{
 							PutModule("Note: Prowl requires setting the 'secret' option");
