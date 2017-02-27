@@ -245,7 +245,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `boxcar`
     *   `nma`
     *   `pushover`
-	*   `pushsafer`
+    *   `pushsafer`
     *   `prowl`
     *   `supertoasty`
     *   `pushbullet`
@@ -279,7 +279,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Pushover or PushBullet, this option allows you to specify a
     single device to send notifications to; if blank or unset, notifications
-    will be sent to all devices.  For Pushover, this is the device name; for
+    will be sent to all devices. For Pushover, this is the device name; for
     PushBullet, this is the device_iden.
 
     When using Nexmo, this option allows you to specify the SMS destination
@@ -287,7 +287,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Telegram, this is the id of the chat that receives the message.
 	
-	When using Pushsafer, this is the id or group id of your devices.
+    When using Pushsafer, this is the id or group id of your devices.
 
 
 ### Notifications
@@ -337,9 +337,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_sound` Default: ` `
 
     Notification sound to play with the push notification.
-    Supported under Pushover, Pushsafer, Faast, and Boxcar 2.  Must be chosen from the list of
-    [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/pushapi),
-	[Faast sounds](http://developer.faast.io/) or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
+    Supported under Pushover, Pushsafer, Faast, and Boxcar 2. Must be chosen from the list of [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/en/pushapi), [Faast sounds](http://developer.faast.io/) or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
 
 
 ### Conditions
