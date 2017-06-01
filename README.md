@@ -105,13 +105,11 @@ Copy the compiled module into your ZNC profile:
 
 Now, load the module in ZNC:
 
-    /msg *status loadmod push
-
-Note: the above command will only enable ZNC Push for a single network in ZNC.  If instead
-you would like to load ZNC Push as a "user level" module, so that you can share configuration
-options across multiple networks, load it like this:
-
     /msg *status loadmod --type=user push
+
+Note: the below command will only enable ZNC Push for a single network in ZNC. Make sure you do not load it for both.
+
+    /msg *status loadmod push
 
 If you prefer to use ZNC's "controlpanel" module, you may do so like this:
 
@@ -139,6 +137,7 @@ For further, detailed instructions specific to each push notification service, t
 documentation is available:
 
 *   [Pushover](doc/pushover.md)
+*   [Telegram](doc/telegram.md)
 
 
 Commands
