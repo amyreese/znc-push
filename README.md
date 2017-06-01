@@ -11,7 +11,7 @@ ZNC Push is a module for [ZNC][] that will send notifications to multiple push n
 services, or SMS for any private message or channel highlight that matches a configurable set of
 conditions.  ZNC Push current supports the following services:
 
-* [Boxcar][] 
+* [Boxcar][]
 * [Boxcar 2][]
 * [Notify My Android][] (NMA)
 * [Pushover][]
