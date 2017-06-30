@@ -259,8 +259,14 @@ class CPushMod : public CModule
 			replace["{title}"] = title;
 			replace["{username}"] = options["username"];
 			replace["{secret}"] = options["secret"];
-			replace["{network}"] = GetNetwork()->GetName();
 			replace["{target}"] = options["target"];
+			// network is special because it can be nullptr if the user has none set up yet
+			CIRCNetwork* network = GetNetwork();
+			if (network) {
+				replace["{network}"] = network->GetName();
+			} else {
+				replace["{network}"] = "(No network)";
+			}
 
 			CString message_uri = expand(options["message_uri"], replace);
 			CString message_title = expand(options["message_title"], replace);
