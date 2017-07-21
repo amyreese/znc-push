@@ -25,6 +25,7 @@ conditions.  ZNC Push current supports the following services:
 * [Pushjet][]
 * [Telegram][]
 * [Slack][]
+* [Discord][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
@@ -252,6 +253,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `pushjet`
     *   `telegram`
     *   `slack`
+    *   `discord`
     *   `url`
 
 *   `username` Default: ` `
@@ -539,6 +541,7 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Pushjet]: http://pushjet.io
 [Telegram]: https://telegram.org/
 [Slack]: https://slack.com/
+[Discord]: https://discord.gg
 
 [faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
 [examples]: https://github.com/jreese/znc-push/blob/master/doc/examples.md

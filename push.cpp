@@ -671,6 +671,25 @@ class CPushMod : public CModule
 
 				PutDebug("payload: " + params["payload"]);
 			}
+            else if (service == "discord")
+			{
+				if (options["secret"] == "")
+				{
+					PutModule("Error: target (from webhook, e.g. 111111111111111111/abcdefghijklmopqrstuvwxyz1234567890-ABCDEFGHIJKLMNOPQRSTUVWXYZ123456) not set");
+					return;
+				}
+
+				service_host = "discordapp.com";
+				service_url = "/api/webhooks/" + options["secret"];
+
+				if (options["username"] != "")
+				{
+					params["username"] = options["username"];
+				}
+
+				params["content"] = message_content;
+
+			}
 			else if (service == "pushjet")
 			{
 				if (options["secret"] == "")
@@ -1443,6 +1462,10 @@ class CPushMod : public CModule
 						else if (value == "slack")
 						{
 							PutModule("Note: Slack requires setting 'secret' (from webhook) and 'target' (channel or username), optional 'username' (bot name)");
+						}
+						else if (value == "discord")
+						{
+							PutModule("Note: Discord requires setting 'secret' (from webhook), optional 'username' (bot name)");
 						}
 						else if (value == "pushjet")
 						{
