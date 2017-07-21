@@ -1893,9 +1893,13 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 	CURL *curl;
 	CURLcode result;
 
+	PutDebug("Building notification to " + service_host + service_url + "...");
+
 	curl = curl_easy_init();
 
 	CString user_agent = "ZNC Push/" + CString(PUSHVERSION);
+
+	PutDebug("User-Agent: " + user_agent);
 
 	CString url = CString(use_ssl ? "https" : "http") + "://" + service_host + service_url;
 	CString query = build_query_string(params);
@@ -1903,6 +1907,8 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 	{
 		url = url + "?" + query;
 	}
+
+	PutDebug("Query string: " + query);
 
 	if (debug)
 	{
@@ -1939,6 +1945,8 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 	}
 
 	result = curl_easy_perform(curl);
+	PutDebug("Request sending");
+
 	curl_easy_cleanup(curl);
 
 	return result;
