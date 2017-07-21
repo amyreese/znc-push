@@ -675,7 +675,7 @@ class CPushMod : public CModule
 			{
 				if (options["secret"] == "")
 				{
-					PutModule("Error: target (from webhook, e.g. 111111111111111111/abcdefghijklmopqrstuvwxyz1234567890-ABCDEFGHIJKLMNOPQRSTUVWXYZ123456) not set");
+					PutModule("Error: secret (from webhook, e.g. 111111111111111111/abcdefghijklmopqrstuvwxyz1234567890-ABCDEFGHIJKLMNOPQRSTUVWXYZ123456) not set");
 					return;
 				}
 
