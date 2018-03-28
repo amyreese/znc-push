@@ -75,7 +75,7 @@ class CPushSocket : public CSocket
 };
 #else
 // forward declaration
-CURLcode make_curl_request(const CString& service_host, const CString& service_url,
+long make_curl_request(const CString& service_host, const CString& service_url,
 						   const CString& service_auth, MCString& params, int port,
 						   bool use_ssl, bool use_post,
 						   const CString& proxy, bool proxy_ssl_verify,
@@ -745,7 +745,11 @@ class CPushMod : public CModule
 
 #ifdef USE_CURL
 			PutDebug("using libcurl");
-			make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
+			long http_code = make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
+			PutDebug("curl: HTTP status code " + CString(http_code));
+			if (!(http_code >= 200 && http_code < 300)) {
+				PutModule("Error: HTTP status code " + CString(http_code));
+			}
 #else
 			PutDebug("NOT using libcurl");
 			// Create the socket connection, write to it, and add it to the queue
@@ -1799,7 +1803,11 @@ class CPushMod : public CModule
 				}
 
 #ifdef USE_CURL
-				make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
+				long http_code = make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
+				PutDebug("curl: HTTP status code " + CString(http_code));
+				if (!(http_code >= 200 && http_code < 300)) {
+					PutModule("Error: HTTP status code " + CString(http_code));
+				}
 #else
 				// Create the socket connection, write to it, and add it to the queue
 				CPushSocket *sock = new CPushSocket(this);
@@ -1884,7 +1892,7 @@ CString build_query_string(MCString& params)
  * @param use_ssl Use SSL
  * @param use_post Use POST method
  */
-CURLcode make_curl_request(const CString& service_host, const CString& service_url,
+long make_curl_request(const CString& service_host, const CString& service_url,
 						   const CString& service_auth, MCString& params, int port,
 						   bool use_ssl, bool use_post,
 						   const CString& proxy, bool proxy_ssl_verify,
@@ -1892,6 +1900,7 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 {
 	CURL *curl;
 	CURLcode result;
+	long http_code;
 
 	curl = curl_easy_init();
 
@@ -1939,9 +1948,15 @@ CURLcode make_curl_request(const CString& service_host, const CString& service_u
 	}
 
 	result = curl_easy_perform(curl);
+	if (result != CURLE_OK) {
+		curl_easy_cleanup(curl);
+		return -1;
+	}
+
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 	curl_easy_cleanup(curl);
 
-	return result;
+	return http_code;
 }
 
 #else
