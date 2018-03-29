@@ -140,6 +140,7 @@ class CPushMod : public CModule
 			defaults["message_uri_title"] = "";
 			defaults["message_priority"] = "0";
 			defaults["message_sound"] = "";
+			defaults["message_escape"] = "";
 
 			// Notification conditions
 			defaults["away_only"] = "no";
@@ -266,6 +267,14 @@ class CPushMod : public CModule
 				replace["{network}"] = network->GetName();
 			} else {
 				replace["{network}"] = "(No network)";
+			}
+
+			if (options["message_escape"] != "")
+			{
+				CString::EEscape esc = CString::ToEscape(options["message_escape"]);
+				for (MCString::iterator i = replace.begin(); i != replace.end(); i++) {
+					i->second = i->second.Escape(esc);
+				}
 			}
 
 			CString message_uri = expand(options["message_uri"], replace);
@@ -728,6 +737,9 @@ class CPushMod : public CModule
 
 				params["chat_id"] = options["target"];
 				params["text"] = message_content;
+				if (options["message_escape"] == "HTML") {
+					params["parse_mode"] = "HTML";
+				}
 			}
 			else
 			{

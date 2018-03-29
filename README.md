@@ -311,6 +311,16 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Nexmo, this value is where the SMS is "from". In most cases, you must use a valid number in international format.
 
+*   `message_escape` Default: ` `
+
+    If set, keyword values will be escaped in this format before they are expanded in
+    `message_content`. Possible values are all that ZNC supports, most useful here will be
+    `HTML` or `URL`.
+
+    Note that the resulting string in `message_content` after keyword expansion will not be
+    escaped. If you need to escape characters for a service, you have to set the escaped
+    string to `message_content`.
+
 *   `message_uri` Default: ` `
 
     URI that will be sent with the push notification.  This could be a web address or a

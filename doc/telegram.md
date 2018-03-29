@@ -16,5 +16,12 @@ module by following the above steps.
 * set secret to the **api key**: <code>/msg *push set secret your-api-key</code>
 * set target to chat ID: <code>/msg *push set target your-chat-id</code>
 
+You can style your messages with [basic HTML][HTML] when you set the
+`message_escape` option accordingly.
+
+    set message_escape HTML
+    set message_content <i>{context}</i>: &lt;<b>{nick}</b>&gt; {message}
+
 [Telegram]: https://telegram.org
 [BotFather]: https://core.telegram.org/bots#6-botfather
+[HTML]: https://core.telegram.org/bots/api#formatting-options
