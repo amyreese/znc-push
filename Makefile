@@ -10,7 +10,7 @@ endif
 all: push.so
 
 push.so: push.cpp
-	CXXFLAGS="$(CXXFLAGS) -DPUSHVERSION=\"$(version)\" $(flags)" LIBS="$(LIBS) $(flags)" \
+	CXXFLAGS="$(CXXFLAGS) -DPUSHVERSION=\"\\\"$(version)\\\"\" $(flags)" LIBS="$(LIBS) $(flags)" \
 		 znc-buildmod push.cpp
 
 install: push.so
