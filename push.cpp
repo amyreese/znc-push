@@ -340,6 +340,25 @@ class CPushMod : public CModule
 				params["notification[message]"] = message_content;
 				params["notification[source_url]"] = message_uri;
 			}
+			else if (service == "pushfleet")
+			{
+				if (options["target"] == "")
+				{
+					PutModule("Error: target user not set");
+					return;
+				}
+
+				CString pushfleet_appid = "A2BMJGZQ";
+
+				service_host = "pushfleet.com";
+				service_url = "/api/v1/send";
+				use_post = false;
+
+				params["appid"] = pushfleet_appid;
+				params["userid"] = options["target"];
+				params["message"] = message_content;
+				params["url"] = message_uri;
+			}
 			else if (service == "boxcar2")
 			{
 				if (options["secret"] == "")
@@ -1479,6 +1498,10 @@ class CPushMod : public CModule
 						if (value == "pushbullet")
 						{
 							PutModule("Note: Pushbullet requires setting both 'target' (to device id) and 'secret' (to api key) options");
+						}
+						else if (value == "pushfleet")
+						{
+							PutModule("Note: Pushfleet requires setting the 'target' option");
 						}
 						else if (value == "boxcar")
 						{
