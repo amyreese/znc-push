@@ -347,14 +347,16 @@ class CPushMod : public CModule
 					PutModule("Error: target user not set");
 					return;
 				}
-
-				CString pushfleet_appid = "A2BMJGZQ";
+				if (options["secret"] == "")
+				{
+					PutModule("Error: secret (appid) not set");
+				}
 
 				service_host = "pushfleet.com";
 				service_url = "/api/v1/send";
 				use_post = false;
 
-				params["appid"] = pushfleet_appid;
+				params["appid"] = options["secret"];
 				params["userid"] = options["target"];
 				params["message"] = message_content;
 				params["url"] = message_uri;
@@ -1501,7 +1503,7 @@ class CPushMod : public CModule
 						}
 						else if (value == "pushfleet")
 						{
-							PutModule("Note: Pushfleet requires setting the 'target' option");
+							PutModule("Note: Pushfleet requires setting both 'target' (to user ID) and 'secret' (to app ID) options");
 						}
 						else if (value == "boxcar")
 						{
