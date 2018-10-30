@@ -1272,6 +1272,25 @@ class CPushMod : public CModule
 		}
 
 		/**
+		 * Handle channel notices.
+		 *
+		 * @param nick Nick that sent the notice
+		 * @param channel Channel the notice was sent to
+		 * @param message Notice contents
+		 */
+		EModRet OnChanNotice(CNick& nick, CChan& channel, CString& message)
+		{
+			if (notify_channel(nick, channel, message))
+			{
+				CString title = "Channel Notice";
+
+				send_message(message, title, channel.GetName(), nick);
+			}
+
+			return CONTINUE;
+		}
+
+		/**
 		 * Handle a private message.
 		 *
 		 * @param nick Nick that sent the message
@@ -1308,6 +1327,24 @@ class CPushMod : public CModule
 		}
 
 		/**
+		 * Handle a private notice.
+		 *
+		 * @param nick Nick that sent the notice
+		 * @param message Notice contents
+		 */
+		EModRet OnPrivNotice(CNick& nick, CString& message)
+		{
+			if (notify_pm(nick, message))
+			{
+				CString title = "Private Notice";
+
+				send_message(message, title, nick.GetNick(), nick);
+			}
+
+			return CONTINUE;
+		}
+
+		/**
 		 * Handle a message sent by the user.
 		 *
 		 * @param target Target channel or nick
@@ -1326,6 +1363,18 @@ class CPushMod : public CModule
 		 * @param message Message contents
 		 */
 		EModRet OnUserAction(CString& target, CString& message)
+		{
+			last_reply_time[target] = last_active_time[target] = idle_time = time(NULL);
+			return CONTINUE;
+		}
+
+		/**
+		 * Handle a notice sent by the user.
+		 *
+		 * @param target Target channel or nick
+		 * @param message Notice contents
+		 */
+		EModRet OnUserNotice(CString& target, CString& message)
 		{
 			last_reply_time[target] = last_active_time[target] = idle_time = time(NULL);
 			return CONTINUE;
