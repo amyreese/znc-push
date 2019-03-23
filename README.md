@@ -13,7 +13,6 @@ conditions.  ZNC Push current supports the following services:
 
 * [Boxcar][]
 * [Boxcar 2][]
-* [Notify My Android][] (NMA)
 * [Pushover][]
 * [Pushsafer][]
 * [Prowl][]
@@ -243,7 +242,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     Possible values include:
 
     *   `boxcar`
-    *   `nma`
     *   `pushover`
     *   `pushsafer`
     *   `prowl`
@@ -539,7 +537,6 @@ from me and not from my employer.  See the `LICENSE` file for details.
 
 [Boxcar]: http://boxcar.io
 [Boxcar 2]: http://boxcar.io
-[Notify My Android]: http://www.notifymyandroid.com
 [Pushover]: http://pushover.net
 [Pushsafer]: http://www.pushsafer.com
 [Prowl]: http://www.prowlapp.com
