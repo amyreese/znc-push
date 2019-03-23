@@ -13,7 +13,6 @@ conditions.  ZNC Push current supports the following services:
 
 * [Boxcar][]
 * [Boxcar 2][]
-* [Notify My Android][] (NMA)
 * [Pushover][]
 * [Pushsafer][]
 * [Prowl][]
