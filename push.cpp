@@ -667,7 +667,7 @@ class CPushMod : public CModule
 					return;
 				}
 
-				service_host = "discordapp.com";
+				service_host = "discord.com";
 				service_url = "/api/webhooks/" + options["secret"];
 
 				if (options["username"] != "")
