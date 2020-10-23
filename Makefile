@@ -11,7 +11,7 @@ all: push.so
 
 push.so: push.cpp
 	CXXFLAGS="$(CXXFLAGS) -DPUSHVERSION=\"\\\"$(version)\\\"\" $(flags)" LIBS="$(LIBS) $(flags)" \
-		 znc-buildmod push.cpp
+		$(HOME)/.local/bin/znc-buildmod push.cpp
 
 install: push.so
 	mkdir -p $(HOME)/.znc/modules/
