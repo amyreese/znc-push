@@ -290,6 +290,13 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 	
     When using Pushsafer, this is the id or group id of your devices.
 
+*   `extra_target` Default: ` `
+
+    Second device or target name for push notifications.
+
+    Currently only Igloo supports this option. Can be used to send
+    notifications to up to two devices at the same time.
+
 
 ### Notifications
 

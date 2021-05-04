@@ -130,6 +130,7 @@ class CPushMod : public CModule
 			defaults["username"] = "";
 			defaults["secret"] = "";
 			defaults["target"] = "";
+			defaults["extra_target"] = "";
 
 			// Notification settings
 			defaults["message_content"] = "{context}: [{nick}] {message}";
@@ -261,6 +262,7 @@ class CPushMod : public CModule
 			replace["{username}"] = options["username"];
 			replace["{secret}"] = options["secret"];
 			replace["{target}"] = options["target"];
+			replace["{extra_target}"] = options["extra_target"];
 			// network is special because it can be nullptr if the user has none set up yet
 			CIRCNetwork* network = GetNetwork();
 			if (network) {
@@ -505,6 +507,11 @@ class CPushMod : public CModule
 				params["message"] = message;
 				params["type"] = type;
 				params["device1"] = options["target"];
+
+				if (options["extra_target"] != "")
+				{
+					params["device2"] = options["extra_target"];
+				}
 			}
 			else if (service == "supertoasty")
 			{
@@ -1498,7 +1505,7 @@ class CPushMod : public CModule
 						}
 						else if (value == "igloo")
 						{
-							PutModule("Note: Igloo requires adding your device with 'target'");
+							PutModule("Note: Igloo requires adding your device with 'target'. An extra device can be added with 'extra_target'.");
 						}
 						else if (value == "supertoasty")
 						{
