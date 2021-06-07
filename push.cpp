@@ -22,6 +22,7 @@
 #include <znc/Client.h>
 #include "time.h"
 #include <string.h>
+#include <regex>
 
 #ifdef USE_CURL
 #include <curl/curl.h>
@@ -235,12 +236,17 @@ class CPushMod : public CModule
 			// Set the last notification time
 			last_notification_time[context] = time(NULL);
 
+			// Strip color codes and other formatting from message
+			CString stripped_message = message;
+			std::regex irc_format_regex("\\x02|\\x03(?:\\d{0,2}(?:,\\d{1,2})?)?|\\x0F|\\x16|\\x1D|\\x1F");
+			stripped_message = std::regex_replace(message, irc_format_regex, "");
+
 			// Shorten message if needed
 			unsigned int message_length = options["message_length"].ToUInt();
-			CString short_message = message;
+			CString short_message = stripped_message;
 			if (message_length > 0)
 			{
-				short_message = message.Ellipsize(message_length);
+				short_message = stripped_message.Ellipsize(message_length);
 			}
 
 			// Generate an ISO8601 date string
