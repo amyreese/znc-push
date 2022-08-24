@@ -4,7 +4,7 @@
 # Allows the user to enter a Push user and API token, and sends
 # channel highlights and personal messages to Push.
 #
-# Copyright (c) 2015 John Reese
+# Copyright (c) 2022 Amethyst Reese
 # Licensed under the MIT license
 #
 
@@ -28,7 +28,7 @@ except ImportError:
 APP_NAME = 'ZNC Push'
 VERSION = 'v2.0.0-rc'
 USER_AGENT = '{0}/{1}'.format(APP_NAME, VERSION)
-IMAGE_URL = 'https://raw2.github.com/jreese/znc-push/master/logo.png'
+IMAGE_URL = 'https://raw2.github.com/amyreese/znc-push/master/logo.png'
 
 USER_CODE_ENABLED = False
 
@@ -1462,7 +1462,7 @@ class Translation(object):
     no = 'no'
     done = 'done'
     help_website = 'View the detailed documentation at '\
-                   'https://github.com/jreese/znc-push/blob/master/README.md'
+                   'https://github.com/amyreese/znc-push/blob/master/README.md'
 
     test_message = 'Test message'
     channel_push = 'Highlight'

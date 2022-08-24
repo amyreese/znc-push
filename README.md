@@ -34,7 +34,7 @@ ZNC Push currently supports ZNC versions 1.0 and newer. To use ZNC Push with
 older versions of ZNC, the "legacy" branch is available, but unsupported and
 unmaintained.
 
-ZNC Push was created by [John Reese](http://johnmreese.com) and designed to
+ZNC Push was created by [Amethyst Reese](http://noswap.com) and designed to
 fill a personal need.  It may not fit your use cases, but any and all feedback
 would be greatly appreciated.
 
@@ -513,15 +513,15 @@ or `http://domain/{nick}/{unixtime}` to `http://domain/somenick/1299685136`.
 License
 -------
 
-This project is copyright John Reese, and licensed under the MIT license.
+This project is copyright Amethyst Reese, and licensed under the MIT license.
 I am providing code in this repository to you under an open source license.
 Because this is my personal repository, the license you receive to my code is
 from me and not from my employer.  See the `LICENSE` file for details.
 
 
-[faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
-[examples]: https://github.com/jreese/znc-push/blob/master/doc/examples.md
-[issues]: https://github.com/jreese/znc-push/issues
+[faq]: https://github.com/amyreese/znc-push/blob/master/doc/faq.md
+[examples]: https://github.com/amyreese/znc-push/blob/master/doc/examples.md
+[issues]: https://github.com/amyreese/znc-push/issues
 
 [Boxcar]: http://boxcar.io
 [Notify My Android]: http://www.notifymyandroid.com
