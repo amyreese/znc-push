@@ -1,7 +1,7 @@
 ZNC Push
 ========
 
-[FAQ][] | [Example Configuration][examples] | [![Build Status](https://travis-ci.org/jreese/znc-push.svg?branch=master)](https://travis-ci.org/jreese/znc-push)
+[FAQ][] | [Example Configuration][examples] | [![Build Status](https://travis-ci.org/amyreese/znc-push.svg?branch=master)](https://travis-ci.org/amyreese/znc-push)
 
 
 Overview
@@ -40,7 +40,7 @@ distribution, so feedback on older releases of ZNC is needed to continue support
 If you want to use ZNC versions before 1.0 (0.206 or older), you will need to check out the
 "legacy" branch in order to compile it correctly.
 
-ZNC Push was created by [John Reese](http://johnmreese.com) and designed to fill a
+ZNC Push was created by [Amethyst Reese](http://noswap.com) and designed to fill a
 personal need.  It may not fit your use cases, but any and all feedback would be greatly
 appreciated.
 
@@ -537,7 +537,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 License
 -------
 
-This project is copyright John Reese, and licensed under the MIT license.
+This project is copyright Amethyst Reese, and licensed under the MIT license.
 I am providing code in this repository to you under an open source license.
 Because this is my personal repository, the license you receive to my code is
 from me and not from my employer.  See the `LICENSE` file for details.
@@ -560,9 +560,9 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Discord]: https://discord.gg
 [Igloo]: https://iglooirc.com/
 
-[faq]: https://github.com/jreese/znc-push/blob/master/doc/faq.md
-[examples]: https://github.com/jreese/znc-push/blob/master/doc/examples.md
-[issues]: https://github.com/jreese/znc-push/issues
+[faq]: https://github.com/amyreese/znc-push/blob/master/doc/faq.md
+[examples]: https://github.com/amyreese/znc-push/blob/master/doc/examples.md
+[issues]: https://github.com/amyreese/znc-push/issues
 [ZNC]: http://en.znc.in "ZNC, an advanced IRC bouncer"
 [ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601 "ISO 8601 Date Format"
 

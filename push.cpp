@@ -4,7 +4,7 @@
  * Allows the user to enter a Push user and API token, and sends
  * channel highlights and personal messages to Push.
  *
- * Copyright (c) 2011 John Reese
+ * Copyright (c) 2022 Amethyst Reese
  * Licensed under the MIT license
  */
 
@@ -536,7 +536,7 @@ class CPushMod : public CModule
 
 				params["title"] = message_title;
 				params["text"] = message_content;
-				params["image"] = "https://raw2.github.com/jreese/znc-push/master/logo.png";
+				params["image"] = "https://raw2.github.com/amyreese/znc-push/master/logo.png";
 				params["sender"] = "ZNC Push";
 			}
 			else if (service == "faast")
@@ -555,7 +555,7 @@ class CPushMod : public CModule
 				params["notification[subtitle]"] = context;
 				params["notification[message]"] = message_content;
 				params["notification[long_message]"] = message_content;
-				params["notification[icon_url]"] = "https://raw2.github.com/jreese/znc-push/master/logo.png";
+				params["notification[icon_url]"] = "https://raw2.github.com/amyreese/znc-push/master/logo.png";
 				if ( options["message_sound"] != "" )
 				{
 					params["notification[sound]"] = options["message_sound"];
@@ -1895,7 +1895,7 @@ class CPushMod : public CModule
 			// HELP command
 			else if (action == "help")
 			{
-				PutModule("View the detailed documentation at https://github.com/jreese/znc-push/blob/master/README.md");
+				PutModule("View the detailed documentation at https://github.com/amyreese/znc-push/blob/master/README.md");
 			}
 			// VERSION command
 			else if (action == "version")
