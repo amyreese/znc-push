@@ -147,7 +147,7 @@ class CPushMod : public CModule
 			// Notification conditions
 			defaults["away_only"] = "no";
 			defaults["client_count_less_than"] = "0";
-			defaults["highlight"] = "";
+			defaults["highlight"] = "%nick%";
 			defaults["idle"] = "0";
 			defaults["last_active"] = "180";
 			defaults["last_notification"] = "300";
@@ -956,7 +956,6 @@ class CPushMod : public CModule
 
 			VCString values;
 			options["highlight"].Split(" ", values, false);
-			values.push_back("%nick%");
 
 			for (VCString::iterator i = values.begin(); i != values.end(); i++)
 			{
@@ -1108,6 +1107,30 @@ class CPushMod : public CModule
 				}
 
 				if (name.WildCmp(value.AsLower()))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+		
+		/**
+		 * Check if the network_blacklist condition is met.
+		 *
+		 * @param network Network that the message was received on
+		 * @return True if network is not in the blacklist
+		 */
+		bool network_blacklist()
+		{
+			VCString blacklist;
+			options["network_blacklist"].Split(" ", blacklist, false);
+
+			CString name = (*m_pNetwork).GetName().AsLower();
+
+			for (VCString::iterator i = blacklist.begin(); i != blacklist.end(); i++)
+			{
+				if (name.WildCmp((*i).AsLower()))
 				{
 					return false;
 				}
@@ -1787,6 +1810,11 @@ class CPushMod : public CModule
 				table.AddRow();
 				table.SetCell("Condition", "idle");
 				table.SetCell("Status", CString(ago) + " seconds");
+				
+				table.AddRow();
+				table.SetCell("Condition", "network_blacklist");
+				// network_blacklist() is True if the network is not in a blacklist
+				table.SetCell("Status", network_blacklist() ? "no" : "yes");
 
 				table.AddRow();
 				table.SetCell("Condition", "network_blacklist");
