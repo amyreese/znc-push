@@ -143,6 +143,8 @@ class CPushMod : public CModule
 			defaults["message_priority"] = "0";
 			defaults["message_sound"] = "";
 			defaults["message_escape"] = "";
+			defaults["message_input"] = "(.*)";
+			defaults["message_output"] = "$1";
 
 			// Notification conditions
 			defaults["away_only"] = "no";
@@ -298,6 +300,8 @@ class CPushMod : public CModule
 			CString service_url;
 			CString service_auth;
 			MCString params;
+
+            message_content = regex_replace(message_content, regex(options["message_input"]), options["message_output"]);
 
 			// Service-specific profiles
 			if (service == "pushbullet")
