@@ -481,26 +481,6 @@ class CPushMod : public CModule
 					params["device2"] = options["extra_target"];
 				}
 			}
-			else if (service == "supertoasty")
-			{
-				if (options["secret"] == "")
-				{
-					PutModule("Error: secret (device id) not set");
-					return;
-				}
-
-				use_post = false;
-				use_port = 80;
-				use_ssl = false;
-
-				service_host = "api.supertoasty.com";
-				service_url = "/notify/"+options["secret"];
-
-				params["title"] = message_title;
-				params["text"] = message_content;
-				params["image"] = "https://raw2.github.com/amyreese/znc-push/master/logo.png";
-				params["sender"] = "ZNC Push";
-			}
 			else if (service == "faast")
 			{
 				if (options["secret"] == "")
@@ -1466,10 +1446,6 @@ class CPushMod : public CModule
 						else if (value == "igloo")
 						{
 							PutModule("Note: Igloo requires adding your device with 'target'. An extra device can be added with 'extra_target'.");
-						}
-						else if (value == "supertoasty")
-						{
-							PutModule("Note: Supertoasty requires setting the 'secret' option with device id");
 						}
 						else if (value == "url")
 						{

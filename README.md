@@ -14,7 +14,6 @@ conditions.  ZNC Push current supports the following services:
 * [Pushover][]
 * [Pushsafer][]
 * [Prowl][]
-* [Supertoasty][]
 * [PushBullet][]
 * [Faast][]
 * [Nexmo][]
@@ -238,7 +237,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `pushover`
     *   `pushsafer`
     *   `prowl`
-    *   `supertoasty`
     *   `pushbullet`
     *   `nexmo`
     *   `pushjet`
@@ -261,7 +259,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, Supertoasty, PushBullet, Nexmo, Pushjet, or Telegram.
+    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, PushBullet, Nexmo, Pushjet, or Telegram.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -538,7 +536,6 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Pushover]: http://pushover.net
 [Pushsafer]: http://www.pushsafer.com
 [Prowl]: http://www.prowlapp.com
-[Supertoasty]: http://www.supertoasty.com
 [PushBullet]: https://www.pushbullet.com/
 [Faast]: http://faast.io/
 [Nexmo]: https://www.nexmo.com
