@@ -329,44 +329,6 @@ class CPushMod : public CModule
 				params["title"] = message_title;
 				params["body"] = message_content;
 			}
-			else if (service == "boxcar")
-			{
-				if (options["username"] == "")
-				{
-					PutModule("Error: username not set");
-					return;
-				}
-
-				CString boxcar_api_key = "puSd2qp2gCDZO7nWkvb9";
-				CString boxcar_api_secret = "wLQQKSyGybIOkggbiKipefeYGLni9B3FPZabopHp";
-
-				service_host = "boxcar.io";
-				service_url = "/devices/providers/" + boxcar_api_key + "/notifications";
-
-				params["email"] = options["username"];
-				params["notification[from_screen_name]"] = context;
-				params["notification[message]"] = message_content;
-				params["notification[source_url]"] = message_uri;
-			}
-			else if (service == "boxcar2")
-			{
-				if (options["secret"] == "")
-				{
-					PutModule("Error: secret not set to apikey");
-					return;
-				}
-
-				service_host = "new.boxcar.io";
-				service_url = "/api/notifications";
-
-				params["user_credentials"] = options["secret"];
-				params["notification[title]"] = message_title;
-				params["notification[long_message]"] = message_content;
-				if ( options["message_sound"] != "" )
-				{
-					params["notification[sound]"] = options["message_sound"];
-				}
-			}
 			else if (service == "pushover")
 			{
 				if (options["username"] == "")
@@ -1485,14 +1447,6 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Pushbullet requires setting both 'target' (to device id) and 'secret' (to api key) options");
 						}
-						else if (value == "boxcar")
-						{
-							PutModule("Note: Boxcar requires setting the 'username' option");
-						}
-						else if (value == "boxcar2")
-						{
-							PutModule("Note: Boxcar 2 requires setting the 'secret' option");
-						}
 						else if (value == "pushover")
 						{
 							PutModule("Note: Pushover requires setting both the 'username' (to user key) and the 'secret' (to application api key) option");
@@ -1843,22 +1797,7 @@ class CPushMod : public CModule
 				CString service_auth;
 				MCString params;
 
-				if (service == "boxcar")
-				{
-					if (options["username"] == "")
-					{
-						PutModule("Error: username not set");
-						return;
-					}
-
-					CString boxcar_api_key = "puSd2qp2gCDZO7nWkvb9";
-
-					service_host = "boxcar.io";
-					service_url = "/devices/providers/" + boxcar_api_key + "/notifications/subscribe";
-
-					params["email"] = options["username"];
-				}
-				else if (service == "airgram")
+				if (service == "airgram")
 				{
 					PutModule("Error: Airgram service shut down. Please configure a different notification provider.");
 				}

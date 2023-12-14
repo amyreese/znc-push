@@ -11,8 +11,6 @@ ZNC Push is a module for [ZNC][] that will send notifications to multiple push n
 services, or SMS for any private message or channel highlight that matches a configurable set of
 conditions.  ZNC Push current supports the following services:
 
-* [Boxcar][]
-* [Boxcar 2][]
 * [Pushover][]
 * [Pushsafer][]
 * [Prowl][]
@@ -125,11 +123,6 @@ and looking in your profile or settings:
     /msg *push set username foo
     /msg *push set secret ...
 
-If you're using Boxcar, you need to use the following command to send a subscription request
-to your account, before ZNC Push can start working:
-
-    /msg *push subscribe
-
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
@@ -191,7 +184,7 @@ Commands
 *   `subscribe`
 
     Send a subscription request for the selected service to your configured account.  This
-    is required by certain services, such as Boxcar, before ZNC Push can send any messages
+    is required by certain services, before ZNC Push can send any messages
     to your account.
 
 *   `send <message>`
@@ -242,7 +235,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Possible values include:
 
-    *   `boxcar`
     *   `pushover`
     *   `pushsafer`
     *   `prowl`
@@ -260,7 +252,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar or Pushover. For Nexmo, this is the service/api key.
+    This option must be set when using Pushover. For Nexmo, this is the service/api key.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as username.
@@ -287,7 +279,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     number. The number must be in international format.
 
     When using Telegram, this is the id of the chat that receives the message.
-	
+
     When using Pushsafer, this is the id or group id of your devices.
 
 *   `extra_target` Default: ` `
@@ -355,8 +347,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_sound` Default: ` `
 
     Notification sound to play with the push notification.
-    Supported under Pushover, Pushsafer, Faast, and Boxcar 2. Must be chosen from the list of [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/en/pushapi), [Faast sounds](http://developer.faast.io/) or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
-
+    Supported under Pushover, Pushsafer, Faast. Must be chosen from the list of [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/en/pushapi), [Faast sounds](http://developer.faast.io/).
 
 ### Conditions
 
@@ -454,11 +445,11 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Individual strings may be prefixed with a `-` (hyphen) to negate the match, which makes
     the string act as a filter rather than a search.
-    
+
     The wildcard `*` (the default) may be used to match any context.
 
     Examples:
-    
+
     * `#important` - Only messages from the #important channel that match all the other
     conditions will be pushed
     * `-#notimportant *` - Messages from #nonimportant will be ignored; everything else (`*`)
@@ -513,20 +504,20 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     (last_active or last_notification or replied) and nick_blacklist` would send a
     notification if any of the three conditions in the sub-expression are met, while still
     requiring all of the conditions outside of the parentheses to also be met.
-    
+
     Specifying `all` is equivalent to:
-    
+
     * `away_only and client_count_less_than and highlight and idle and last_active and last_notification and nick_blacklist and replied and context`
 
 *   `query_conditions` Default: `all`
 
     This option is more or less identical to `channel_conditions`, except that it is used
     to filter notifications for private messages.
-    
+
     Specifying `all` is equivalent to:
-    
+
     * `away_only and client_count_less_than and idle and last_active and last_notification and nick_blacklist and replied`
-    
+
 *   `debug` Default: `off`
 
     When set to `on`, this option enables debug output for various features, and is useful
@@ -544,8 +535,6 @@ from me and not from my employer.  See the `LICENSE` file for details.
 
 
 
-[Boxcar]: http://boxcar.io
-[Boxcar 2]: http://boxcar.io
 [Pushover]: http://pushover.net
 [Pushsafer]: http://www.pushsafer.com
 [Prowl]: http://www.prowlapp.com
