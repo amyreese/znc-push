@@ -13,11 +13,11 @@ jobs:
 
     steps:
     - name: Add ZNC PPA
-      run: add-apt-repository -y ppa:teward/znc
+      run: sudo add-apt-repository -y ppa:teward/znc
     - name: Update apt cache
-      run: apt -qq update
+      run: sudo apt -qq update
     - name: Install build dependencies
-      run: apt install -y znc znc-dev libcurl4-openssl-dev
+      run: sudo apt install -y znc znc-dev libcurl4-openssl-dev
     - uses: actions/checkout@v3
     - name: configure
       run: ./configure
