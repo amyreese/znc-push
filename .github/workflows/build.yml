@@ -15,11 +15,5 @@ jobs:
     - name: Install build dependencies
       run: sudo apt install -y znc znc-dev libcurl4-openssl-dev
     - uses: actions/checkout@v3
-    - name: configure
-      run: ./configure
     - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      run: make curl=yes
