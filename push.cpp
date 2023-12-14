@@ -530,10 +530,6 @@ class CPushMod : public CModule
 					i->second = expand(i->second, replace);
 				}
 			}
-			else if (service == "airgram")
-			{
-				PutModule("Error: Airgram service shut down. Please configure another notification provider.");
-			}
 			else if (service == "slack")
 			{
 				if (options["secret"] == "")
@@ -1640,45 +1636,6 @@ class CPushMod : public CModule
 				}
 
 				PutModule(table);
-			}
-			// SUBSCRIBE command
-			else if (action == "subscribe")
-			{
-				// Set up the connection profile
-				CString service = options["service"];
-				bool use_post = true;
-				int use_port = 443;
-				bool use_ssl = true;
-				CString service_host;
-				CString service_url;
-				CString service_auth;
-				MCString params;
-
-				if (service == "airgram")
-				{
-					PutModule("Error: Airgram service shut down. Please configure a different notification provider.");
-				}
-				else
-				{
-					PutModule("Error: service does not support subscribe command");
-					return;
-				}
-
-#ifdef USE_CURL
-				long http_code = make_curl_request(service_host, service_url, service_auth, params, use_port, use_ssl, use_post, options["proxy"], options["proxy_ssl_verify"] != "no", options["debug"] == "on");
-				PutDebug("curl: HTTP status code " + CString(http_code));
-				if (!(http_code >= 200 && http_code < 300)) {
-					PutModule("Error: HTTP status code " + CString(http_code));
-				}
-#else
-				// Create the socket connection, write to it, and add it to the queue
-				CPushSocket *sock = new CPushSocket(this);
-				sock->Connect(service_host, use_port, use_ssl);
-				sock->Request(use_post, service_host, service_url, params, service_auth);
-				AddSocket(sock);
-#endif
-
-				PutModule("Ok");
 			}
 			// SEND command
 			else if (action == "send")

@@ -176,12 +176,6 @@ Commands
     Check the status of current conditions.  Specifying the "context" of either a channel
     or nick name will provide status values specific to that context.
 
-*   `subscribe`
-
-    Send a subscription request for the selected service to your configured account.  This
-    is required by certain services, before ZNC Push can send any messages
-    to your account.
-
 *   `send <message>`
 
     Manually trigger a notification with the given message.  Useful for testing to validate
