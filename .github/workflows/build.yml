@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Build
 
 on:
   push:
@@ -12,10 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Add ZNC PPA
-      run: sudo add-apt-repository -y ppa:teward/znc
-    - name: Update apt cache
-      run: sudo apt -qq update
     - name: Install build dependencies
       run: sudo apt install -y znc znc-dev libcurl4-openssl-dev
     - uses: actions/checkout@v3
