@@ -15,10 +15,6 @@ conditions.  ZNC Push current supports the following services:
 * [Pushsafer][]
 * [Prowl][]
 * [PushBullet][]
-* [Faast][]
-* [Nexmo][]
-* [Pushalot][]
-* [Pushjet][]
 * [Telegram][]
 * [Slack][]
 * [Discord][]
@@ -238,8 +234,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `pushsafer`
     *   `prowl`
     *   `pushbullet`
-    *   `nexmo`
-    *   `pushjet`
     *   `telegram`
     *   `slack`
     *   `discord`
@@ -250,7 +244,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     User account that should receive push notifications.
 
-    This option must be set when using Pushover. For Nexmo, this is the service/api key.
+    This option must be set when using Pushover.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as username.
@@ -259,7 +253,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, PushBullet, Nexmo, Pushjet, or Telegram.
+    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, PushBullet, or Telegram.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -272,9 +266,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     single device to send notifications to; if blank or unset, notifications
     will be sent to all devices. For Pushover, this is the device name; for
     PushBullet, this is the device_iden.
-
-    When using Nexmo, this option allows you to specify the SMS destination
-    number. The number must be in international format.
 
     When using Telegram, this is the id of the chat that receives the message.
 
@@ -305,8 +296,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Title that will be provided for the push notification.  Keyword expansion is performed
     on this value.
-
-    When using Nexmo, this value is where the SMS is "from". In most cases, you must use a valid number in international format.
 
 *   `message_escape` Default: ` `
 
@@ -340,12 +329,12 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_priority` Default: ` `
 
     Priority level that will be used for the push notification.
-    Currently supported only by Pushover.net, Notify My Android and Pushjet.
+    Currently supported only by Pushover.net and Notify My Android.
 
 *   `message_sound` Default: ` `
 
     Notification sound to play with the push notification.
-    Supported under Pushover, Pushsafer, Faast. Must be chosen from the list of [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/en/pushapi), [Faast sounds](http://developer.faast.io/).
+    Supported under Pushover, Pushsafer. Must be chosen from the list of [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/en/pushapi).
 
 ### Conditions
 
@@ -537,10 +526,6 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Pushsafer]: http://www.pushsafer.com
 [Prowl]: http://www.prowlapp.com
 [PushBullet]: https://www.pushbullet.com/
-[Faast]: http://faast.io/
-[Nexmo]: https://www.nexmo.com
-[Pushalot]: https://pushalot.com/
-[Pushjet]: http://pushjet.io
 [Telegram]: https://telegram.org/
 [Slack]: https://slack.com/
 [Discord]: https://discord.gg

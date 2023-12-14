@@ -411,31 +411,6 @@ class CPushMod : public CModule
 				}
 
 			}
-			else if (service == "pushalot")
-			{
-				if (options["secret"] == "")
-				{
-					PutModule("Error: secret (authorization token) not set");
-					return;
-				}
-
-				service_host = "pushalot.com";
-				service_url = "/api/sendmessage";
-
-				params["AuthorizationToken"] = options["secret"];
-				params["Title"] = message_title;
-				params["Body"] = message_content;
-
-				if (message_uri != "")
-				{
-					params["Link"] = message_uri;
-				}
-
-				if (options["message_uri_title"] != "" )
-				{
-					params["LinkTitle"] = options["message_uri_title"];
-				}
-			}
 			else if (service == "prowl")
 			{
 				if (options["secret"] == "")
@@ -480,59 +455,6 @@ class CPushMod : public CModule
 				{
 					params["device2"] = options["extra_target"];
 				}
-			}
-			else if (service == "faast")
-			{
-				if (options["secret"] == "")
-				{
-					PutModule("Error: secret not set to apikey");
-					return;
-				}
-
-				service_host = "www.appnotifications.com";
-				service_url = "/account/notifications.json";
-
-				params["user_credentials"] = options["secret"];
-				params["notification[title]"] = message_title;
-				params["notification[subtitle]"] = context;
-				params["notification[message]"] = message_content;
-				params["notification[long_message]"] = message_content;
-				params["notification[icon_url]"] = "https://raw2.github.com/amyreese/znc-push/master/logo.png";
-				if ( options["message_sound"] != "" )
-				{
-					params["notification[sound]"] = options["message_sound"];
-				}
-				if ( options["message_uri"] != "" )
-				{
-					params["notification[run_command]"] = options["message_uri"];
-				}
-			}
-			else if (service == "nexmo")
-			{
-				if (options["username"] == "")
-				{
-					PutModule("Error: username (api key) not set");
-					return;
-				}
-				if (options["secret"] == "")
-				{
-					PutModule("Error: secret (api secret) not set");
-					return;
-				}
-				if (options["target"] == "")
-				{
-					PutModule("Error: destination mobile number (in international format) not set");
-					return;
-				}
-
-				service_host = "rest.nexmo.com";
-				service_url = "/sms/json";
-
-				params["api_secret"] = options["secret"];
-				params["api_key"] = options["username"];
-				params["from"] = message_title;
-				params["to"] = options["target"];
-				params["text"] = message_content;
 			}
 			else if (service == "url")
 			{
@@ -655,31 +577,6 @@ class CPushMod : public CModule
 
 				params["content"] = message_content;
 
-			}
-			else if (service == "pushjet")
-			{
-				if (options["secret"] == "")
-				{
-					PutModule("Error: secret (service key) not set");
-					return;
-				}
-
-				service_host = "api.pushjet.io";
-				service_url = "/message";
-
-				params["secret"] = options["secret"];
-				params["title"] = message_title;
-				params["message"] = message_content;
-
-				if (message_uri != "")
-				{
-					params["link"] = message_uri;
-				}
-
-				if (options["message_priority"] != "")
-				{
-					params["level"] = options["message_priority"];
-				}
 			}
 			else if (service == "telegram")
 			{
@@ -1435,10 +1332,6 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Pushsafer requires setting the 'private or alias key' option");
 						}
-						else if (value == "pushalot")
-						{
-							PutModule("Note: Pushalot requires setting the 'secret' (to user key) (to authorization token) option");
-						}
 						else if (value == "prowl")
 						{
 							PutModule("Note: Prowl requires setting the 'secret' option");
@@ -1451,14 +1344,6 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: URL requires setting the 'message_uri' option with the full URL");
 						}
-						else if (value == "faast")
-						{
-							PutModule("Note: Faast requires setting the secret to your apikey");
-						}
-						else if (value == "nexmo")
-						{
-							PutModule("Note: Nexmo requires setting the 'username' (to api key), 'secret' (to api secret), 'message_title' (to sender number in international format), and 'target' (to destination number in international format) options");
-						}
 						else if (value == "slack")
 						{
 							PutModule("Note: Slack requires setting 'secret' (from webhook) and 'target' (channel or username), optional 'username' (bot name)");
@@ -1466,10 +1351,6 @@ class CPushMod : public CModule
 						else if (value == "discord")
 						{
 							PutModule("Note: Discord requires setting 'secret' (from webhook), optional 'username' (bot name)");
-						}
-						else if (value == "pushjet")
-						{
-							PutModule("Note: Pushjet requires setting 'secret' (service key) option");
 						}
 						else if (value == "telegram")
 						{
