@@ -11,17 +11,10 @@ ZNC Push is a module for [ZNC][] that will send notifications to multiple push n
 services, or SMS for any private message or channel highlight that matches a configurable set of
 conditions.  ZNC Push current supports the following services:
 
-* [Boxcar][]
-* [Boxcar 2][]
 * [Pushover][]
 * [Pushsafer][]
 * [Prowl][]
-* [Supertoasty][]
 * [PushBullet][]
-* [Faast][]
-* [Nexmo][]
-* [Pushalot][]
-* [Pushjet][]
 * [Telegram][]
 * [Slack][]
 * [Discord][]
@@ -125,11 +118,6 @@ and looking in your profile or settings:
     /msg *push set username foo
     /msg *push set secret ...
 
-If you're using Boxcar, you need to use the following command to send a subscription request
-to your account, before ZNC Push can start working:
-
-    /msg *push subscribe
-
 At this point, it should start sending notifications every time you get a private message
 or someone says your name in a channel.  If this is everything you wanted, congratulations,
 you're done!
@@ -188,12 +176,6 @@ Commands
     Check the status of current conditions.  Specifying the "context" of either a channel
     or nick name will provide status values specific to that context.
 
-*   `subscribe`
-
-    Send a subscription request for the selected service to your configured account.  This
-    is required by certain services, such as Boxcar, before ZNC Push can send any messages
-    to your account.
-
 *   `send <message>`
 
     Manually trigger a notification with the given message.  Useful for testing to validate
@@ -242,14 +224,10 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Possible values include:
 
-    *   `boxcar`
     *   `pushover`
     *   `pushsafer`
     *   `prowl`
-    *   `supertoasty`
     *   `pushbullet`
-    *   `nexmo`
-    *   `pushjet`
     *   `telegram`
     *   `slack`
     *   `discord`
@@ -260,7 +238,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     User account that should receive push notifications.
 
-    This option must be set when using Boxcar or Pushover. For Nexmo, this is the service/api key.
+    This option must be set when using Pushover.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as username.
@@ -269,7 +247,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, Supertoasty, PushBullet, Nexmo, Pushjet, or Telegram.
+    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, PushBullet, or Telegram.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -283,11 +261,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     will be sent to all devices. For Pushover, this is the device name; for
     PushBullet, this is the device_iden.
 
-    When using Nexmo, this option allows you to specify the SMS destination
-    number. The number must be in international format.
-
     When using Telegram, this is the id of the chat that receives the message.
-	
+
     When using Pushsafer, this is the id or group id of your devices.
 
 *   `extra_target` Default: ` `
@@ -315,8 +290,6 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Title that will be provided for the push notification.  Keyword expansion is performed
     on this value.
-
-    When using Nexmo, this value is where the SMS is "from". In most cases, you must use a valid number in international format.
 
 *   `message_escape` Default: ` `
 
@@ -350,13 +323,12 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_priority` Default: ` `
 
     Priority level that will be used for the push notification.
-    Currently supported only by Pushover.net, Notify My Android and Pushjet.
+    Currently supported only by Pushover.net and Notify My Android.
 
 *   `message_sound` Default: ` `
 
     Notification sound to play with the push notification.
-    Supported under Pushover, Pushsafer, Faast, and Boxcar 2. Must be chosen from the list of [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/en/pushapi), [Faast sounds](http://developer.faast.io/) or [Boxcar 2 sounds](https://boxcar.uservoice.com/knowledgebase/articles/306788-how-to-send-your-boxcar-account-a-notification).
-
+    Supported under Pushover, Pushsafer. Must be chosen from the list of [Pushover sounds](https://pushover.net/api#sounds), [Pushsafer sounds](https://www.pushsafer.com/en/pushapi).
 
 ### Conditions
 
@@ -454,11 +426,11 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Individual strings may be prefixed with a `-` (hyphen) to negate the match, which makes
     the string act as a filter rather than a search.
-    
+
     The wildcard `*` (the default) may be used to match any context.
 
     Examples:
-    
+
     * `#important` - Only messages from the #important channel that match all the other
     conditions will be pushed
     * `-#notimportant *` - Messages from #nonimportant will be ignored; everything else (`*`)
@@ -513,20 +485,20 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     (last_active or last_notification or replied) and nick_blacklist` would send a
     notification if any of the three conditions in the sub-expression are met, while still
     requiring all of the conditions outside of the parentheses to also be met.
-    
+
     Specifying `all` is equivalent to:
-    
+
     * `away_only and client_count_less_than and highlight and idle and last_active and last_notification and nick_blacklist and replied and context`
 
 *   `query_conditions` Default: `all`
 
     This option is more or less identical to `channel_conditions`, except that it is used
     to filter notifications for private messages.
-    
+
     Specifying `all` is equivalent to:
-    
+
     * `away_only and client_count_less_than and idle and last_active and last_notification and nick_blacklist and replied`
-    
+
 *   `debug` Default: `off`
 
     When set to `on`, this option enables debug output for various features, and is useful
@@ -544,17 +516,10 @@ from me and not from my employer.  See the `LICENSE` file for details.
 
 
 
-[Boxcar]: http://boxcar.io
-[Boxcar 2]: http://boxcar.io
 [Pushover]: http://pushover.net
 [Pushsafer]: http://www.pushsafer.com
 [Prowl]: http://www.prowlapp.com
-[Supertoasty]: http://www.supertoasty.com
 [PushBullet]: https://www.pushbullet.com/
-[Faast]: http://faast.io/
-[Nexmo]: https://www.nexmo.com
-[Pushalot]: https://pushalot.com/
-[Pushjet]: http://pushjet.io
 [Telegram]: https://telegram.org/
 [Slack]: https://slack.com/
 [Discord]: https://discord.gg
