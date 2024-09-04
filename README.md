@@ -1,7 +1,7 @@
 ZNC Push
 ========
 
-[FAQ][] | [Example Configuration][examples] | [![Build Status](https://travis-ci.org/amyreese/znc-push.svg?branch=master)](https://travis-ci.org/amyreese/znc-push)
+[FAQ][] | [Example Configuration][examples] | [![Build Status](https://github.com/amyreese/znc-push/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/amyreese/znc-push/actions/workflows/build.yml)
 
 
 Overview
