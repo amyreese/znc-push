@@ -265,6 +265,8 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     When using Pushsafer, this is the id or group id of your devices.
 
+    When using Igloo, this is the Push Token found in the client settings.
+
 *   `extra_target` Default: ` `
 
     Second device or target name for push notifications.
