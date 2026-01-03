@@ -7,7 +7,6 @@
  * Copyright (c) 2022 Amethyst Reese
  * Licensed under the MIT license
  */
-
 #define REQUIRESSL
 #ifndef PUSHVERSION
 #define PUSHVERSION "dev"
@@ -590,6 +589,58 @@ class CPushMod : public CModule
 				if (options["message_escape"] == "HTML") {
 					params["parse_mode"] = "HTML";
 				}
+			}
+			else if (service == "ntfy")
+			{
+				use_post = false;
+				if (options["secret"] == "")
+				{
+					PutModule("Error: ntfy token/secret not set");
+					return;
+				}
+				service_auth = CString(":") +options["secret"];
+
+				if (options["target"] == "")
+				{
+					PutModule("Error: ntfy topic/target not set");
+					return;
+				}
+
+				if (options["message_priority"] != "0")
+				{
+					params["priority"] = options["message_priority"];
+				}
+				else
+				{
+					params["priority"] = "low";
+				}
+
+				if (options["tags"] != "")
+				{
+					params["tags"] = options["tags"];
+				}
+
+				params["message"] = message_content;
+
+				// set service_host to ntfy.sh if no host is specified
+				service_host = options["host"];
+				if (service_host == "")
+				{
+					service_host = "ntfy.sh";
+				}
+				service_url = CString("https://") + service_host + CString("/") + options["target"] + CString("/publish");
+
+				// "ntfy.sh/mywebhook/publish?message=Webhook+triggered&priority=high&tags=warning,skull"
+
+				// PutModule("service: " + service);
+				// PutModule("service_host: " + service_host);
+				// PutModule("service_url: " + service_url);
+				// PutModule("service_auth: " + service_auth);
+				// PutModule("token: " + options["secret"]);
+				// PutModule("topic: " + options["target"]);
+				// PutModule("use_port: " + CString(use_port));
+				// PutModule("use_ssl: " + CString(use_ssl ? 1 : 0));
+				// PutModule("use_post: " + CString(use_post ? 1 : 0));
 			}
 			else
 			{
@@ -1352,9 +1403,13 @@ class CPushMod : public CModule
 						{
 							PutModule("Note: Telegram requires setting both the 'secret' (api key) and 'target' (chat_id)");
 						}
+						else if (value == "ntfy")
+						{
+							PutModule("Note: ntfy requires setting 'topic' and 'token' options. Optional 'host', 'priority', and 'tags'.");
+						}
 						else
 						{
-							PutModule("Error: unknown service name");
+							PutModule("Error: unknown service name specified");
 							return;
 						}
 					}

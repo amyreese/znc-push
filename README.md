@@ -19,6 +19,7 @@ conditions.  ZNC Push current supports the following services:
 * [Slack][]
 * [Discord][]
 * [Igloo][]
+* [ntfy][]
 * Custom URL GET requests
 
 This project is still a Work In Progress, but should be functional enough and stable enough
@@ -232,6 +233,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     *   `slack`
     *   `discord`
     *   `igloo`
+    *   `ntfy`
     *   `url`
 
 *   `username` Default: ` `
@@ -247,7 +249,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 
     Authentication token for push notifications.
 
-    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, PushBullet, or Telegram.
+    This option must be set when using Notify My Android, Pushover, Pushsafer, Prowl, PushBullet, ntfy or Telegram.
 
     When using the custom URL service, if this option is set it will enable HTTP basic
     authentication and be used as password.
@@ -264,6 +266,12 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
     When using Telegram, this is the id of the chat that receives the message.
 
     When using Pushsafer, this is the id or group id of your devices.
+
+    When using ntfy, this is used as the topic which receives the message.
+
+*.  `tags` Defaults: ` `
+
+    When using ntfy, this can add some tags for the message. See ntfy documentation.
 
 *   `extra_target` Default: ` `
 
@@ -323,7 +331,7 @@ to something similar to "http://domain/#channel/2011-03-09 14:25:09", or
 *   `message_priority` Default: ` `
 
     Priority level that will be used for the push notification.
-    Currently supported only by Pushover.net and Notify My Android.
+    Currently supported only by Pushover.net, Notify My Android and ntfy
 
 *   `message_sound` Default: ` `
 
@@ -524,6 +532,7 @@ from me and not from my employer.  See the `LICENSE` file for details.
 [Slack]: https://slack.com/
 [Discord]: https://discord.gg
 [Igloo]: https://iglooirc.com/
+[ntfy]: https://ntfy.sh
 
 [faq]: https://github.com/amyreese/znc-push/blob/master/doc/faq.md
 [examples]: https://github.com/amyreese/znc-push/blob/master/doc/examples.md
